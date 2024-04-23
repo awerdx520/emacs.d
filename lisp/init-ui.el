@@ -28,8 +28,8 @@
   (find-font (font-spec :name font-name)))
 
 (when (display-graphic-p)
-  (cl-loop for font in '("Cascadia Code" "SF Mono" "Source Code Pro"
-                         "Fira Code" "Menlo" "Monaco" "Dejavu Sans Mono"
+  (cl-loop for font in '("Source Code Pro" "Fira Code" "Monaco"
+                         "Dejavu Sans Mono" "Menlo" "Cascadia Code" "SF Mono"
                          "Lucida Console" "Consolas" "SAS Monospace")
            when (font-installed-p font)
            return (set-face-attribute
@@ -47,7 +47,7 @@
                                                :size (cond ((eq system-type 'gnu/linux) 16.5)
                                                            ((eq system-type 'windows-nt) 15.0)))
                                     nil 'prepend))
-  (cl-loop for font in '("思源黑体 CN" "思源宋体 CN" "微软雅黑 CN"
+  (cl-loop for font in '("Sarasa Term SC Nerd" "思源黑体 CN" "思源宋体 CN" "微软雅黑 CN"
                          "Source Han Sans CN" "Source Han Serif CN"
                          "WenQuanYi Micro Hei" "文泉驿等宽微米黑"
                          "Microsoft Yahei UI" "Microsoft Yahei")
