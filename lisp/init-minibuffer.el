@@ -43,12 +43,21 @@
 
 (use-package consult
   :bind (([remap imenu]                  . consult-imenu)
-         ([remap goto-line]              . consult-goto-line)
-         ([remap bookmark-jump]          . consult-bookmark)
-         ([remap recentf-open-files]     . consult-recent-file)
          ([remap repeat-complex-command] . consult-complex-command)
          ([remap jump-to-register]       . consult-register-load)
-         ([remap point-to-register]      . consult-register-store))
+         ([remap point-to-register]      . consult-register-store)
+         ([remap evil-show-marks]               . consult-mark)
+         ([remap evil-show-registers]           . consult-register)
+         ([remap goto-line]                     . consult-goto-line)
+         ([remap info-search]                   . consult-info)
+         ([remap locate]                        . consult-locate)
+         ([remap load-theme]                    . consult-theme)
+         ([remap man]                           . consult-man)
+         ([remap recentf-open-files]            . consult-recent-file)
+         ([remap switch-to-buffer]              . consult-buffer)
+         ([remap switch-to-buffer-other-window] . consult-buffer-other-window)
+         ([remap switch-to-buffer-other-frame]  . consult-buffer-other-frame)
+         ([remap yank-pop]                      . consult-yank-pop))
   :config
   (with-no-warnings
     (consult-customize consult-ripgrep consult-git-grep consult-grep
@@ -85,21 +94,21 @@ Supports exportion consult-grep to wgrep, file to wdeired, and consult-localtion
     (require 'embark)
     (require 'wgrep)
     (pcase-let ((`(,type . ,candidates)
-	             (run-hook-with-args-until-success 'embark-candidate-collectors)))
+	         (run-hook-with-args-until-success 'embark-candidate-collectors)))
       (pcase type
         ('consult-grep (let ((embark-after-export-hook #'wgrep-change-to-wgrep-mode))
-		                 (embark-export)))
+		         (embark-export)))
         ('file (let ((embark-after-export-hook #'wdired-change-to-wdired-mode))
-	             (embark-export)))
+	         (embark-export)))
         ('consult-location (let ((embark-after-export-hook #'occur-edit-mode))
-			                 (embark-export)))
+			     (embark-export)))
         (x (user-error "embark category %S doesn't support writeable export" x)))))
 
   (eval-after-load 'consult
     '(eval-after-load 'embark
-       '(progn
-	      (require 'embark-consult)
-	      (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))))
+      '(progn
+	 (require 'embark-consult)
+	 (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))))
 
   (define-key minibuffer-local-map (kbd "C-c C-e") 'embark-export-write))
 
