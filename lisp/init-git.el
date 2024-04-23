@@ -12,9 +12,18 @@
 ;; See `magit-define-global-key-bindings' for more information.
 (use-package magit
   :hook (git-commit-setup . git-commit-turn-on-flyspell)
-  :bind (("C-x g"   . magit-status)
-         ("C-x M-g" . magit-dispatch)
-         ("C-c M-g" . magit-file-dispatch))
+  :general
+  (thomas-leader-git
+   "." 'magit-file-dispatch
+   "/" 'magit-dispatch
+   "b" 'magit-branch-checkout
+   "C" 'magit-clone
+   "D" 'magit-file-delete
+   "g" 'magit-status
+   "G" 'magit-status-here
+   "L" 'maigt-log-buffer-file
+   "S" 'magit-stage-buffer-file
+   "U" 'magit-unstage-buffer-file)
   :custom
   (magit-diff-refine-hunk t)
   (magit-diff-paint-whitespace nil)
