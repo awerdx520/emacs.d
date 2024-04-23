@@ -19,6 +19,11 @@
 ;;
 ;;; Code:
 
+;; 加载 custom file
+(setq custom-file (locate-user-emacs-file "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 ;; Ensure that, if we do need package.el, it is configured correctly. You really
 ;; shouldn't be using it, but it may be convenient for quickly testing packages.
 (setq package-user-dir (concat thomas-local-dir "elpa/")
@@ -60,8 +65,7 @@
   (setq package-archives '(("org" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
                            ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/"))))
 
-;; Load straight bootstrap file
-(defvar bootstrap-version)
+
 (let ((bootstrap-file (expand-file-name "straight/repos/straight.el/bootstrap.el"
                                         straight-base-dir))
       (bootstrap-version 6))
@@ -73,8 +77,8 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
-
 (setq byte-compile-warnings '(cl-functions))
+
 (straight-use-package 'use-package)
 
 (provide 'init-package)

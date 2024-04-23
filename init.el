@@ -1,40 +1,33 @@
 ;;; init.el --- The main entry for emacs -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
-;; Some functionality uses this to identify you, e.g. GPG configuration, email
-;; clients, file templates and snippets.
-(if (string= (getenv "LOCATION") "work-dell-64")
-    (setq user-full-name "tangxin1"
-          user-mail-address "***REMOVED***"
-          user-gpg-key "92A648F04F129A7A")
-
-  (setq user-full-name "tangxin"
-        user-mail-address "1164074502@qq.com"
-        user-gpg-key "92A648F04F129A7A"))
-
-
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
-;; (setq org-journal-dir (concat user-emacs-directory "gtd/")
-;;       org-roam-directory (concat user-emacs-directory "roam/")
-;;       org-archive-location (concat org-directory "archive/%s_archive::"))
-
 ;; --debug-init implies `debug-on-error'.
 (setq debug-on-error init-file-debug)
+
+;; Defer garbage collection further back in the startup process
+(setq gc-cons-threshold most-positive-fixnum)
+
+;; Prevent flashing of unstyled modeline at startup
+(setq-default mode-line-format nil)
+
+;; Don't pass case-insensitive to `auto-mode-alist'
+(setq auto-mode-case-fold nil)
 
 ;; Load customize config file
 (let ((dir (locate-user-emacs-file "lisp")))
   (add-to-list 'load-path (file-name-as-directory  dir))
   (add-to-list 'load-path (file-name-as-directory (expand-file-name "lang" dir))))
-(setq custom-file (locate-user-emacs-file "custom.el"))
 
-;;
+;; 依赖
 (require 'init-const)
 (require 'init-macro)
+
+;; packages
 (require 'init-package)
+
+;; preferences
 (require 'init-base)
 (require 'init-wsl)
-
 ;; ui
 (require 'init-ui)
 (require 'init-dashboard)
@@ -73,8 +66,4 @@
 (require 'init-browser)
 
 (require 'init-keybinding)
-
-(when (file-exists-p custom-file)
-  (load custom-file))
-
-(provide 'init)
+;;;  init.el ends here

@@ -30,7 +30,8 @@
 
 ;;; Code:
 (require 'cl-lib)
-(eval-when-compile (require 'subr-x))
+(eval-when-compile
+  (require 'subr-x))
 
 (defconst thomas-leader-key "SPC"
   "Set default leader key.")
@@ -41,7 +42,8 @@
 (defconst thomas-localleader-key "SPC m"
   "Set default local leader key.")
 
-(defconst homepage-url "https://github.com/awerdx520/")
+(defconst homepage-url "https://github.com/awerdx520/"
+  "Github Homepage url.")
 
 (defconst IS-WSL
   (and (eq system-type 'gnu/linux)
@@ -78,19 +80,13 @@ regenerated or restored. For example, a recently-opened file list is not
 essential, but losing it means losing this record, and restoring it requires
 revisiting all those files.")
 
-(defvar thomas-projectile-fd-binary
-  (cl-find-if #'executable-find (list "fdfind" "fd"))
-  "The filename of the `fd' executable.
+;; (defvar thomas-project-fd-binary
+;;   (cl-find-if #'executable-find (list "fdfind" "fd"))
+;;   "The filename of the `fd' executable.
 
-On some distros it's 'fdfind' (ubuntu,debian, and derivatives).
-On most it's 'fd'.")
+;; On some distros it's 'fdfind' (ubuntu,debian, and derivatives).
+;; On most it's 'fd'.")
 
-
-(defconst tldr-buffer-name "*tldr*"
-  "")
-
-(defconst tldr-url-template "https://api.github.com/repos/tldr-pages/tldr/contents/pages/%s/%s.md"
-  "")
 
 (provide 'init-const)
 
