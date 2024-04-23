@@ -15,12 +15,14 @@
 
 (setq use-file-dialog nil ;; Suppress GUI features and more
       use-dialog-box nil
+
       ;; 关闭相关设置
       inhibit-x-resources t
       inhibit-default-init t
       inhibit-startup-screen t
       inhibit-startup-message t
       inhibit-startup-buffer-menu t
+
       ;; Pixelwise resize
       window-resize-pixelwise t
       frame-resize-pixelwise t
@@ -68,9 +70,6 @@
       y-or-n-p-use-read-key t
       read-char-choice-use-read-key t)
 
-;; Font size
-(set-face-attribute 'default nil :height 110)
-
 ;; Show line/column number and more
 (use-package simple
   :straight (:type built-in)
@@ -104,9 +103,6 @@
 (setq auth-sources (list (file-name-concat thomas-state-dir "authinfo.gpg")
                          "~/.authinfo.gpg"))
 
-(when (boundp 'native-comp-eln-load-path)
-  (setcar native-comp-eln-load-path
-          (concat thomas-cache-dir "eln-cache/")))
 ;; This package lets you enable minor modes based on file name and contents.
 ;; To find the right modes, it checks filenames against patterns in `auto-minor-mode-alist'
 ;; and file contents against `auto-minor-mode-magic-alist'.

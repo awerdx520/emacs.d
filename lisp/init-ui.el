@@ -18,16 +18,59 @@
 ;;
 ;;
 ;;; Code:
-;; Font size
-(set-face-attribute 'default nil :height 110)
+
 ;; Startup maximum
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+;; Font size
+(defun font-installed-p (font-name)
+  "Check if font with FONT-NAME is available."
+  (find-font (font-spec :name font-name)))
+
+(when (display-graphic-p)
+  (cl-loop for font in '("Cascadia Code" "SF Mono" "Source Code Pro"
+                         "Fira Code" "Menlo" "Monaco" "Dejavu Sans Mono"
+                         "Lucida Console" "Consolas" "SAS Monospace")
+           when (font-installed-p font)
+           return (set-face-attribute
+                   'default nil
+                   :font (font-spec :family font
+                                    :weight 'normal
+                                    :slant 'normal
+                                    :size (cond ((eq system-type 'gnu/linux) 13.0)
+                                                ((eq system-type 'windows-nt) 12.5)))))
+  (cl-loop for font in '("OpenSansEmoji" "Noto Color Emoji" "Segoe UI Emoji"
+                         "EmojiOne Color" "Apple Color Emoji" "Symbola" "Symbol")
+           when (font-installed-p font)
+           return (set-fontset-font t 'unicode
+                                    (font-spec :family font
+                                               :size (cond ((eq system-type 'gnu/linux) 16.5)
+                                                           ((eq system-type 'windows-nt) 15.0)))
+                                    nil 'prepend))
+  (cl-loop for font in '("思源黑体 CN" "思源宋体 CN" "微软雅黑 CN"
+                         "Source Han Sans CN" "Source Han Serif CN"
+                         "WenQuanYi Micro Hei" "文泉驿等宽微米黑"
+                         "Microsoft Yahei UI" "Microsoft Yahei")
+           when (font-installed-p font)
+           return (set-fontset-font t '(#x4e00 . #x9fff)
+                                    (font-spec :name font
+                                               :weight 'normal
+                                               :slant 'normal
+                                               :size (cond ((eq system-type 'gnu/linux) 16.5)
+                                                           ((eq system-type 'windows-nt) 15.0)))))
+  (cl-loop for font in '("HanaMinB" "SimSun-ExtB")
+           when (font-installed-p font)
+           return (set-fontset-font t '(#x20000 . #x2A6DF)
+                                    (font-spec :name font
+                                               :weight 'normal
+                                               :slant 'normal
+                                               :size (cond ((eq system-type 'gnu/linux) 16.5)
+                                                           ((eq system-type 'windows-nt) 15.0))))))
 ;;
 ;;; General UX
 ;; Don't prompt for confirmation when we create a new file or buffer (assume the
 ;; user knows what they're doing).
 (setq confirm-nonexistent-file-or-buffer nil)
-
 (setq uniquify-buffer-name-style 'forward
       ;; no beeping or blinking please
       ring-bell-function #'ignore
@@ -102,13 +145,6 @@
 (when (bound-and-true-p tooltip-mode)
   (tooltip-mode -1))
 
-;; FIX: The native border "consumes" a pixel of the fringe on righter-most
-;;   splits, `window-divider' does not. Available since Emacs 25.1.
-(setq window-divider-default-places t
-      window-divider-default-bottom-width 1
-      window-divider-default-right-width 1)
-(add-hook 'doom-init-ui-hook #'window-divider-mode)
-
 ;; UX: Favor vertical splits over horizontal ones. Monitors are trending toward
 ;;   wide, rather than tall.
 (setq split-width-threshold 160
@@ -139,17 +175,14 @@
 (setq minibuffer-prompt-properties '(read-only t intangible t cursor-intangible t face minibuffer-prompt))
 (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
-;;
-;;; Built-in packages
+;; Built-in packages
 
 ;;;###package ansi-color
 (setq ansi-color-for-comint-mode t)
 
-
 (with-eval-after-load 'comint
   (setq comint-prompt-read-only t
         comint-buffer-maximum-size 2048)) ; double the default
-
 
 (with-eval-after-load 'compile
   (setq compilation-always-kill t       ; kill compilation process before starting another
@@ -223,13 +256,10 @@
 (use-package doom-themes
   :config
   (doom-themes-org-config)
-
   (let ((theme (if (display-graphic-p)
                    'doom-one
                  'doom-Iosvkem)))
     (load-theme theme t)))
-
-
 
 (use-package paren
   ;; highlight matching delimiters
@@ -262,8 +292,6 @@
   ;; complexity of the font-lock keyword and hopefully buy us a few ms of
   ;; performance.
   (setq rainbow-delimiters-max-face-count 4))
-
-
 
 ;;
 ;;; Line numbers
