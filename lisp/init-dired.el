@@ -4,13 +4,11 @@
 ;; dired-narrow is superseded by `consult-focus-lines'.
 
 ;;; Code:
-
 (use-package dired
   :straight (:type built-in)
   :general
   (general-def :keymaps 'dired-mode-map
     :states '(normal global)
-    "q" '+dired/quit-all
     "C-c C-e" 'wdired-change-to-wdired-mode)
   :init
   (setq dired-dwim-target t ; suggest a target for moving/copying intelligently
@@ -31,29 +29,10 @@
         ;; Screens are larger nowadays, we can afford slightly larger thumbnails
         image-dired-thumb-size 150)
   :config
-  (set-evil-initial-state! 'image-dired-display-image-mode 'emacs)
-  (defun +dired-disable-gnu-ls-flags-maybe-h ()
-    "Remove extraneous switches from `dired-actual-switches' when it's
-uncertain that they are supported (e.g. over TRAMP or on Windows).
-
-Fixes #1703: dired over TRAMP displays a blank screen.
-Fixes #3939: unsortable dired entries on Windows."
-    (when (or (file-remote-p default-directory)
-              (and (boundp 'ls-lisp-use-insert-directory-program)
-                   (not ls-lisp-use-insert-directory-program)))
-      (setq-local dired-actual-switches (car args))))
-  (let ((args (list "-ahl" "-v" "--group-directories-first")))
-    (setq dired-listing-switches (string-join args " "))
-    (add-hook 'dired-mode-hook #'+dired-disable-gnu-ls-flags-maybe-h))
-
   ;; Don't complain about this command being disabled when we use it
-  (put 'dired-find-alternate-file 'disabled nil)
+  (put 'dired-find-alternate-file 'disabled nil))
 
-  (defadvice! +dired--no-revert-in-virtual-buffers-a (&rest args)
-    "Don't auto-revert in dired-virtual buffers (see `dired-virtual-revert')."
-    :before-while #'dired-buffer-stale-p
-    (not (eq revert-buffer-function #'dired-virtual-revert))))
-
+;;
 (use-package dired-aux
   :straight (:type built-in)
   :after dired
@@ -83,7 +62,7 @@ Fixes #3939: unsortable dired entries on Windows."
 (use-package nerd-icons-dired
   :hook (dired-mode . nerd-icons-dired-mode))
 
-;;(use-package dirvish)
+;;
 (use-package dired-x
   :straight (:type built-in)
   :hook (dired-mode . dired-omit-mode)
@@ -116,10 +95,9 @@ Fixes #3939: unsortable dired entries on Windows."
   (thomas-localleader :keymaps 'dired-mode-map
                       "h" 'dired-omit-mode))
 
-
+;; 使用 fd 搜索
 (use-package fd-dired
-  :when thomas-projectile-fd-binary
-  :defer t
+  :when (executable-find "fd")
   :init
   (global-set-key [remap find-dired] #'fd-dired))
 

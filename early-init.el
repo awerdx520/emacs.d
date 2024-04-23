@@ -13,13 +13,13 @@
 ;; `lsp-mode' benefits from that.
 (setq read-process-output-max (* 4 1024 1024))
 
-;; 关闭 Native Compilation 特性
 ;; Prevent unwanted runtime compilation for gccemacs (native-comp) users;
 ;; packages are compiled ahead-of-time when they are installed and site files
 ;; are compiled when gccemacs is installed.
 (setq native-comp-deferred-compilation nil ;; obsolete since 29.1
-      native-comp-jit-compilation nil);; Package initialize occurs automatically, before `user-init-file' is
+      native-comp-jit-compilation nil)
 
+;; Package initialize occurs automatically, before `user-init-file' is
 ;; loaded, but after `early-init-file'. We handle package
 ;; initialization, so we must prevent Emacs from doing it early!
 (setq package-enable-at-startup nil)
