@@ -117,12 +117,10 @@
      ("rc\\'" . conf-mode)
      ("\\.\\(?:hex\\|nes\\)\\'" . hexl-mode))))
 
-
 ;; Buffer index
 (use-package imenu
   :straight (:type built-in)
   :hook (imenu-after-jump . recenter))
-
 
 ;;
 (use-package undo-tree
@@ -202,6 +200,15 @@
     :non-normal-prefix (concat thomas-leader-alt-key " o")
     :keymaps 'override
     "" '(:ignore t :wk "open"))
+
+  ;;project
+  (general-create-definer thomas-leader-project
+    :states '(normal visual motion)
+    :prefix "SPC p"
+    :non-normal-prefix (concat thomas-leader-alt-key " p")
+    :keymaps 'override
+    "" '(:ignore t :wk "project"))
+
   ;; quit
   (general-create-definer thomas-leader-quit
     :states '(normal visual motion)
@@ -231,6 +238,7 @@
     :non-normal-prefix (concat thomas-leader-alt-key " w")
     :keymaps 'override
     "" '(:ignore t :wk "window"))
+
   (thomas-leader
    "RET" 'consult-bookmark
    "'" 'vertico-repeat
