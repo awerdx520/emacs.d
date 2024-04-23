@@ -44,6 +44,8 @@
 (use-package eshell
   :straight (:type built-in)
   :hook (eshell-mode . shell-mode-common-init)
+  :init
+  (setq eshell-directory-name (concat thomas-data-dir "eshell/"))
   :config
   ;; Prevent accident typing
   (defalias 'eshell/vi 'find-file)
@@ -104,8 +106,8 @@ current directory."
 (use-package esh-mode
   :straight (:type built-in)
   :bind (:map eshell-mode-map
-         ([remap kill-region] . backward-kill-word)
-         ([remap delete-char] . eshell-delchar-or-maybe-eof))
+              ([remap kill-region] . backward-kill-word)
+              ([remap delete-char] . eshell-delchar-or-maybe-eof))
   :config
   ;; Delete the last "word"
   (dolist (ch '(?_ ?- ?.))
@@ -144,28 +146,6 @@ If popup is focused, kill it."
   :custom
   (shell-kill-buffer-on-exit t)
   (shell-get-old-input-include-continuation-lines t))
-
-;; For windows, use eshell instead.
-(use-package eshell
-  :straight (:type built-in)
-  :when (eq system-type 'windows-nt)
-  :bind ("M-`" . eshell-toggle)
-  :config
-  (defun eshell-toggle ()
-    "Toggle a persistent eshell popup window.
-If popup is visible but unselected, select it.
-If popup is focused, kill it."
-    (interactive)
-    (if-let ((win (get-buffer-window "*eshell-popup*")))
-        (if (eq (selected-window) win)
-            ;; If users attempt to delete the sole ordinary window. silence it.
-            (shell-delete-window)
-          (select-window win))
-      (let ((display-comint-buffer-action '(display-buffer-at-bottom
-                                            (inhibit-same-window . nil)))
-            (eshell-buffer-name "*eshell-popup*"))
-        (with-current-buffer (eshell)
-          (add-hook 'eshell-exit-hook 'shell-delete-window nil t))))))
 
 (provide 'init-shell)
 ;;; init-shell.el ends here
