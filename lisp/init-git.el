@@ -10,6 +10,7 @@
 ;; Explicit binding makes it load lazily although it's the default.
 ;; See `magit-define-global-key-bindings' for more information.
 (use-package magit
+  :after transient
   :hook (git-commit-setup . git-commit-turn-on-flyspell)
   :general
   (thomas-leader-git
