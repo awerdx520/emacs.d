@@ -79,8 +79,6 @@
                          [simple-query "archlinux.org" "man.archlinux.org/search?q=" ""])
                         ("Man Go" .
                          [simple-query "archlinux.org" "man.archlinux.org/search?q=" "&go=Go"])
-                        ("DevDocs.io" .
-                         [simple-query "devdocs.io" "devdocs.io/#q=" ""])
                         ("StackOverflow" .
                          [simple-query "stackoverflow.com" "stackoverflow.com/search?q=" ""])
                         ("Github"         .

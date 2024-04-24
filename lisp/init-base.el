@@ -126,7 +126,9 @@
 (use-package undo-tree
   ;; Branching & persistent undo
   :hook (after-init . global-undo-tree-mode)
-  :custom (undo-tree-history-directory-alist `(("." . ,(concat thomas-cache-dir "undo-tree-hist/"))))
+  :init
+  (setq undo-tree-history-directory-alist
+        `(("." . ,(concat thomas-cache-dir "undo-tree-hist/"))))
   :config
   (setq undo-tree-visualizer-diff t
         undo-tree-auto-save-history t

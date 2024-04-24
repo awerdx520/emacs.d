@@ -1,6 +1,7 @@
 ;;; init.el --- The main entry for emacs -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
+;;;
 ;; --debug-init implies `debug-on-error'.
 (setq debug-on-error init-file-debug)
 
@@ -47,6 +48,7 @@
 (require 'init-spell)
 ;;
 (require 'init-project)
+(require 'init-treesit)
 (require 'init-git)
 (require 'init-snippets)
 (require 'init-syntax)
