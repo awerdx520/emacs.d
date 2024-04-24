@@ -13,6 +13,7 @@
   :init
   (setq dired-dwim-target t ; suggest a target for moving/copying intelligently
         dired-hide-details-hide-symlink-targets nil
+        dired-kill-when-opening-new-dired-buffer t
         ;; don't prompt to revert, just do it
         dired-auto-revert-buffer #'dired-buffer-stale-p
         ;; Always copy/delete recursively
@@ -20,6 +21,8 @@
         dired-recursive-deletes 'top
         ;; Ask whether destination dirs should get created when copying/removing files.
         dired-create-destination-dirs 'ask
+        ;; 生成对齐的 dired 图标
+        dired-listing-switches "-ahl -v --group-directories-first --time-style=long-iso"
         ;; Where to store image caches
         image-dired-dir (concat thomas-cache-dir "image-dired/")
         image-dired-db-file (concat image-dired-dir "db.el")
@@ -29,8 +32,20 @@
         ;; Screens are larger nowadays, we can afford slightly larger thumbnails
         image-dired-thumb-size 150)
   :config
-  ;; Don't complain about this command being disabled when we use it
-  (put 'dired-find-alternate-file 'disabled nil))
+  ;; 修改自 https://www.emacswiki.org/emacs/DiredOmitMode
+  (define-advice dired-do-print (:override (&optional _))
+    "Show/hide dotfiles."
+    (interactive)
+    (if (or (not (boundp 'dired-dotfiles-show-p)) dired-dotfiles-show-p)
+        (progn
+          (setq-local dired-dotfiles-show-p nil)
+          (dired-mark-files-regexp "^\\.")
+          (dired-do-kill-lines))
+      (revert-buffer)
+      (setq-local dired-dotfiles-show-p t))
+
+    ;; Don't complain about this command being disabled when we use it
+    (put 'dired-find-alternate-file 'disabled nil)))
 
 ;;
 (use-package dired-aux
