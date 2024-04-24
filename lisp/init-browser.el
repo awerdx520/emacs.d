@@ -22,64 +22,83 @@
 ;; Needed by `webpaste'
 (use-package browse-url
   :straight (:type built-in)
-  :custom
+  :general
+  (thomas-leader-open
+   "b" 'browse-url
+   "o" 'browse-url-at-point
+   "s" 'browse-url-of-file)
+  :config
   (when IS-WSL
     (setq browse-url-chrome-program
           "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"))
-  (setq browse-url-browser-function #'browse-url-chrome)
-  (browse-url-handlers '(("\\`file:" . browse-url-default-browser))))
+
+  ;; 默认使用 Google Chrome
+  (setq browse-url-browser-function #'browse-url-chrome
+        browse-url-handlers '(("\\`file:" . browse-url-default-browser))))
 
 ;; Pastebin service
 (use-package webpaste
   :commands webpaste-paste-buffer-or-region
-  :custom
-  (webpaste-open-in-browser t)
-  (webpaste-paste-confirmation t)
-  (webpaste-add-to-killring nil)
-  (webpaste-provider-priority '("paste.mozilla.org" "dpaste.org" "ix.io")))
+  :general
+  (thomas-leader-remote
+   "p b" 'webpaste-paste-buffer
+   "p r" 'webpaste-paste-region
+   "p p" 'webpaste-paste-buffer-or-region)
+  :config
+  (setq webpaste-open-in-browser t ;; After a successful paste, the returned URL from the provider will be sent to the killring.
+        ;; Require confirmation before doing paste
+        webpaste-paste-confirmation t
+        ;; After a successful paste, the returned URL from the provider will be sent to the killring.
+        webpaste-add-to-killring t
+        webpaste-provider-priority '("paste.mozilla.org" "dpaste.org" "gist.github.com")))
 
 
-;; Web search
+;; web search
 (use-package webjump
   :straight (:type built-in)
-  ;; C-c / will be shadowed by `org-sparse-tree' in org-mode
-  :bind ("C-c C-/" . webjump)
+  :general
+  (thomas-leader-search
+   "o" 'webjump)
   :config
-  (defconst webjump-weather-default-cities '("º¼ÖÝ" "ÉîÛÚ" "±±¾©" "ÉÏº£"))
-  (defconst webjump-weather-url-template "https://weathernew.pae.baidu.com/weathernew/pc?query=%sÌìÆø&srcid=4982")
+  (setq webjump-sites '(;; Internet search engines.
+                        ("Google" .
+                         [simple-query "www.google.com"
+                                       "www.google.com/search?q=" ""])
+                        ("Wikipedia" .
+                         [simple-query "wikipedia.org" "wikipedia.org/wiki/" ""])
+                        ("Ludwig Guru" .
+                         [simple-query "ludwig.guru" "ludwig.guru/s/" ""])
+                        ("Stack Overflow" .
+                         [simple-query "stackoverflow.com" "stackoverflow.com/search?q=" ""])
+                        ("Archlinux Wiki" .
+                         [simple-query "archlinuxcn.org" "wiki.archlinuxcn.org/wzh/index.php?search=" "&title=Special%3A%E6%90%9C%E7%B4%A2&profile=advanced&fulltext=1&ns0=1"])
 
-  (defun webjump-weather (_name)
-    (let ((city (completing-read "City: " webjump-weather-default-cities)))
-      (format webjump-weather-url-template city)))
+                        ("AUR" .
+                         [simple-query "archlinux.org" "aur.archlinux.org/packages?O=0&K=" ""])
+                        ("Man Search" .
+                         [simple-query "archlinux.org" "man.archlinux.org/search?q=" ""])
+                        ("Man Go" .
+                         [simple-query "archlinux.org" "man.archlinux.org/search?q=" "&go=Go"])
+                        ("DevDocs.io" .
+                         [simple-query "devdocs.io" "devdocs.io/#q=" ""])
+                        ("StackOverflow" .
+                         [simple-query "stackoverflow.com" "stackoverflow.com/search?q=" ""])
+                        ("Github"         .
+                         [smple-query "github.com"     "github.com/search?ref=simplesearch&q=" ""])
+                        ("Wolfram alpha"    .
+                         [smple-query "wolframalpha.com"   "wolframalpha.com/input/?i=" ""])
+                        ("MDN"  .
+                         [smple-query "mozilla.org"               "developer.mozilla.org/en-US/search?q=" ""])
+                        ("Rust Docs" .
+                         [smple-query "rust-lang.org"  "doc.rust-lang.org/std/?search=" ""])
+                        ;; Code search
+                        ("Code Search" .
+                         [simple-query "sourcegraph.com" "sourcegraph.com/search?q=context:global+" "&patternType=literal"])
 
-  (add-to-list 'browse-url-handlers '("weathernew.pae.baidu.com" . xwidget-webkit-browse-url))
-  :custom
-  (webjump-sites '(;; Internet search engines.
-                   ("Google" .
-                    [simple-query "www.google.com"
-                                  "www.google.com/search?q=" ""])
-                   ("Wikipedia" .
-                    [simple-query "wikipedia.org" "wikipedia.org/wiki/" ""])
-                   ("Ludwig Guru" .
-                    [simple-query "ludwig.guru" "ludwig.guru/s/" ""])
-                   ("Stack Overflow" .
-                    [simple-query "stackoverflow.com" "stackoverflow.com/search?q=" ""])
-                   ("Man Search" .
-                    [simple-query "archlinux.org" "man.archlinux.org/search?q=" ""])
-                   ("Man Go" .
-                    [simple-query "archlinux.org" "man.archlinux.org/search?q=" "&go=Go"])
-
-                   ;; Code search
-                   ("Code Search" .
-                    [simple-query "sourcegraph.com" "sourcegraph.com/search?q=context:global+" "&patternType=literal"])
-
-                   ;; Life
-                   ("Weather" . webjump-weather)
-
-                   ;; Language specific engines.
-                   ("x86 Instructions Reference" .
-                    [simple-query "www.felixcloutier.com"
-                                  "www.felixcloutier.com/x86/" ""]))))
+                        ;; Language specific engines.
+                        ("x86 Instructions Reference" .
+                         [simple-query "www.felixcloutier.com"
+                                       "www.felixcloutier.com/x86/" ""]))))
 
 (provide 'init-browser)
 ;;; init-browser.el ends here
