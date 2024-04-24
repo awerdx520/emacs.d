@@ -217,11 +217,18 @@
     :keymaps 'override
     "" '(:ignore t :wk "quit/session"))
 
-  ;; quit
+  ;; insert
   (general-create-definer thomas-leader-insert
     :states '(normal visual motion)
     :prefix "SPC i"
     :non-normal-prefix (concat thomas-leader-alt-key " i")
+    :keymaps 'override)
+
+  ;; remote
+  (general-create-definer thomas-leader-remote
+    :states '(normal visual motion)
+    :prefix "SPC r"
+    :non-normal-prefix (concat thomas-leader-alt-key " r")
     :keymaps 'override)
 
   ;; search
@@ -288,11 +295,8 @@
   (thomas-leader-open
    "-" 'dired-jump
    "A" 'org-agenda
-   "b" 'browse-url
    "f" 'make-frame
    "F" 'select-frame-by-name
-   "o" 'browse-url-at-point
-   "s" 'browse-url-of-file
    "t" 'eshell)
 
   (thomas-leader-quit
