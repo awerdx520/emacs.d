@@ -211,8 +211,8 @@
   :config
   (doom-themes-org-config)
   (let ((theme (if (display-graphic-p)
-                   'doom-one
-                 'doom-Iosvkem)))
+                   'doom-vibrant
+                 'doom-one-light)))
     (load-theme theme t)))
 
 (use-package paren
