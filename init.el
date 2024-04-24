@@ -20,6 +20,7 @@
 
 ;; 依赖
 (require 'init-const)
+(require 'init-custom)
 (require 'init-macro)
 
 ;; packages
