@@ -1,8 +1,8 @@
 ;; -*- lexical-binding: t -*-
 
 (use-package rime
-  :custom
-  (default-input-method "rime")
+  :init
+  (setq default-input-method "rime")
   :config
   (setq rime-user-data-dir (concat thomas-cache-dir "rime/")))
 

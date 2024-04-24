@@ -7,7 +7,6 @@
 ;;; Code:
 
 ;; The awesome git client
-;;
 ;; Explicit binding makes it load lazily although it's the default.
 ;; See `magit-define-global-key-bindings' for more information.
 (use-package magit
@@ -24,18 +23,18 @@
    "L" 'maigt-log-buffer-file
    "S" 'magit-stage-buffer-file
    "U" 'magit-unstage-buffer-file)
-  :custom
-  (magit-diff-refine-hunk t)
-  (magit-diff-paint-whitespace nil)
-  (magit-ediff-dwim-show-on-hunks t))
+  :config
+  (setq magit-diff-refine-hunk t
+        magit-diff-paint-whitespace nil
+        magit-ediff-dwim-show-on-hunks t))
 
 ;; NOTE: `diff-hl' depends on `vc'
 (use-package vc
   :straight (:type built-in)
-  :custom
-  (vc-follow-symlinks t)
-  (vc-allow-async-revert t)
-  (vc-handled-backends '(Git)))
+  :config
+  (setq vc-follow-symlinks t
+        vc-allow-async-revert t
+        vc-handled-backends '(Git)))
 
 ;; Highlight uncommitted changes using VC
 (use-package diff-hl
@@ -63,11 +62,11 @@
   (defun ediff-restore-window-conf ()
     (when (window-configuration-p local-ediff-saved-window-conf)
       (set-window-configuration local-ediff-saved-window-conf)))
-  :custom
-  (ediff-highlight-all-diffs t)
-  (ediff-window-setup-function 'ediff-setup-windows-plain)
-  (ediff-split-window-function 'split-window-horizontally)
-  (ediff-merge-split-window-function 'split-window-horizontally))
+  :config
+  (setq ediff-highlight-all-diffs t
+        ediff-window-setup-function 'ediff-setup-windows-plain
+        ediff-split-window-function 'split-window-horizontally
+        ediff-merge-split-window-function 'split-window-horizontally))
 
 ;; Setup gitignore mode
 (use-package conf-mode

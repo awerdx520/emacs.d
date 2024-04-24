@@ -9,77 +9,68 @@
 (use-package compile
   :straight (:type built-in)
   :hook (compilation-filter . ansi-color-compilation-filter)
-  :custom
-  (compilation-always-kill t)
-  (compilation-scroll-output t)
+  :config
+  (setq compilation-always-kill t
+        compilation-scroll-output t)
   ;; Save all buffers on M-x `compile'
-  (compilation-ask-about-save nil))
+  (setq compilation-ask-about-save nil))
 
 ;; The unified debugger
 (use-package gud
   :straight (:type built-in)
   :hook (gud-mode . gud-tooltip-mode)
-  :custom
-  (gud-highlight-current-line t))
+  :config
+  (setq gud-highlight-current-line t))
 
 ;; GDB specific config
 (use-package gdb-mi
   :straight (:type built-in)
   :commands gdb
-  :custom
-  (gdb-show-main t)
-  (gdb-display-io-nopopup t)
-  (gdb-show-changed-values t)
-  (gdb-delete-out-of-scope t)
-  (gdb-use-colon-colon-notation t)
-  (gdb-debuginfod-enable-setting nil)
-  (gdb-restore-window-configuration-after-quit t))
+  :config
+  (setq gdb-show-main t
+        gdb-display-io-nopopup t
+        gdb-show-changed-values t
+        gdb-delete-out-of-scope t
+        gdb-use-colon-colon-notation t
+        gdb-debuginfod-enable-setting nil
+        gdb-restore-window-configuration-after-quit t))
 
 ;; Insert SPDX license header
 (use-package spdx
   :hook (prog-mode . spdx-tempo-setup)
-  :custom
-  (spdx-ignore-deprecated t))
-
-;; Show trailing whitespaces
-(use-package whitespace
-  :straight (:type built-in)
-  :hook ((prog-mode markdown-mode conf-mode) . whitespace-mode)
-  :custom
-  (whitespace-style '(face trailing)))
+  :config
+  (setq spdx-ignore-deprecated t))
 
 ;; Quickrun codes, including cpp. awesome!
 (use-package quickrun
-  :bind ("C-c x" . quickrun)
-  :custom
-  (quickrun-focus-p nil)
-  (quickrun-input-file-extension ".qr"))
-
+  :config
+  (setq quickrun-focus-p nil
+        quickrun-input-file-extension ".qr"))
 
 ;; xref
 (use-package xref
   :straight (:type built-in)
   :hook ((xref-after-return xref-after-jump) . recenter)
-  :custom
+  :config
   ;; Emacs 28+
   ;;
   ;; `project-find-regexp' can be faster when setting `xref-search-program' to
   ;;  `ripgrep'.
-  (xref-search-program (cond ((executable-find "rg") 'ripgrep)
-                             ((executable-find "ugrep") 'ugrep)
-                             (t 'grep)))
-  (xref-history-storage 'xref-window-local-history)
-  (xref-show-xrefs-function #'xref-show-definitions-completing-read)
-  (xref-show-definitions-function #'xref-show-definitions-completing-read))
+  (setq xref-search-program (cond ((executable-find "rg") 'ripgrep)
+                                  ((executable-find "ugrep") 'ugrep)
+                                  (t 'grep))
+        xref-history-storage 'xref-window-local-history
+        xref-show-xrefs-function #'xref-show-definitions-completing-read
+        xref-show-definitions-function #'xref-show-definitions-completing-read))
 
 ;; Jump to definition, used as a fallback of lsp-find-definition
 (use-package dumb-jump
   :bind (("M-g j" . dumb-jump-go)
          ("M-g J" . dumb-jump-go-other-window))
-  :custom
-  (dumb-jump-quiet t)
-  (dumb-jump-aggressive t)
-  (dumb-jump-selector 'completing-read))
+  :config
+  (setq dumb-jump-quiet t
+        dumb-jump-aggressive t
+        dumb-jump-selector 'completing-read))
 
 ;; A fancy ctags frontend
 (use-package citre
@@ -91,16 +82,10 @@
          ("C-c c p" . citre-peek)
          ("C-c c a" . citre-ace-peek)
          ("C-c c u" . citre-update-this-tags-file))
-  :custom
-  (citre-enable-capf-integration nil)
-  (citre-prompt-language-for-ctags-command t)
-  (citre-auto-enable-citre-mode-modes '(prog-mode)))
-
-;; Browse devdocs.io
-(use-package devdocs
-  :bind ("C-c b" . devdocs-lookup)
   :config
-  (add-to-list 'completion-category-overrides '(devdocs (styles . (flex)))))
+  (setq citre-enable-capf-integration nil
+        citre-prompt-language-for-ctags-command t
+        citre-auto-enable-citre-mode-modes '(prog-mode)))
 
 ;; Hiding structured data
 ;;
@@ -114,7 +99,6 @@
   :hook (prog-mode . hs-minor-mode)
   :config
   (defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
-
   (defface hideshow-border-face
     '((((background light))
        :background "rosy brown" :extend t)
@@ -144,34 +128,20 @@
                                                               hideshow-border-face)))
         ;; folding indicator
         (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
-  :custom
-  (hs-set-up-overlay #'hideshow-folded-overlay-fn))
-
-;; Antlr mode
-(use-package antlr-mode
-  :straight (:type built-in)
-  :mode ("\\.g4\\'" . antlr-mode))
+  (setq hs-set-up-overlay #'hideshow-folded-overlay-fn))
 
 ;; XML
 (use-package nxml-mode
   :straight (:type built-in)
   :mode (("\\.xml\\'" . nxml-mode)
          ("\\.rss\\'" . nxml-mode))
-  :custom
-  (nxml-slash-auto-complete-flag t)
-  (nxml-auto-insert-xml-declaration-flag t))
+  :config
+  (setq nxml-slash-auto-complete-flag t
+        nxml-auto-insert-xml-declaration-flag t))
 
 ;; Config files mode
 (use-package yaml-mode
   :mode ("\\.ya?ml\\'" . yaml-mode))
-
-;; The dot-language
-(use-package graphviz-dot-mode
-  :mode ("\\.dot\\'" . graphviz-dot-mode)
-  :config
-  (set-company-backends-for! graphviz-dot-mode company-dabbrev-code company-dabbrev company-graphviz-dot-backend)
-  :custom
-  (graphviz-dot-indent-width 2))
 
 ;; Syntax highlighting for systemd files
 (use-package conf-mode
@@ -181,13 +151,6 @@
                  "path" "service" "slice" "socket" "swap" "target" "timer")
              string-end) . conf-toml-mode))
 
-(use-package treesit
-  :straight (:type built-in)
-  :config
-  (setq treesit-language-source-alist
-        '((c . ("https://github.com/tree-sitter/tree-sitter-c"))
-          (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
-          (json . ("https://github.com/tree-sitter/tree-sitter-json")))))
 
 (use-package lsp-bridge
   :straight '(lsp-bridge  :fetcher github :repo "manateelazycat/lsp-bridge"

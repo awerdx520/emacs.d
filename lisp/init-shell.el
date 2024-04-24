@@ -90,14 +90,14 @@ current directory."
         (setq dir (substring dir 0 -1)))
       (let ((dir (completing-read "Directory: " dirs nil t)))
         (eshell/cd dir))))
-  :custom
+  :config
   ;; The following cmds will run on term.
-  (eshell-visual-commands '("top" "htop" "less" "more" "telnet"))
-  (eshell-visual-subcommands '(("git" "help" "lg" "log" "diff" "show")))
-  (eshell-visual-options '(("git" "--help" "--paginate")))
+  (setq eshell-visual-commands '("top" "htop" "less" "more" "telnet")
+        eshell-visual-subcommands '(("git" "help" "lg" "log" "diff" "show"))
+        eshell-visual-options '(("git" "--help" "--paginate")))
   ;; Completion like bash
-  (eshell-cmpl-ignore-case t)
-  (eshell-cmpl-cycle-completions nil))
+  (setq eshell-cmpl-ignore-case t
+        eshell-cmpl-cycle-completions nil))
 
 (use-package em-rebind
   :straight (:type built-in)
@@ -143,9 +143,9 @@ If popup is focused, kill it."
   (defun revert-tab-width-to-default ()
     "Revert `tab-width' to default value."
     (setq-local tab-width 8))
-  :custom
-  (shell-kill-buffer-on-exit t)
-  (shell-get-old-input-include-continuation-lines t))
+  :config
+  (setq shell-kill-buffer-on-exit t
+        shell-get-old-input-include-continuation-lines t))
 
 (provide 'init-shell)
 ;;; init-shell.el ends here

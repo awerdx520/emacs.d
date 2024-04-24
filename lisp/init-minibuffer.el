@@ -8,8 +8,8 @@
 (use-package vertico
   :hook ((after-init . vertico-mode)
          (minibuffer-setup . vertico-repeat-save))
-  :custom
-  (vertico-sort-function nil))
+  :config
+  (setq vertico-sort-function nil))
 
 (use-package orderless
   :init
@@ -75,12 +75,12 @@
   ;; Optionally tweak the register preview window.
   ;; This adds thin lines, sorting and hides the mode line of the window.
   (advice-add #'register-preview :override #'consult-register-window)
-  :custom
-  (consult-fontify-preserve nil)
-  (consult-async-min-input 2)
-  (consult-async-refresh-delay 0.15)
-  (consult-async-input-throttle 0.2)
-  (consult-async-input-debounce 0.1))
+  :config
+  (setq consult-fontify-preserve nil
+        consult-async-min-input 2
+        consult-async-refresh-delay 0.15
+        consult-async-input-throttle 0.2
+        consult-async-input-debounce 0.1))
 
 ;; Consult users will also want the embark-consult package.
 (use-package embark-consult
