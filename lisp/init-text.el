@@ -18,7 +18,6 @@
         ;; paragraphs
         sentence-end-double-space nil))
 
-
 ;; Pixel alignment for org/markdown tables
 (use-package valign
   :ensure t
@@ -45,19 +44,26 @@
     "Insert details tag (collapsible) quickly."
     (interactive "sTitle: ")
     (insert (format "<details><summary>%s</summary>\n\n</details>" title)))
-  :custom
-  (markdown-header-scaling t)
-  (markdown-enable-wiki-links t)
-  (markdown-italic-underscore t)
-  (markdown-asymmetric-header t)
-  (markdown-gfm-uppercase-checkbox t)
-  (markdown-fontify-code-blocks-natively t))
+  :config
+  (setq markdown-header-scaling t
+        markdown-enable-wiki-links t
+        markdown-italic-underscore t
+        markdown-asymmetric-header t
+        markdown-gfm-uppercase-checkbox t
+        markdown-fontify-code-blocks-natively t))
 
 ;; ReStructuredText
 (use-package rst
   :ensure nil
   :hook ((rst-mode . visual-line-mode)
          (rst-adjust . rst-toc-update)))
+
+;; Show trailing whitespaces
+(use-package whitespace
+  :straight (:type built-in)
+  :hook ((prog-mode markdown-mode conf-mode) . whitespace-mode)
+  :config
+  (setq whitespace-style '(face trailing)))
 
 (provide 'init-text)
 ;;; init-text.el ends here
