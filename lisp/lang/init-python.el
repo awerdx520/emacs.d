@@ -33,7 +33,6 @@ as the environment to run epc."
   :mode ("/Pipfile\\'" . conf-mode)
   :init
   (setq python-indent-guess-indent-offset-verbose nil)
-  (add-hook 'python-mode-local-vars-hook #'tree-sitter! 'append)
   :config
   ;; Stop the spam!
   (setq python-indent-guess-indent-offset-verbose nil)

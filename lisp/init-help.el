@@ -19,6 +19,14 @@
 ;;
 ;;; Code:
 
+;; Browse devdocs.io
+(use-package devdocs
+  :bind ("C-c b" . devdocs-lookup)
+  :config
+  (setq devdocs-data-dir (concat thomas-data-dir "devdocs"))
+  (add-to-list 'completion-category-overrides
+               '(devdocs (styles . (flex)))))
+
 ;; Quick editing in `describe-variable'
 (with-eval-after-load 'help-fns
   (put 'help-fns-edit-variable 'disabled nil))
@@ -85,7 +93,7 @@
    "R" 'info-display-manual
    "s" 'describe-syntax
    "S" 'info-lookup-symbol
-   ;;"t" 'consult-theme
+   "t" 'consult-theme
    "v" 'describe-variable
    "w" 'where-is
    "W" 'woman
@@ -97,5 +105,6 @@
    "C-p" 'view-emacs-problems
    "C-t" 'view-emacs-todo
    "C-w" 'describe-no-warranty))
+
 (provide 'init-help)
 ;;; init-help.el ends here

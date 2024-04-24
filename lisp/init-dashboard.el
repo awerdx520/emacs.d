@@ -26,12 +26,14 @@
                                              (nerd-icons-octicon "nf-oct-mark_github")
                                            "¡ï")
                                         "GitHub" "Browse" (lambda (&rest _) (browse-url homepage-url)))
+
                                        (,(if (fboundp 'nerd-icons-octicon)
                                              (nerd-icons-octicon "nf-oct-download")
                                            "?")
-                                        "Upgrade" "Upgrade packages synchronously" (lambda (&rest _) (package-upgrade-all nil)) success))))
+                                        "Upgrade" "Upgrade packages synchronously"
+                                        (lambda (&rest _) (package-upgrade-all nil)) success))))
   :config
-  (setq dashboard-startup-banner 'logo
+  (setq dashboard-startup-banner '2
         dashboard-projects-backend 'project-el
         dashboard-set-heading-icons t
         dashboard-set-file-icons t
