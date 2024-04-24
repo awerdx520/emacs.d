@@ -20,10 +20,12 @@
 ;;; Code:
 
 ;;
-(use-package direnv
-  :hook (after-init . direnv-mode)
+(use-package envrc
+  :hook (after-init . envrc-global-mode)
   :config
-  (setq direnv-always-show-summary nil))
+  ;; Ensure babel's execution environment matches the host buffer's.
+  (advice-add #'org-babel-execute-src-block :around #'envrc-propagate-environment))
+
 
 (use-package project
   :straight (:type built-in)
