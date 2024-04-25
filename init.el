@@ -30,6 +30,7 @@
 
 ;; preferences
 (require 'init-base)
+(require 'init-undo)
 (require 'init-wsl)
 ;; ui
 (require 'init-ui)
