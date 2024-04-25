@@ -19,6 +19,34 @@
 ;;
 ;;; Code:
 
+;;
+;;; Windows/frames
+
+;; A simple frame title
+(setq frame-title-format '("%b – Thomas Emacs")
+      icon-title-format frame-title-format)
+
+
+;; Don't resize the frames in steps; it looks weird, especially in tiling window
+;; managers, where it can leave unseemly gaps.
+(setq frame-resize-pixelwise t)
+
+;; But do not resize windows pixelwise, this can cause crashes in some cases
+;; when resizing too many windows at once or rapidly.
+(setq window-resize-pixelwise nil)
+
+;; UX: GUIs are inconsistent across systems, desktop environments, and themes,
+;;   and don't match the look of Emacs. They also impose inconsistent shortcut
+;;   key paradigms. I'd rather Emacs be responsible for prompting.
+(setq use-dialog-box nil)
+(when (bound-and-true-p tooltip-mode)
+  (tooltip-mode -1))
+
+;; UX: Favor vertical splits over horizontal ones. Monitors are trending toward
+;;   wide, rather than tall.
+(setq split-width-threshold 160
+      split-height-threshold nil)
+
 (use-package ace-window
   :defer t
   :init

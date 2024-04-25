@@ -4,7 +4,6 @@
 ;;
 
 ;;; Code:
-
 ;; Optimize for very long lines
 (setq-default bidi-paragraph-direction 'left-to-right
               fill-column 80
@@ -13,26 +12,26 @@
               tab-width 4
               tab-always-indent nil)
 
-(setq use-file-dialog nil ;; Suppress GUI features and more
-      use-dialog-box nil
+;; By default, Emacs stores `authinfo' in $HOME and in plain-text. Let's not do
+;; that, mkay? This file stores usernames, passwords, and other treasures for
+;; the aspiring malicious third party. You'll need a GPG setup though.
+(setq auth-sources (list (file-name-concat thomas-state-dir "authinfo.gpg")
+                         "~/.authinfo.gpg"))
 
+(setq use-dialog-box nil
       ;; 关闭相关设置
-      inhibit-x-resources t
-      inhibit-default-init t
       inhibit-startup-screen t
       inhibit-startup-message t
-      inhibit-startup-buffer-menu t
 
       ;; Pixelwise resize
       window-resize-pixelwise t
       frame-resize-pixelwise t
       ;; Linux specific
-      x-gtk-use-system-tooltips nil
+      x-gtk-use-system-tooltips t
       x-underline-at-descent-line t
       ;; With GPG 2.1+, this forces gpg-agent to use the Emacs minibuffer to prompt
       ;; for the key passphrase.
       epg-pinentry-mode 'loopback
-      ;;
       bidi-inhibit-bpa t
       ;; Always load the newest file
       load-prefer-newer t
@@ -68,40 +67,21 @@
       use-short-answers t
       ;; Inhibit switching out from `y-or-n-p' and `read-char-choice'
       y-or-n-p-use-read-key t
+      kill-do-not-save-duplicates t
       read-char-choice-use-read-key t)
 
-;; Show line/column number and more
-(use-package simple
-  :straight (:type built-in)
-  :config
-  (setq line-number-mode t ;; show line/column/filesize in modeline
-        column-number-mode t
-        size-indication-mode t
-        ;; open brackets auto complete
-        electric-pair-mode t
-        ;; No visual feedback on copy/delete.
-        copy-region-blink-delay 0
-        delete-pair-blink-delay 0
-        ;; confusing if no fringes (GUI only).
-        visual-line-fringe-indicators '(nil right-curly-arrow)
-        ;; don't save current clipboard text before replacing it
-        save-interprogram-paste-before-kill nil
-        ;; eliminate duplicates
-        kill-do-not-save-duplicates t
-        ;; include '\n' when point starts at the beginning-of-line
-        kill-whole-line t
-        ;; show cwd when `shell-command' and `async-shell-command'
-        shell-command-prompt-show-cwd t
-        ;; show the name of character in `what-cursor-position'
-        what-cursor-show-names t
-        ;; M-x foo should only be available in `org-mode` or modes derived from `org-mode`.
-        read-extended-command-predicate #'command-completion-default-include-p))
+;;
+;;; General UX
+;; Don't prompt for confirmation when we create a new file or buffer (assume the
+;; user knows what they're doing).
+(setq confirm-nonexistent-file-or-buffer nil)
+(setq uniquify-buffer-name-style 'forward
+      ;; no beeping or blinking please
+      ring-bell-function #'ignore
+      visible-bell nil)
 
-;; By default, Emacs stores `authinfo' in $HOME and in plain-text. Let's not do
-;; that, mkay? This file stores usernames, passwords, and other treasures for
-;; the aspiring malicious third party. You'll need a GPG setup though.
-(setq auth-sources (list (file-name-concat thomas-state-dir "authinfo.gpg")
-                         "~/.authinfo.gpg"))
+
+
 
 ;; This package lets you enable minor modes based on file name and contents.
 ;; To find the right modes, it checks filenames against patterns in `auto-minor-mode-alist'
