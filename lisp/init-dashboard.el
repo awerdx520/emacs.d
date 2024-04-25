@@ -18,8 +18,11 @@
 ;;
 ;;
 ;;; Code:
+(use-package dashboard-hackernews)
+
 
 (use-package dashboard
+  :after dashboard-hackernews
   :init
   ;; Format: "(icon title help action face prefix suffix)"
   (setq dashboard-navigator-buttons `(((,(if (fboundp 'nerd-icons-octicon)
@@ -33,17 +36,34 @@
                                         "Upgrade" "Upgrade packages synchronously"
                                         (lambda (&rest _) (package-upgrade-all nil)) success))))
   :config
+  ;; 在 Server 模式下，创建 frame 时显示仪表盘
+  (setq initial-buffer-choice (lambda ()
+                                (get-buffer-create "*dashboard*")))
+  ;;
   (setq dashboard-startup-banner '2
-        dashboard-projects-backend 'project-el
-        dashboard-set-heading-icons t
-        dashboard-set-file-icons t
-        dashboard-set-init-info t
-        dashboard-set-navigator t
-        dashboard-items '((recents   . 10)
+        dashboard-projects-backend 'project-el)
+  ;;
+  (setq dashboard-set-init-info t
+        dashboard-set-navigator t)
+  (setq dashboard-items '((hackernews . 8)
+                          (recents   . 5)
                           (bookmarks . 5)
                           (projects  . 7)
                           (agenda . 5)
                           (registers . 5)))
+  ;;
+
+  (setq dashboard-set-heading-icons nil
+        dashboard-set-file-icons t
+        dashboard-icon-type 'nerd-icons
+        dashboard-heading-icons '((hackernews . "nf-fa-hacker_news")
+                                  (recents . "nf-cod-files")
+                                  (bookmarks . "nf-cod-bookmark")
+                                  (projects . "nf-cod-project")
+                                  (agenda . "nf-cod-calendar")
+                                  (registers . "nf-md-clipboard")))
+
+  ;; 启动 dashboard 设置
   (dashboard-setup-startup-hook))
 
 (provide 'init-dashboard)
