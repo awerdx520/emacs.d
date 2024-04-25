@@ -13,17 +13,22 @@
   :after transient
   :hook (git-commit-setup . git-commit-turn-on-flyspell)
   :general
-  (thomas-leader-git
-   "." 'magit-file-dispatch
-   "/" 'magit-dispatch
-   "b" 'magit-branch-checkout
-   "C" 'magit-clone
-   "D" 'magit-file-delete
-   "g" 'magit-status
-   "G" 'magit-status-here
-   "L" 'maigt-log-buffer-file
-   "S" 'magit-stage-buffer-file
-   "U" 'magit-unstage-buffer-file)
+  (thomas-leader
+   ;;
+   "g." 'magit-file-dispatch
+   "g/" 'magit-dispatch
+   "gb" 'magit-branch-checkout
+   "gC" 'magit-clone
+   "gD" 'magit-file-delete
+   "gg" 'magit-status
+   "gG" 'magit-status-here
+   "gL" 'magit-log-buffer-file
+   "gS" 'magit-stage-buffer-file
+   "gU" 'magit-unstage-buffer-file
+   ;;
+   "pt" 'magit-todos-list) ;; 列出项目 TODO
+
+
   :config
   (setq magit-diff-refine-hunk t
         magit-diff-paint-whitespace nil

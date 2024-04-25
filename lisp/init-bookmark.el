@@ -22,10 +22,9 @@
 ;; Bookmark
 (use-package bookmark
   :general
-  (thomas-leader-buffer
-   "m" 'bookmark-set
-   "M" 'bookmark-delete
-   "RET" 'bookmark-jump)
+  (thomas-leader
+   "bm" 'bookmark-set
+   "bM" 'bookmark-delete)
   :config
   (setq bookmark-default-file (concat thomas-data-dir "bookmarks"))
   (with-no-warnings

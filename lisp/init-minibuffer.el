@@ -8,6 +8,9 @@
 (use-package vertico
   :hook ((after-init . vertico-mode)
          (minibuffer-setup . vertico-repeat-save))
+  :general
+  (thomas-leader
+   "'" 'vertico-repeat)
   :config
   (setq vertico-sort-function nil))
 
@@ -38,6 +41,9 @@
               ("C-;"     . embark-act)
               ("C-c C-c" . embark-export)
               ("C-c C-o" . embark-collect))
+  :general
+  (thomas-leader
+   "a" '(embark-act :wk "Actions"))
   :config
   (setq prefix-help-command 'embark-prefix-help-command))
 
@@ -58,6 +64,29 @@
          ([remap switch-to-buffer-other-window] . consult-buffer-other-window)
          ([remap switch-to-buffer-other-frame]  . consult-buffer-other-frame)
          ([remap yank-pop]                      . consult-yank-pop))
+  :general
+  (thomas-leader
+   "." 'consult-find
+   "RET" 'consult-bookmark
+   ;;
+   "bb" 'consult-buffer
+   ;;
+   "fr" 'consult-recent-file
+   ;;
+   "ht" 'consult-theme
+   ;;
+   "pb" 'consult-project-buffer ;; 切换到项目中已经打开的 Buffer
+   ;;
+   "ir" 'consult-register
+   "is" 'consult-yasnippet
+   ;;
+   "sb" 'thomas/search-buffer
+   "sB" 'thomas/search-all-buffer
+   "sf" 'consult-locate
+   "si" 'consult-imenu
+   "sI" 'consult-imenu-multi
+   "sm" 'consult-bookmark
+   "sr" 'consult-mark )
   :config
   (with-no-warnings
     (consult-customize consult-ripgrep consult-git-grep consult-grep

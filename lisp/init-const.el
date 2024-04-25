@@ -80,13 +80,6 @@ regenerated or restored. For example, a recently-opened file list is not
 essential, but losing it means losing this record, and restoring it requires
 revisiting all those files.")
 
-;; (defvar thomas-project-fd-binary
-;;   (cl-find-if #'executable-find (list "fdfind" "fd"))
-;;   "The filename of the `fd' executable.
-
-;; On some distros it's 'fdfind' (ubuntu,debian, and derivatives).
-;; On most it's 'fd'.")
-
 
 (provide 'init-const)
 

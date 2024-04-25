@@ -21,7 +21,9 @@
 
 ;; Browse devdocs.io
 (use-package devdocs
-  :bind ("C-c b" . devdocs-lookup)
+  :general
+  (thomas-leader
+   "pl" 'devdocs-lookup)
   :config
   (setq devdocs-data-dir (concat thomas-data-dir "devdocs"))
   (add-to-list 'completion-category-overrides
@@ -60,51 +62,46 @@
 (use-package help
   :straight (:type built-in)
   :general
-  (thomas-leader-help
-   "" '(:ignore t :wk "help")
-   "RET" 'info-emacs-manual
-   "'" 'describe-char
-   "." 'display-local-help
-   "?" 'help-for-help
-   "a" 'apropos
-   "A" 'apropos-documentation
-   "bb" 'describe-bindings
-   "bf" 'which-key-show-full-keymap
-   "bi" 'which-key-show-minor-mode-keymap
-   "bk" 'which-key-show-keymap
-   "bm" 'which-key-show-major-mode
-   "bt" 'which-key-show-top-level
-   "c" 'describe-key-briefly
-   "C" 'describe-coding-system
-   "e" 'view-echo-area-messages
-   "f" 'describe-function
-   "F" 'describe-face
-   "g" 'describe-gnu-project
-   "i" 'info
-   "I" 'describe-input-method
-   "k" 'describe-key
-   "K" 'Info-goto-emacs-key-command-node
-   "l" 'view-lossage
-   "L" 'describe-language-environment
-   "m" 'describe-mode
-   "o" 'describe-symbol
-   "P" 'find-library
-   "q" 'help-quit
-   "R" 'info-display-manual
-   "s" 'describe-syntax
-   "S" 'info-lookup-symbol
-   "t" 'consult-theme
-   "v" 'describe-variable
-   "w" 'where-is
-   "W" 'woman
-   "R" 'info-display-manual
-   "x" 'describe-command
-   "C-d" 'view-emacs-debugging
-   "C-f" 'view-emacs-FAQ
-   "C-n" 'view-emacs-news
-   "C-p" 'view-emacs-problems
-   "C-t" 'view-emacs-todo
-   "C-w" 'describe-no-warranty))
+  (thomas-leader
+   "h <RET>" 'info-emacs-manual
+   "h'" 'describe-char
+   "h." 'display-local-help
+   "h?" 'help-for-help
+   "ha" 'apropos
+   "hA" 'apropos-documentation
+   "hbb" 'describe-bindings
+   ;;
+   "hc" 'describe-key-briefly
+   "hC" 'describe-coding-system
+   "he" 'view-echo-area-messages
+   "hf" 'describe-function
+   "hF" 'describe-face
+   "hg" 'describe-gnu-project
+   "hi" 'info
+   "hI" 'describe-input-method
+   "hk" 'describe-key
+   "hK" 'Info-goto-emacs-key-command-node
+   "hl" 'view-lossage
+   "hL" 'describe-language-environment
+   "hm" 'describe-mode
+   "ho" 'describe-symbol
+   "hP" 'find-library
+   "hq" 'help-quit
+   "hR" 'info-display-manual
+   "hs" 'describe-syntax
+   "hS" 'info-lookup-symbol
+   "hv" 'describe-variable
+   "hw" 'where-is
+   "hW" 'woman
+   "hR" 'info-display-manual
+   "hx" 'describe-command
+   ;;
+   "h <C-d>" 'view-emacs-debugging
+   "h <C-f>" 'view-emacs-FAQ
+   "h <C-n>" 'view-emacs-news
+   "h <C-p>" 'view-emacs-problems
+   "h <C-t>" 'view-emacs-todo
+   "h <C-w>" 'describe-no-warranty))
 
 (provide 'init-help)
 ;;; init-help.el ends here

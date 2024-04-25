@@ -34,33 +34,33 @@
         evil-want-abbrev-expand-on-insert-exit nil
         evil-symbol-word-search t)
   :general
-  (thomas-leader-window
-   "+" 'evil-window-increase-height
-   "-" 'evil-window-decrease-height
-   ":" 'evil-ex
-   "<" 'evil-window-decrease-width
-   ">" 'evil-window-decrease-width
-   "_" 'evil-window-set-height
-   "b" 'evil-window-bottom-right
-   "c" 'evil-window-delete
-   "d" 'evil-window-delete
-   "h" 'evil-window-left
-   "j" 'evil-window-down
-   "k" 'evil-window-up
-   "l" 'evil-window-right
-                                        ;"m" 'maxiz
-   "n" 'evil-window-new
-   "p" 'evil-window-mru
-   "q" 'evil-quit
-   "r" 'evil-window-rotate-downwards
-   "R" 'evil-window-rotate-upwards
-   "s" 'evil-window-split
-   "t" 'evil-window-top-left
-   "v" 'evil-window-vsplit
-   "w" 'evil-window-next
-   "W" 'evil-window-prev
-   "x" 'evil-window-exchange
-   "|" 'evil-window-set-width))
+  (thomas-leader
+   "w+" 'evil-window-increase-height
+   "w-" 'evil-window-decrease-height
+   "w:" 'evil-ex
+   "w<" 'evil-window-decrease-width
+   "w>" 'evil-window-decrease-width
+   "w_" 'evil-window-set-height
+   "wb" 'evil-window-bottom-right
+   "wc" 'evil-window-delete
+   "wd" 'evil-window-delete
+   "wh" 'evil-window-left
+   "wj" 'evil-window-down
+   "wk" 'evil-window-up
+   "wl" 'evil-window-right
+   ;;"wm" 'maxiz
+   "wn" 'evil-window-new
+   "wp" 'evil-window-mru
+   "wq" 'evil-quit
+   "wr" 'evil-window-rotate-downwards
+   "wR" 'evil-window-rotate-upwards
+   "ws" 'evil-window-split
+   "wt" 'evil-window-top-left
+   "wv" 'evil-window-vsplit
+   "ww" 'evil-window-next
+   "wW" 'evil-window-prev
+   "wx" 'evil-window-exchange
+   "w|" 'evil-window-set-width))
 
 
 (use-package evil-collection

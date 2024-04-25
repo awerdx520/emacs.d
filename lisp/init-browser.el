@@ -23,10 +23,10 @@
 (use-package browse-url
   :straight (:type built-in)
   :general
-  (thomas-leader-open
-   "b" 'browse-url
-   "o" 'browse-url-at-point
-   "s" 'browse-url-of-file)
+  (thomas-leader
+   "ob" 'browse-url
+   "oo" 'browse-url-at-point
+   "os" 'browse-url-of-file)
   :config
   (when IS-WSL
     (setq browse-url-chrome-program
@@ -40,10 +40,10 @@
 (use-package webpaste
   :commands webpaste-paste-buffer-or-region
   :general
-  (thomas-leader-remote
-   "p b" 'webpaste-paste-buffer
-   "p r" 'webpaste-paste-region
-   "p p" 'webpaste-paste-buffer-or-region)
+  (thomas-leader
+   "r p b" 'webpaste-paste-buffer
+   "r p r" 'webpaste-paste-region
+   "r p p" 'webpaste-paste-buffer-or-region)
   :config
   (setq webpaste-open-in-browser t ;; After a successful paste, the returned URL from the provider will be sent to the killring.
         ;; Require confirmation before doing paste
@@ -57,8 +57,8 @@
 (use-package webjump
   :straight (:type built-in)
   :general
-  (thomas-leader-search
-   "o" 'webjump)
+  (thomas-leader
+   "so" 'webjump)
   :config
   (setq webjump-sites '(;; Internet search engines.
                         ("Google" .
