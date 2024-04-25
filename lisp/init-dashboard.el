@@ -18,11 +18,16 @@
 ;;
 ;;
 ;;; Code:
+
+;; 在仪表盘上展示 hacker news
 (use-package dashboard-hackernews)
 
-
+;;
 (use-package dashboard
   :after dashboard-hackernews
+  :custom-face
+  (dashboard-items-face ((t (:weight normal))))
+  (dashboard-heading-face ((t (:weight bold))))
   :init
   ;; Format: "(icon title help action face prefix suffix)"
   (setq dashboard-navigator-buttons `(((,(if (fboundp 'nerd-icons-octicon)
@@ -45,24 +50,21 @@
   ;;
   (setq dashboard-set-init-info t
         dashboard-set-navigator t)
-  (setq dashboard-items '((hackernews . 8)
-                          (recents   . 5)
-                          (bookmarks . 5)
+  (setq dashboard-items '((recents   . 5)
                           (projects  . 7)
                           (agenda . 5)
-                          (registers . 5)))
-  ;;
-
-  (setq dashboard-set-heading-icons nil
+                          (bookmarks . 5)
+                          (hackernews . 8)))
+  ;; TODO 设置 heading icon 存在找不到 nero-icons 字体的问题
+  (setq dashboard-set-heading-icons t
+        dashboard-center-content t
         dashboard-set-file-icons t
         dashboard-icon-type 'nerd-icons
-        dashboard-heading-icons '((hackernews . "nf-fa-hacker_news")
-                                  (recents . "nf-cod-files")
-                                  (bookmarks . "nf-cod-bookmark")
-                                  (projects . "nf-cod-project")
-                                  (agenda . "nf-cod-calendar")
-                                  (registers . "nf-md-clipboard")))
-
+        dashboard-heading-icons '((hackernews . "nf-oct-paperclip")
+                                  (agenda . "nf-oct-calendar")
+                                  (recents . "nf-oct-file")
+                                  (projects . "nf-oct-project")
+                                  (bookmarks . "nf-oct-bookmark")))
   ;; 启动 dashboard 设置
   (dashboard-setup-startup-hook))
 
