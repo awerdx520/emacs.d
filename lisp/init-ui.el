@@ -168,6 +168,7 @@
                 "\\_<[[:digit:]]+\\(?:\\.[0-9]*\\)?\\_>"))
 
 (use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode)
   :config
   ;; Helps us distinguish stacked delimiter pairs, especially in parentheses-drunk
   ;; languages like Lisp. I reduce it from it's default of 9 to reduce the
