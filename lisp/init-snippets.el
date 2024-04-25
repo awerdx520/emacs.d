@@ -33,6 +33,7 @@
              yas-activate-extra-mode
              yas-deactivate-extra-mode
              yas-maybe-expand-abbrev-key-filter)
+  :diminish yas-minor-mode
   :init
   ;; Reduce default verbosity. 3 is too chatty about initializing yasnippet. 2
   ;; is just right (only shows errors).

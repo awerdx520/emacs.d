@@ -81,7 +81,15 @@
       visible-bell nil)
 
 
+;; 用于阻止一些包在 modeline 上的添加信息已经与 use-package 集成，
+;; 可用 :diminish xxx-mode 配置当前包禁止显示在 modeline 上
+(use-package diminish)
 
+;; auto-revert
+(use-package auto-revert
+  :straight (:type built-in)
+  :diminish  auto-revert-mode
+  :hook (after-init . global-auto-revert-mode))
 
 ;; This package lets you enable minor modes based on file name and contents.
 ;; To find the right modes, it checks filenames against patterns in `auto-minor-mode-alist'
