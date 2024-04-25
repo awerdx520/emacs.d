@@ -22,6 +22,7 @@
 ;; 依赖
 (require 'init-const)
 (require 'init-custom)
+(require 'init-funcs)
 (require 'init-macro)
 
 ;; packages
