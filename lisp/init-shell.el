@@ -97,7 +97,8 @@ current directory."
         eshell-visual-options '(("git" "--help" "--paginate")))
   ;; Completion like bash
   (setq eshell-cmpl-ignore-case t
-        eshell-cmpl-cycle-completions nil))
+        eshell-cmpl-cycle-completions nil)
+  (add-to-list 'comint-output-filter-functions 'ansi-color-process-output))
 
 (use-package em-rebind
   :straight (:type built-in)
@@ -145,7 +146,8 @@ If popup is focused, kill it."
     (setq-local tab-width 8))
   :config
   (setq shell-kill-buffer-on-exit t
-        shell-get-old-input-include-continuation-lines t))
+        shell-get-old-input-include-continuation-lines t)
+  (add-to-list 'comint-output-filter-functions 'ansi-color-process-output))
 
 (provide 'init-shell)
 ;;; init-shell.el ends here

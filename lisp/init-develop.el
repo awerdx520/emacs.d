@@ -5,15 +5,29 @@
 
 ;;; Code:
 
-;; Compilation Mode
 (use-package compile
+  ;; Compilation Mode
+  ;; TODO understand
   :straight (:type built-in)
   :hook (compilation-filter . ansi-color-compilation-filter)
   :config
-  (setq compilation-always-kill t
-        compilation-scroll-output t)
-  ;; Save all buffers on M-x `compile'
-  (setq compilation-ask-about-save nil))
+  (setq compilation-always-kill t ; kill compilation process before starting another
+        compilation-ask-about-save nil  ; save all buffers on `compile'
+        compilation-scroll-output 'first-error)
+  (add-hook 'compilation-filter-hook #'comint-truncate-buffer)
+  ;; Automatically truncate compilation buffers so they don't accumulate too
+  ;; much data and bog down the rest of Emacs.
+  (autoload 'comint-truncate-buffer "comint" nil t))
+
+(use-package comint
+  ;; ComintMode 用于制作 shell 或 repl 之类的缓冲区，在其中与外部进程交互。
+  ;; TODO understand
+  :straight (:type built-in)
+  :config
+  (setq comint-prompt-read-only t
+        ;; double the default
+        comint-buffer-maximum-size 2048)
+  (add-to-list 'comint-output-filter-functions 'ansi-color-process-output))
 
 ;; The unified debugger
 (use-package gud
@@ -78,6 +92,7 @@
 ;; zc hide-block
 (use-package hideshow
   :straight (:type built-in)
+  :diminish hs-minor-mode
   :hook (prog-mode . hs-minor-mode)
   :config
   (defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
