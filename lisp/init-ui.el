@@ -259,18 +259,11 @@
 
 ;; Highlight TODO
 (use-package hl-todo
-  :hook (after-init . global-hl-todo-mode)
-  :bind (:map hl-todo-mode-map
-              ("C-c t p" . hl-todo-previous)
-              ("C-c t n" . hl-todo-next)
-              ("C-c t i" . hl-todo-insert)
-              ("C-c t o" . hl-todo-occur)
-              ("C-c t s" . hl-todo-rgrep)))
+  :hook (after-init . global-hl-todo-mode))
+
 
 (use-package transient
   :straight (:type built-in)
-  :bind (("C-c h o" . scroll-other-window-menu)
-         ("C-c h t" . background-opacity-menu))
   :init
   (setq transient-levels-file (concat thomas-data-dir "transient/levels")
         transient-values-file (concat thomas-data-dir "transient/values")

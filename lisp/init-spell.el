@@ -9,12 +9,6 @@
 ;; z= `ispell-word'
 (use-package ispell
   :straight (:type built-in)
-  :bind (("C-c i c" . ispell-comments-and-strings)
-         ("C-c i p" . ispell-comment-or-string-at-point)
-         ("C-c i k" . ispell-kill-ispell)
-         ("C-c i m" . ispell-message)
-         ("C-c i b" . ispell-buffer)
-         ("C-c i r" . ispell-region))
   :config
   ;; MacOS is broken
   (when (eq system-type 'darwin)

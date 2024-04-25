@@ -65,30 +65,12 @@
 
 ;; Jump to definition, used as a fallback of lsp-find-definition
 (use-package dumb-jump
-  :bind (("M-g j" . dumb-jump-go)
-         ("M-g J" . dumb-jump-go-other-window))
   :config
   (setq dumb-jump-quiet t
         dumb-jump-aggressive t
         dumb-jump-selector 'completing-read))
 
-;; A fancy ctags frontend
-(use-package citre
-  :init
-  ;; Load the prelude.
-  (require 'citre-config)
-  :bind (("C-c c j" . citre-jump)
-         ("C-c c J" . citre-jump-back)
-         ("C-c c p" . citre-peek)
-         ("C-c c a" . citre-ace-peek)
-         ("C-c c u" . citre-update-this-tags-file))
-  :config
-  (setq citre-enable-capf-integration nil
-        citre-prompt-language-for-ctags-command t
-        citre-auto-enable-citre-mode-modes '(prog-mode)))
-
 ;; Hiding structured data
-;;
 ;; zm hide-all
 ;; zr show-all
 ;; za toggle-fold

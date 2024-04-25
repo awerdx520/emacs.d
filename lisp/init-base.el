@@ -131,179 +131,95 @@
     :states '(normal visual motion)
     :prefix thomas-leader-key
     :non-normal-prefix thomas-leader-alt-key
-    :keymaps 'override)
-  ;; localleader
-  (general-create-definer thomas-localleader
-    :states '(normal visual motion)
-    :prefix thomas-localleader-key
-    :non-normal-prefix (concat thomas-leader-alt-key " m")
-    :keymaps 'override)
-
-  ;; buffer
-  (general-create-definer thomas-leader-buffer
-    :states '(normal visual motion)
-    :prefix "SPC b"
-    :non-normal-prefix (concat thomas-leader-alt-key " b")
     :keymaps 'override
-    "" '(:ignore t :wk "buffer"))
-  ;; code
-  (general-create-definer thomas-leader-code
-    :states '(normal visual motion)
-    :prefix "SPC c"
-    :non-normal-prefix (concat thomas-leader-alt-key " c")
-    :keymaps 'override
-    "" '(:ignore t :wk "code"))
+    ;; Top
+    ":" 'execute-extended-command
+    ";" 'pp-eval-expression
+    "`" 'switch-to-buffer
 
-  ;; file
-  (general-create-definer thomas-leader-file
-    :states '(normal visual motion)
-    :prefix "SPC f"
-    :non-normal-prefix (concat thomas-leader-alt-key " f")
-    :keymaps 'override
-    "" '(:ignore t :wk "file"))
-  ;; git
-  (general-create-definer thomas-leader-git
-    :states '(normal visual motion)
-    :prefix "SPC g"
-    :non-normal-prefix (concat thomas-leader-alt-key " h")
-    :keymaps 'override
-    "" '(:ignore t :wk "git"))
-  ;; help
-  (general-create-definer thomas-leader-help
-    :states '(normal visual motion)
-    :prefix "SPC h"
-    :non-normal-prefix (concat thomas-leader-alt-key " h")
-    :keymaps 'override
-    "" '(:ignore t :wk "insert"))
-  ;; open
-  (general-create-definer thomas-leader-open
-    :states '(normal visual motion)
-    :prefix "SPC o"
-    :non-normal-prefix (concat thomas-leader-alt-key " o")
-    :keymaps 'override
-    "" '(:ignore t :wk "open"))
+    ;; Buffer
+    "b" '(:ignore t :wk "buffer")
+    ;;    "b-" 'thomas/toggle-narrow-buffer
+    "b[" 'previous-buffer
+    "b]" 'next-buffer
+    "bc" 'clone-indirect-buffer
+    "bC" 'clone-indirect-buffer-other-window
+    "bd" 'kill-current-buffer
+    "bi" 'ibuffer
+    "bk" 'kill-current-buffer
+    "bl" 'evil-switch-to-windows-last-buffer
+    "bm" 'bookmark-set
+    "bM" 'bookmark-delete
+    "bn" 'next-buffer
+    "bN" 'evil-buffer-new
+    "bp" 'previous-buffer
+    "br" 'revert-buffer
+    "bs" 'save-buffer
+    "bS" 'evil-write-all
+    "by" '+default/yank-buffer-contents
+    "bz" 'bury-buffer
 
-  ;;project
-  (general-create-definer thomas-leader-project
-    :states '(normal visual motion)
-    :prefix "SPC p"
-    :non-normal-prefix (concat thomas-leader-alt-key " p")
-    :keymaps 'override
-    "" '(:ignore t :wk "project"))
+    ;; Code
+    "c" '(:ignore t :wk "code")
+    "cc" 'compile
+    "cC" 'recompile
+    "cd" 'xref-find-definitions
+    "cD" 'xref-find-references
 
-  ;; quit
-  (general-create-definer thomas-leader-quit
-    :states '(normal visual motion)
-    :prefix "SPC q"
-    :non-normal-prefix (concat thomas-leader-alt-key " q")
-    :keymaps 'override
-    "" '(:ignore t :wk "quit/session"))
+    ;; File
+    "f" '(:ignore t :wk "file")
+    "ff" 'find-file
+    ;; Git
+    "g" '(:ignore t :wk "git")
 
-  ;; insert
-  (general-create-definer thomas-leader-insert
-    :states '(normal visual motion)
-    :prefix "SPC i"
-    :non-normal-prefix (concat thomas-leader-alt-key " i")
-    :keymaps 'override)
+    ;; Help
+    "h" '(:ignore t :wk "help")
 
-  ;; remote
-  (general-create-definer thomas-leader-remote
-    :states '(normal visual motion)
-    :prefix "SPC r"
-    :non-normal-prefix (concat thomas-leader-alt-key " r")
-    :keymaps 'override)
+    ;; Insert
+    "i" '(:ignore t :wk "insert")
+    "ie" 'emoji-search
 
-  ;; search
-  (general-create-definer thomas-leader-search
-    :states '(normal visual motion)
-    :prefix "SPC s"
-    :keymaps 'override
-    "" '(:ignore t :wk "search"))
+    ;; Open
+    "o" '(:ignore t :wk "open")
+    "o-" 'dired-jump
+    "oA" 'org-agenda
+    "of" 'make-frame
+    "oF" 'select-frame-by-name
+    "ot" 'eshell
 
-  ;; window
-  (general-create-definer thomas-leader-window
-    :states '(normal visual motion)
-    :prefix "SPC w"
-    :non-normal-prefix (concat thomas-leader-alt-key " w")
-    :keymaps 'override
-    "" '(:ignore t :wk "window"))
+    ;; Project
+    "p" '(:ignore t :wk "project")
 
-  (thomas-leader
-   "RET" 'consult-bookmark
-   "'" 'vertico-repeat
-   "." 'consult-find
-   ":" 'execute-extended-command
-   ";" 'pp-eval-expression
-   "`" 'switch-to-buffer
-   "a" '(embark-act :wk "Actions"))
+    ;; Quit
+    "q" '(:ignore t :wk "quit/session")
+    "qK" 'save-buffers-kill-emacs
+    "qq" 'save-buffers-kill-terminal
 
-  (thomas-leader-buffer
-   "-" 'thomas/toggle-narrow-buffer
-   "[" 'previous-buffer
-   "]" 'next-buffer
-   "b" 'consult-buffer
-   "c" 'clone-indirect-buffer
-   "C" 'clone-indirect-buffer-other-window
-   "d" 'kill-current-buffer
-   "i" 'ibuffer
-   "k" 'kill-current-buffer
-   ;;"K" 'thomas/kill-all-buffer
-   "l" 'evil-switch-to-windows-last-buffer
-   "m" 'bookmark-set
-   "M" 'bookmark-delete
-   "n" 'next-buffer
-   "N" 'evil-buffer-new
-   "p" 'previous-buffer
-   "r" 'revert-buffer
-   "s" 'save-buffer
-   "S" 'evil-write-all
-   "y" '+default/yank-buffer-contents
-   "z" 'bury-buffer)
+    ;; Remote
+    "r" '(:ignore t :wk "quit/session")
 
-  (thomas-leader-code
-   "c" 'compile
-   "C" 'recompile
-   "d" 'xref-find-definitions
-   "D" 'xref-find-references)
+    ;; Search
+    "s" '(:ignore t :wk "search")
 
-  (thomas-leader-file
-   "C" 'thomas/copy-this-file
-   "d" '+default/dired
-   "f" 'find-file)
-
-  (thomas-leader-insert
-   "e" 'emoji-search)
-
-  (thomas-leader-open
-   "-" 'dired-jump
-   "A" 'org-agenda
-   "f" 'make-frame
-   "F" 'select-frame-by-name
-   "t" 'eshell)
-
-  (thomas-leader-quit
-   "f" 'thomas/delete/frame-with-prompt
-   "K" 'save-buffers-kill-emacs
-   "q" 'save-buffers-kill-terminal)
-
-  (thomas-leader-search
-   "b" '+default/search-buffer
-   "B" '(cmd!! #'consult-line-multi 'all-buffers)
-   "f" 'consult-locate
-   "i" 'consult-imenu
-   "I" 'consult-imenu-multi
-   "m" 'consult-bookmark
-   "r" 'consult-mark)
-
-  (thomas-leader-window
-   "=" 'balance-windows
-   "f" 'ffap-other-window
-   "T" 'tear-off-window
-   "C-o" 'delete-other-windows))
+    ;; Window
+    "w" '(:ignore t :wk "window")
+    "w=" 'balance-windows
+    "wf" 'ffap-other-window
+    "wT" 'tear-off-window
+    "w <C-o>" 'delete-other-windows))
 
 ;; Tips for next keystroke
 (use-package which-key
+  :diminish
   :hook (after-init . which-key-mode)
+  :general
+  (thomas-leader
+   ;;
+   "hbf" 'which-key-show-full-keymap
+   "hbi" 'which-key-show-minor-mode-keymap
+   "hbk" 'which-key-show-keymap
+   "hbm" 'which-key-show-major-mode
+   "hbt" 'which-key-show-top-level)
   :config
   (setq which-key-sort-order #'which-key-key-order-alpha
         which-key-sort-uppercase-first nil
