@@ -19,17 +19,6 @@
 ;;
 ;;; Code:
 
-
-;;
-;;; General UX
-;; Don't prompt for confirmation when we create a new file or buffer (assume the
-;; user knows what they're doing).
-(setq confirm-nonexistent-file-or-buffer nil)
-(setq uniquify-buffer-name-style 'forward
-      ;; no beeping or blinking please
-      ring-bell-function #'ignore
-      visible-bell nil)
-
 ;;
 ;;; Scrolling
 (setq hscroll-margin 2
@@ -77,79 +66,20 @@
       indicate-empty-lines nil)
 
 ;;
-;;; Windows/frames
+;;; Line numbers
 
-;; A simple frame title
-(setq frame-title-format '("%b – Thomas Emacs")
-      icon-title-format frame-title-format)
+;; Explicitly define a width to reduce the cost of on-the-fly computation
+(setq-default display-line-numbers-width 3)
 
+;; Show absolute line numbers for narrowed regions to make it easier to tell the
+;; buffer is narrowed, and where you are, exactly.
+(setq-default display-line-numbers-widen t)
 
-;; Don't resize the frames in steps; it looks weird, especially in tiling window
-;; managers, where it can leave unseemly gaps.
-(setq frame-resize-pixelwise t)
-
-;; But do not resize windows pixelwise, this can cause crashes in some cases
-;; when resizing too many windows at once or rapidly.
-(setq window-resize-pixelwise nil)
-
-;; UX: GUIs are inconsistent across systems, desktop environments, and themes,
-;;   and don't match the look of Emacs. They also impose inconsistent shortcut
-;;   key paradigms. I'd rather Emacs be responsible for prompting.
-(setq use-dialog-box nil)
-(when (bound-and-true-p tooltip-mode)
-  (tooltip-mode -1))
-
-;; UX: Favor vertical splits over horizontal ones. Monitors are trending toward
-;;   wide, rather than tall.
-(setq split-width-threshold 160
-      split-height-threshold nil)
 
 ;;
-;;; Minibuffer
-
-;; Allow for minibuffer-ception. Sometimes we need another minibuffer command
-;; while we're in the minibuffer.
-(setq enable-recursive-minibuffers t)
-
-;; Show current key-sequence in minibuffer ala 'set showcmd' in vim. Any
-;; feedback after typing is better UX than no feedback at all.
-(setq echo-keystrokes 0.02)
-
-;; Expand the minibuffer to fit multi-line text displayed in the echo-area. This
-;; doesn't look too great with direnv, however...
-(setq resize-mini-windows 'grow-only)
-
-;; Typing yes/no is obnoxious when y/n will do
-(if (boundp 'use-short-answers)
-    (setq use-short-answers t)
-  ;; DEPRECATED: Remove when we drop 27.x support
-  (advice-add #'yes-or-no-p :override #'y-or-n-p))
-
-;; Try to keep the cursor out of the read-only portions of the minibuffer.
-(setq minibuffer-prompt-properties '(read-only t intangible t cursor-intangible t face minibuffer-prompt))
-(add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-
-;; Built-in packages
-
-;;;###package ansi-color
-(setq ansi-color-for-comint-mode t)
-
-(with-eval-after-load 'comint
-  (setq comint-prompt-read-only t
-        comint-buffer-maximum-size 2048)) ; double the default
-
-(with-eval-after-load 'compile
-  (setq compilation-always-kill t       ; kill compilation process before starting another
-        compilation-ask-about-save nil  ; save all buffers on `compile'
-        compilation-scroll-output 'first-error)
-  (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
-  ;; Automatically truncate compilation buffers so they don't accumulate too
-  ;; much data and bog down the rest of Emacs.
-  (autoload 'comint-truncate-buffer "comint" nil t)
-  (add-hook 'compilation-filter-hook #'comint-truncate-buffer))
-
+;;; 一些增强包
 (use-package hl-line
-  ;; Highlights the current line
+  ;; 高亮当前行
   :hook (after-init . global-hl-line-mode)
   :init
   (defvar global-hl-line-modes
@@ -191,23 +121,17 @@
   (add-hook 'evil-visual-state-exit-hook  #'thomas-enable-hl-line-maybe-h)
   (add-hook 'deactivate-mark-hook #'thomas-enable-hl-line-maybe-h))
 
-
 (use-package nerd-icons
-  :when (display-graphic-p)
-  :commands (nerd-icons-octicon
-             nerd-icons-faicon
-             nerd-icons-flicon
-             nerd-icons-wicon
-             nerd-icons-mdicon
-             nerd-icons-codicon
-             nerd-icons-devicon
-             nerd-icons-ipsicon
-             nerd-icons-pomicon
-             nerd-icons-powerline))
+  ;; A Library for Nerd Font icons
+  :config
+  ;; The Nerd Font you want to use in GUI
+  ;; "Symbols Nerd Font Mono" is the default and is recommended
+  ;; but you can use any other Nerd Font if you want
+  (when (display-graphic-p)
+    (setq nerd-icons-font-family "Symbols Nerd Font Mono")))
 
-
-;; Use Iosvkem in terminals
 (use-package doom-themes
+  ;; 包含大量漂亮的主题，
   :config
   (doom-themes-org-config)
   (let ((theme (if (display-graphic-p)
@@ -216,7 +140,8 @@
     (load-theme theme t)))
 
 (use-package paren
-  ;; highlight matching delimiters
+  ;; 高亮显示匹配的括号
+  :straight (:type built-in)
   :hook (after-init . show-paren-mode)
   :config
   (setq show-paren-delay 0.1
@@ -224,20 +149,23 @@
         show-paren-when-point-inside-paren t
         show-paren-when-point-in-periphery t))
 
-;;;###package whitespace
-(setq whitespace-line-column nil
-      whitespace-style
-      '(face indentation tabs tab-mark spaces space-mark newline newline-mark
-        trailing lines-tail)
-      whitespace-display-mappings
-      '((tab-mark ?\t [?› ?\t])
-        (newline-mark ?\n [?¬ ?\n])
-        (space-mark ?\  [?·] [?.])))
+(use-package whitespace
+  ;; 空白字符配置
+  :config
+  (setq whitespace-line-column nil
+        whitespace-style
+        '(face indentation tabs tab-mark spaces space-mark newline newline-mark
+          trailing lines-tail)
+        whitespace-display-mappings
+        '((tab-mark ?\t [?› ?\t])
+          (newline-mark ?\n [?¬ ?\n])
+          (space-mark ?\  [?·] [?.]))))
 
-;; Many major modes do no highlighting of number literals, so we do it for them
 (use-package highlight-numbers
+  ;;许多主要模式不突出显示数字文字，因此我们为它们突出显示
   :hook ((prog-mode conf-mode) . highlight-numbers-mode)
-  :config (setq highlight-numbers-generic-regexp "\\_<[[:digit:]]+\\(?:\\.[0-9]*\\)?\\_>"))
+  :config (setq highlight-numbers-generic-regexp
+                "\\_<[[:digit:]]+\\(?:\\.[0-9]*\\)?\\_>"))
 
 (use-package rainbow-delimiters
   :config
@@ -246,16 +174,6 @@
   ;; complexity of the font-lock keyword and hopefully buy us a few ms of
   ;; performance.
   (setq rainbow-delimiters-max-face-count 4))
-
-;;
-;;; Line numbers
-
-;; Explicitly define a width to reduce the cost of on-the-fly computation
-(setq-default display-line-numbers-width 3)
-
-;; Show absolute line numbers for narrowed regions to make it easier to tell the
-;; buffer is narrowed, and where you are, exactly.
-(setq-default display-line-numbers-widen t)
 
 ;; Highlight TODO
 (use-package hl-todo
