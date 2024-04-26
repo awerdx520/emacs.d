@@ -55,9 +55,9 @@
                           (agenda . 5)
                           (bookmarks . 5)
                           (hackernews . 8)))
+  (setq dashboard-page-separator "\n\f\n")
   ;; TODO 设置 heading icon 存在找不到 nero-icons 字体的问题
   (setq dashboard-set-heading-icons t
-        dashboard-center-content t
         dashboard-set-file-icons t
         dashboard-icon-type 'nerd-icons
         dashboard-heading-icons '((hackernews . "nf-oct-paperclip")

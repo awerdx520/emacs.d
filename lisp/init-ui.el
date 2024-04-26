@@ -249,5 +249,8 @@
   :config
   (setq symbol-overlay-scope t))
 
+(use-package page-break-lines
+  :hook (dashboard-mode . page-break-lines-mode))
+
 (provide 'init-ui)
 ;;; init-ui.el ends here
