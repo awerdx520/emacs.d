@@ -244,5 +244,10 @@
   (defun background-opacity-get-alpha-str ()
     (format "Alpha %s%%" (background-opacity-get-alpha))))
 
+(use-package symbol-overlay
+  :hook (prog-mode . symbol-overlay-mode)
+  :config
+  (setq symbol-overlay-scope t))
+
 (provide 'init-ui)
 ;;; init-ui.el ends here
