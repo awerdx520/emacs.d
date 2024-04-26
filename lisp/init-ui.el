@@ -63,7 +63,13 @@
 ;; Reduce the clutter in the fringes; we'd like to reserve that space for more
 ;; useful information, like git-gutter and flycheck.
 (setq indicate-buffer-boundaries nil
-      indicate-empty-lines nil)
+      indicate-empty-lines nil
+      left-margin-width 2
+      right-margin-width 2)
+
+;; 设置边缘 finge 宽度
+(when (display-graphic-p)
+  (set-fringe-mode 2))
 
 ;;
 ;;; Line numbers
