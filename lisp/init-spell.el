@@ -9,6 +9,9 @@
 ;; z= `ispell-word'
 (use-package ispell
   :straight (:type built-in)
+  :general
+  (general-def :states 'normal
+    "z=" 'ispell-word)
   :config
   ;; MacOS is broken
   (when (eq system-type 'darwin)
@@ -23,7 +26,7 @@
         ispell-program-name "hunspell"
         ispell-dictionary "en_US"
         ispell-following-word t
-        ispell-personal-dictionary (locate-user-emacs-file "hunspell_dict.txt")))
+        ispell-personal-dictionary (expand-file-name thomas-cache-dir "hunspell_dict.txt")))
 
 ;; Spell check on-the-fly
 (use-package flyspell

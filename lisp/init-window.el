@@ -70,5 +70,8 @@
               "*Apropos*" "*Help*" "*cvs*" "*Buffer List*" "*Ibuffer*"
               "*esh command on file*")))
 
+;; Posframe can pop up a frame at point, this posframe is a child-frame connected to its root window’s buffer.
+(use-package posframe)
+
 (provide 'init-window)
 ;;; init-window.el ends here

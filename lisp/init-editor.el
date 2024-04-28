@@ -19,11 +19,109 @@
 ;;
 ;;; Code:
 
+;;
+;;; Undo
+(use-package undo-fu
+  :hook (after-init . undo-fu-mode)
+  :config
+  ;; Increase undo history limits to reduce likelihood of data loss
+  (setq undo-limit 400000           ; 400kb (default is 160kb)
+        undo-strong-limit 3000000   ; 3mb   (default is 240kb)
+        undo-outer-limit 48000000)  ; 48mb  (default is 24mb)
+
+  (define-minor-mode undo-fu-mode
+    "Enables `undo-fu' for the current session."
+    :keymap (let ((map (make-sparse-keymap)))
+              (define-key map [remap undo] #'undo-fu-only-undo)
+              (define-key map [remap redo] #'undo-fu-only-redo)
+              (define-key map (kbd "C-_")     #'undo-fu-only-undo)
+              (define-key map (kbd "M-_")     #'undo-fu-only-redo)
+              (define-key map (kbd "C-M-_")   #'undo-fu-only-redo-all)
+              (define-key map (kbd "C-x r u") #'undo-fu-session-save)
+              (define-key map (kbd "C-x r U") #'undo-fu-session-recover)
+              map)
+    :init-value nil
+    :global t))
+
+
+(use-package undo-fu-session
+  :hook (undo-fu-mode . global-undo-fu-session-mode)
+  :custom (undo-fu-session-directory (expand-file-name "undo-fu-session" thomas-cache-dir))
+  :config
+  (setq undo-fu-session-incompatible-files
+        '("\\.gpg$" "/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'"))
+
+  (when (executable-find "zstd")
+    ;; There are other algorithms available, but zstd is the fastest, and speed
+    ;; is our priority within Emacs
+    (setq undo-fu-session-compression 'zst))
+
+  (defun undo-fu-make-hashed-session-file-name-a (file)
+    "HACK Fix #4993: we've advised `make-backup-file-name-1' to produced SHA1'ed
+        filenames to prevent file paths that are too long, so we force
+        `undo-fu-session--make-file-name' to use it instead of its own
+        home-grown overly-long-filename generator.
+        TODO PR this upstream; should be a universal issue"
+    (concat (let ((backup-directory-alist `(("." . ,undo-fu-session-directory))))
+              (make-backup-file-name-1 file)
+              (undo-fu-session--file-name-ext)))
+    (advice-add  'undo-fu-session--make-file-name
+                 :override #'undo-fu-make-hashed-session-file-name-a)))
+
+(use-package vundo
+  :when (> emacs-major-version 27)
+  :defer t
+  :config
+  (setq vundo-glyph-alist vundo-unicode-symbols
+        vundo-compact-display t)
+  (define-key vundo-mode-map [remap doom/escape] #'vundo-quit))
+
+
+;;
+;;; File
 ;; Workaround with minified source files
 (use-package so-long
   :straight (:type built-in)
   :hook (after-init . global-so-long-mode))
 
+;; Recently opened files
+(use-package recentf
+  :straight (:type built-in)
+  :hook (after-init . recentf-mode)
+  :custom (recentf-save-file (expand-file-name  "recentf" thomas-cache-dir))
+  :config
+  (setq recentf-max-saved-items 300
+        ;; The most sensible time to clean up your recent files list is when you quit
+        ;; Emacs (unless this is a long-running daemon session).
+        recentf-auto-cleanup (when (daemonp) 300))
+
+  (defun thomas--recentf-file-truename-fn (file)
+    (if (or (not (file-remote-p file))
+            (equal "sudo" (file-remote-p file 'method)))
+        (abbreviate-file-name (file-truename (tramp-file-name-localname file)))
+      file))
+
+  ;; REVIEW: Use this in lieu of `doom--recentf-file-truename-fn' when we drop
+  ;;   28 support. See emacs-mirror/emacs@32906819addd.
+  ;; (setq recentf-show-abbreviated t)
+  ;; Resolve symlinks, strip out the /sudo:X@ prefix in local tramp paths, and
+  ;; abbreviate $HOME -> ~ in filepaths (more portable, more readable, & saves
+  ;; space)
+  (add-to-list 'recentf-filename-handlers #'thomas--recentf-file-truename-fn)
+
+  ;; Add dired directories to recentf file list.
+  (add-hook 'dired-mode-hook (lambda () (recentf-add-file default-directory)))
+
+  (add-hook 'kill-emacs-hook #'recentf-cleanup)
+
+  ;; Anything in runtime folders
+  (add-to-list 'recentf-exclude
+               (concat "^" (regexp-quote (or (getenv "XDG_RUNTIME_DIR")
+                                             "/run")))))
+
+
+;;
+;;; Comment
 (use-package newcomment
   :straight (:type built-in)
   :bind ([remap comment-dwim] . comment-or-uncomment)
@@ -51,32 +149,14 @@ Else, call `comment-or-uncomment-region' on the current line."
   ;; quoted text can be `auto-fill'ed.
   (comment-auto-fill-only-comments t))
 
-
-;; Recently opened files
-(use-package recentf
-  :straight (:type built-in)
-  :hook (after-init . recentf-mode)
-  :config
-  (setq recentf-save-file (concat thomas-cache-dir "recentf"))
-  :custom
-  (recentf-max-saved-items 300)
-  (recentf-auto-cleanup 'never)
-  (recentf-exclude '(;; Folders on MacOS start
-                     "^/private/tmp/"
-                     "^/var/folders/"
-                     ;; Folders on MacOS end
-                     "^/tmp/"
-                     "/ssh\\(x\\)?:"
-                     "/su\\(do\\)?:"
-                     "^/usr/include/"
-                     "/TAGS\\'"
-                     "COMMIT_EDITMSG\\'")))
-
-
-;; Session
+;;
+;;; Session
+;; 保存 session 相关配置，如：kill-ring 等变量
 (use-package savehist
   :straight (:type built-in)
-  :custom (savehist-file (concat thomas-cache-dir "savehist"))
+  :hook (after-init . savehist-mode)
+  :custom
+  (savehist-file (expand-file-name "savehist" thomas-cache-dir))
   :config
   (setq savehist-save-minibuffer-history t
         savehist-autosave-interval nil     ; save on kill only
@@ -85,46 +165,103 @@ Else, call `comment-or-uncomment-region' on the current line."
           register-alist                   ; persist macros
           mark-ring global-mark-ring       ; persist marks
           search-ring regexp-search-ring)) ; persist searches
-  (add-hook 'savehist-save-hook
-            (defun thomas-savehist-unpropertize-variables-h ()
-              "Remove text properties from `kill-ring' to reduce savehist cache size."
-              (setq kill-ring
-                    (mapcar #'substring-no-properties
-                            (cl-remove-if-not #'stringp kill-ring))
-                    register-alist
-                    (cl-loop for (reg . item) in register-alist
-                             if (stringp item)
-                             collect (cons reg (substring-no-properties item))
-                             else collect (cons reg item))))
-            (defun thomas-savehist-remove-unprintable-registers-h ()
-              "Remove unwriteable registers (e.g. containing window configurations).
+
+  (defun thomas-savehist-unpropertize-variables-h ()
+    "Remove text properties from `kill-ring' to reduce savehist cache size."
+    (setq kill-ring
+          (mapcar #'substring-no-properties
+                  (cl-remove-if-not #'stringp kill-ring))
+          register-alist
+          (cl-loop for (reg . item) in register-alist
+                   if (stringp item)
+                   collect (cons reg (substring-no-properties item))
+                   else collect (cons reg item))))
+  (add-hook 'savehist-save-hook #'thomas-savehist-unpropertize-variables-h)
+
+  (defun thomas-savehist-remove-unprintable-registers-h ()
+    "Remove unwriteable registers (e.g. containing window configurations).
 Otherwise, `savehist' would discard `register-alist' entirely if we don't omit
 the unwritable tidbits."
-              ;; Save new value in the temp buffer savehist is running
-              ;; `savehist-save-hook' in. We don't want to actually remove the
-              ;; unserializable registers in the current session!
-              (setq-local register-alist
-                          (cl-remove-if-not #'savehist-printable register-alist)))))
+
+    ;; Save new value in the temp buffer savehist is running
+    ;; `savehist-save-hook' in. We don't want to actually remove the
+    ;; unserializable registers in the current session!
+    (setq-local register-alist
+                (cl-remove-if-not #'savehist-printable register-alist)))
+  (add-hook 'savehist-save-hook #'thomas-savehist-remove-unprintable-registers-h))
 
 
-;; Back to the previous position
+;; 记录关闭之前打开 Buffer 光标位置
 (use-package saveplace
   :straight (:type built-in)
   :hook (after-init . save-place-mode)
-  :custom (save-place-file (concat thomas-cache-dir "saveplace")))
+  :custom (save-place-file (expand-file-name "saveplace" thomas-cache-dir)))
 
-;; Server mode.
-;; Use emacsclient to connect
-(use-package server
-  :when (display-graphic-p)
-  :straight (:type built-in)
-  :hook (after-init . server-mode)
+;;
+;;; jump
+(use-package better-jumper
+  :hook (after-init . better-jumper-mode)
+  :commands thomas-set-jump-a thomas-set-jump-maybe-a thomas-set-jump-h
+  :preface
+  ;; REVIEW Suppress byte-compiler warning spawning a *Compile-Log* buffer at
+  ;; startup. This can be removed once gilbertw1/better-jumper#2 is merged.
+  (defvar better-jumper-local-mode nil)
+  :init
+  (with-eval-after-load 'evil
+    (general-def
+      [remap evil-jump-forward]  'better-jumper-jump-forward
+      [remap evil-jump-backward] 'better-jumper-jump-backward
+      [remap xref-pop-marker-stack] 'better-jumper-jump-backward))
+  (general-def
+    [remap xref-go-back] 'better-jumper-jump-backward
+    [remap xref-go-forward] 'better-jumper-jump-forward)
   :config
-  (when-let (name (getenv "EMACS_SERVER_NAME"))
-    (setq server-name name))
-  (unless (server-running-p)
-    (server-start)))
+  :config
+  (defun thomas-set-jump-a (fn &rest args)
+    "Set a jump point and ensure fn doesn't set any new jump points."
+    (better-jumper-set-jump (if (markerp (car args)) (car args)))
+    (let ((evil--jumps-jumping t)
+          (better-jumper--jumping t))
+      (apply fn args)))
 
+  (defun thomas-set-jump-maybe-a (fn &rest args)
+    "Set a jump point if fn actually moves the point."
+    (let ((origin (point-marker))
+          (result
+           (let* ((evil--jumps-jumping t)
+                  (better-jumper--jumping t))
+             (apply fn args)))
+          (dest (point-marker)))
+      (unless (equal origin dest)
+        (with-current-buffer (marker-buffer origin)
+          (better-jumper-set-jump
+           (if (markerp (car args))
+               (car args)
+             origin))))
+      (set-marker origin nil)
+      (set-marker dest nil)
+      result))
+
+  (defun thomas-set-jump-h ()
+    "Run `better-jumper-set-jump' but return nil, for short-circuiting hooks."
+    (better-jumper-set-jump)
+    nil)
+
+  ;; Creates a jump point before killing a buffer. This allows you to undo
+  ;; killing a buffer easily (only works with file buffers though; it's not
+  ;; possible to resurrect special buffers).
+  ;;
+  ;; I'm not advising `kill-buffer' because I only want this to affect
+  ;; interactively killed buffers.
+  (advice-add #'kill-current-buffer :around #'thomas-set-jump-a)
+
+  ;; Create a jump point before jumping with imenu.
+  (advice-add #'imenu :around #'thomas-set-jump-a))
+
+
+;;
+;;; Edit
+;; 智能添加 parens 符号
 (use-package smartparens
   ;; Auto-close delimiters and blocks as you type. It's more powerful than that,
   ;; but that is all Doom uses it for.
@@ -179,8 +316,10 @@ This includes everything that calls `read--expression', e.g.
   (sp-local-pair '(minibuffer-mode minibuffer-inactive-mode) "'" nil :actions nil)
   (sp-local-pair '(minibuffer-mode minibuffer-inactive-mode) "`" nil :actions nil))
 
+;; 删除末尾空白
 (use-package ws-butler
   ;; a less intrusive `delete-trailing-whitespaces' on save
+  :hook (after-init . ws-butler-mode)
   :config
   ;; ws-butler normally preserves whitespace in the buffer (but strips it from
   ;; the written file). While sometimes convenient, this behavior is not
@@ -188,6 +327,42 @@ This includes everything that calls `read--expression', e.g.
   ;; which causes folks to redundantly install their own.
   (setq ws-butler-keep-whitespace-before-point nil))
 
+;;
+;;; Motion
+(use-package avy
+  :config
+  (setq avy-all-windows nil
+        avy-all-windows-alt t
+        avy-background t
+        ;; the unpredictability of this (when enabled) makes it a poor default
+        avy-single-candidate-jump nil))
+
+;;
+;;; Server
+;; Use emacsclient to connect
+(use-package server
+  :when (display-graphic-p)
+  :straight (:type built-in)
+  :hook (after-init . server-mode)
+  :config
+  (when-let (name (getenv "EMACS_SERVER_NAME"))
+    (setq server-name name))
+  (unless (server-running-p)
+    (server-start)))
+
+;; transparent remote access
+(use-package tramp
+  :straight (:type built-in)
+  :defer t
+  :config
+  (setq remote-file-name-inhibit-cache 60
+        tramp-completion-reread-directory-timeout 60
+        tramp-verbose 1
+        tramp-default-method "ssh"
+        vc-ignore-dir-regexp (format "%s\\|%s\\|%s"
+                                     vc-ignore-dir-regexp
+                                     tramp-file-name-regexp
+                                     "[/\\\\]node_modules")))
 
 (provide 'init-editor)
 ;;; init-editor.el ends here

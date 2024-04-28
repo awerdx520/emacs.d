@@ -63,7 +63,7 @@
   :straight (:type built-in)
   :general
   (thomas-leader
-   "h <RET>" 'info-emacs-manual
+   "h RET" 'info-emacs-manual
    "h'" 'describe-char
    "h." 'display-local-help
    "h?" 'help-for-help
@@ -96,12 +96,12 @@
    "hR" 'info-display-manual
    "hx" 'describe-command
    ;;
-   "h <C-d>" 'view-emacs-debugging
-   "h <C-f>" 'view-emacs-FAQ
-   "h <C-n>" 'view-emacs-news
-   "h <C-p>" 'view-emacs-problems
-   "h <C-t>" 'view-emacs-todo
-   "h <C-w>" 'describe-no-warranty))
+   "h C-d" 'view-emacs-debugging
+   "h C-f" 'view-emacs-FAQ
+   "h C-n" 'view-emacs-news
+   "h C-p" 'view-emacs-problems
+   "h C-t" 'view-emacs-todo
+   "h C-w" 'describe-no-warranty))
 
 (provide 'init-help)
 ;;; init-help.el ends here

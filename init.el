@@ -24,51 +24,41 @@
 (require 'init-custom)
 (require 'init-funcs)
 (require 'init-macro)
+(require 'init-wsl)
 
 ;; packages
 (require 'init-package)
-
-;; preferences
 (require 'init-base)
-(require 'init-undo)
-(require 'init-wsl)
-;; ui
-(require 'init-ui)
-(require 'init-dashboard)
-(require 'init-modeline)
+
 ;;
+(require 'init-ui)
 (require 'init-editor)
-(require 'init-buffer)
-(require 'init-minibuffer)
+(require 'init-completion)
+(require 'init-snippets)
+
+(require 'init-chinese)
+(require 'init-bookmark)
+(require 'init-browser)
 (require 'init-window)
 (require 'init-dired)
 (require 'init-help)
-(require 'init-motion)
-(require 'init-remote)
-;;
-(require 'init-chinese)
 (require 'init-spell)
-;;
-(require 'init-project)
-(require 'init-treesit)
-(require 'init-git)
-(require 'init-snippets)
 (require 'init-syntax)
+(require 'init-git)
+(require 'init-treesit)
 (require 'init-format)
+(require 'init-shell)
 (require 'init-develop)
+;;
+
 ;; Language
+(require 'init-text)
 ;;(require 'init-cpp)
 (require 'init-rust)
 ;;(require 'init-bazel)
 (require 'init-python)
 ;;(require 'init-elisp)
 (require 'init-sh)
-
-;;
-(require 'init-shell)
-(require 'init-text)
-(require 'init-bookmark)
-(require 'init-browser)
 
 (require 'init-keybinding)
 ;;;  init.el ends here

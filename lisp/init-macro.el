@@ -20,9 +20,16 @@
 ;;; Code:
 
 ;;; Mutation
+;;;###autoload
 (defmacro appendq! (sym &rest lists)
   "Append LISTS to SYM in place."
   `(setq ,sym (append ,sym ,@lists)))
+
+;;;###autoload
+(defmacro wsl--open-with (id &optional app dir)
+  `(defun ,(intern (format "wsl/%s" id)) ()
+     (interactive)
+     (wsl-open-with ,app ,dir)))
 
 (provide 'init-macro)
 ;;; init-macro.el ends here

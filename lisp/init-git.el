@@ -27,12 +27,67 @@
    "gU" 'magit-unstage-buffer-file
    ;;
    "pt" 'magit-todos-list) ;; 列出项目 TODO
-
-
   :config
   (setq magit-diff-refine-hunk t
         magit-diff-paint-whitespace nil
-        magit-ediff-dwim-show-on-hunks t))
+        magit-ediff-dwim-show-on-hunks t)
+  (add-hook 'magit-process-model-hook #'goto-address-mode))
+
+(use-package magit-todos
+  :after magit
+  :config
+  (setq magit-todos-keyword-suffix "\\(?:([^)]+)\\)?:?") ; make colon optional
+  (define-key magit-todos-section-map "j" nil))
+
+(with-eval-after-load 'evil-collection
+  (use-package evil-collection-magit
+    :init (defvar evil-collection-magit-use-z-for-folds t)
+    :config
+    ;; q is enough; ESC is way too easy for a vimmer to accidentally press,
+    ;; especially when traversing modes in magit buffers.
+    (evil-define-key* 'normal magit-status-mode-map [escape] nil)
+
+    ;; Some extra vim-isms I thought were missing from upstream
+    (evil-define-key* '(normal visual) magit-mode-map
+      "*"  #'magit-worktree
+      "zt" #'evil-scroll-line-to-top
+      "zz" #'evil-scroll-line-to-center
+      "zb" #'evil-scroll-line-to-bottom
+      "g=" #'magit-diff-default-context)
+
+    ;; Fix these keybinds because they are blacklisted
+    ;; REVIEW There must be a better way to exclude particular evil-collection
+    ;;        modules from the blacklist.
+    (general-def :states '(normal visual) magit-mode-map
+      "]" #'magit-section-forward-sibling
+      "[" #'magit-section-backward-sibling
+      "gr" #'magit-refresh
+      "gR" #'magit-refresh-all)
+
+    (general-def :states '(normal visual) magit-status-mode-map
+      "gz" #'magit-refresh)
+
+    (general-def :states '(normal visual) magit-diff-mode-map
+      "gd" #'magit-jump-to-diffstat-or-diff)
+
+    ;; A more intuitive behavior for TAB in magit buffers:
+    (general-def 'normal :keymaps
+      '(magit-status-mode-map)
+      magit-stash-mode-map
+      magit-revision-mode-map
+      magit-process-mode-map
+      magit-diff-mode-map
+      [tab] #'magit-section-toggle)
+
+    (with-eval-after-load 'git-rebase
+      (dolist (key '(("M-k" . "gk") ("M-j" . "gj")))
+        (when-let (desc (assoc (car key) evil-collection-magit-rebase-commands-w-descriptions))
+          (setcar desc (cdr key))))
+      (evil-define-key* evil-collection-magit-state git-rebase-mode-map
+        "gj" #'git-rebase-move-line-down
+        "gk" #'git-rebase-move-line-up))))
+
+
 
 ;; NOTE: `diff-hl' depends on `vc'
 (use-package vc

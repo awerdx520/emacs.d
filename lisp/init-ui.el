@@ -81,6 +81,81 @@
 ;; buffer is narrowed, and where you are, exactly.
 (setq-default display-line-numbers-widen t)
 
+(use-package page-break-lines
+  :hook (dashboard-mode . page-break-lines-mode))
+
+(use-package dashboard
+  :custom-face
+  (dashboard-items-face ((t (:weight normal))))
+  (dashboard-heading-face ((t (:weight bold))))
+  :init
+  ;; Format: "(icon title help action face prefix suffix)"
+  (setq dashboard-navigator-buttons `(((,(if (fboundp 'nerd-icons-octicon)
+                                             (nerd-icons-octicon "nf-oct-mark_github")
+                                           "¡ï")
+                                        "GitHub" "Browse" (lambda (&rest _) (browse-url homepage-url)))
+
+                                       (,(if (fboundp 'nerd-icons-octicon)
+                                             (nerd-icons-octicon "nf-oct-download")
+                                           "?")
+                                        "Upgrade" "Upgrade packages synchronously"
+                                        (lambda (&rest _) (package-upgrade-all nil)) success))))
+  :config
+  ;; 在 Server 模式下，创建 frame 时显示仪表盘
+  (setq initial-buffer-choice (lambda ()
+                                (get-buffer-create "*dashboard*")))
+  ;;
+  (setq dashboard-startup-banner '2
+        dashboard-projects-backend 'project-el)
+  ;;
+  (setq dashboard-set-init-info t
+        dashboard-set-navigator t)
+  (setq dashboard-items '((recents   . 5)
+                          (projects  . 7)
+                          (agenda . 5)
+                          (bookmarks . 5)))
+  (setq dashboard-page-separator "\n\f\n")
+  ;; TODO 设置 heading icon 存在找不到 nero-icons 字体的问题
+  (setq dashboard-set-heading-icons t
+        dashboard-set-file-icons t
+        dashboard-icon-type 'nerd-icons
+        dashboard-heading-icons '((agenda . "nf-oct-calendar")
+                                  (recents . "nf-oct-file")
+                                  (projects . "nf-oct-project")
+                                  (bookmarks . "nf-oct-bookmark")))
+  ;; 启动 dashboard 设置
+  (dashboard-setup-startup-hook))
+
+(use-package hide-mode-line
+  ;; Hide the mode line in completion popups and MAN pages because they serve
+  ;; little purpose there, and is better hidden.
+  :hook (completion-list-mode Man-mode))
+
+(use-package doom-modeline
+  :hook (after-init . doom-modeline-mode)
+  :hook (doom-modeline-mode . size-indication-mode) ; filesize in modeline
+  :hook (doom-modeline-mode . column-number-mode)   ; cursor column in modeline
+  :init
+  ;; Set these early so they don't trigger variable watchers
+  (setq doom-modeline-bar-width 3
+        doom-modeline-github nil
+        doom-modeline-mu4e nil
+        doom-modeline-persp-name nil
+        doom-modeline-minor-modes nil
+        doom-modeline-major-mode-icon nil
+        doom-modeline-buffer-file-name-style 'relative-from-project
+        ;; Only show file encoding if it's non-UTF-8 and different line endings
+        ;; than the current OSes preference
+        doom-modeline-buffer-encoding 'nondefault
+        doom-modeline-default-eol-type 0)
+
+  :config
+  ;; anzu.el 提供了一个次要模式，可以在各种搜索模式下在模式行中显示当前匹配和总匹配信息。
+  (use-package anzu)
+  ;; anzu for evil-mode
+  (use-package evil-anzu
+    :after evil
+    :config (global-anzu-mode +1)))
 
 ;;
 ;;; 一些增强包
@@ -248,9 +323,6 @@
   :hook (prog-mode . symbol-overlay-mode)
   :config
   (setq symbol-overlay-scope t))
-
-(use-package page-break-lines
-  :hook (dashboard-mode . page-break-lines-mode))
 
 (provide 'init-ui)
 ;;; init-ui.el ends here
