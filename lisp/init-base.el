@@ -79,11 +79,30 @@
       ;; no beeping or blinking please
       ring-bell-function #'ignore
       visible-bell nil)
+;;
+;;; Minibuffer
 
+;; Allow for minibuffer-ception. Sometimes we need another minibuffer command
+;; while we're in the minibuffer.
+(setq enable-recursive-minibuffers t)
 
-;; 用于阻止一些包在 modeline 上的添加信息已经与 use-package 集成，
-;; 可用 :diminish xxx-mode 配置当前包禁止显示在 modeline 上
-(use-package diminish)
+;; Show current key-sequence in minibuffer ala 'set showcmd' in vim. Any
+;; feedback after typing is better UX than no feedback at all.
+(setq echo-keystrokes 0.02)
+
+;; Expand the minibuffer to fit multi-line text displayed in the echo-area. This
+;; doesn't look too great with direnv, however...
+(setq resize-mini-windows 'grow-only)
+
+;; Typing yes/no is obnoxious when y/n will do
+(if (boundp 'use-short-answers)
+    (setq use-short-answers t)
+  ;; DEPRECATED: Remove when we drop 27.x support
+  (advice-add #'yes-or-no-p :override #'y-or-n-p))
+
+;; Try to keep the cursor out of the read-only portions of the minibuffer.
+(setq minibuffer-prompt-properties '(read-only t intangible t cursor-intangible t face minibuffer-prompt))
+(add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
 ;; auto-revert
 (use-package auto-revert
@@ -104,11 +123,6 @@
      ("\\.log\\'" . text-mode)
      ("rc\\'" . conf-mode)
      ("\\.\\(?:hex\\|nes\\)\\'" . hexl-mode))))
-
-;; Buffer index
-(use-package imenu
-  :straight (:type built-in)
-  :hook (imenu-after-jump . recenter))
 
 ;; Gerneral Keybinding
 (use-package general
@@ -157,6 +171,7 @@
     ;; File
     "f" '(:ignore t :wk "file")
     "ff" 'find-file
+    "fe" '+default/find-file-in-emacs
     ;; Git
     "g" '(:ignore t :wk "git")
 
@@ -184,17 +199,21 @@
     "qq" 'save-buffers-kill-terminal
 
     ;; Remote
-    "r" '(:ignore t :wk "quit/session")
+    "r" '(:ignore t :wk "remote")
 
     ;; Search
     "s" '(:ignore t :wk "search")
+    "se" '+default/search-emacs
+    "sb" '+default/search-buffer
+    "ss" '+default/search-buffer
+    "sB" '+default/search-all-buffer
 
     ;; Window
     "w" '(:ignore t :wk "window")
     "w=" 'balance-windows
     "wf" 'ffap-other-window
     "wT" 'tear-off-window
-    "w <C-o>" 'delete-other-windows))
+    "w C-o" 'delete-other-windows))
 
 ;; Tips for next keystroke
 (use-package which-key

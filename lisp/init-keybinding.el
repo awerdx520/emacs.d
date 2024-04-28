@@ -6,8 +6,10 @@
 ;;; Code:
 (use-package evil
   :init
-  (setq evil-disable-insert-state-bindings t)
-  (setq evil-want-Y-yank-to-eol t)
+  (setq evil-disable-insert-state-bindings t
+        evil-want-Y-yank-to-eol t)
+  ;; 由于 undo 更新频率很低，并且与 evil 存在兼容性问题
+  (setq evil-undo-system 'undo-fu)
   :hook (after-init . evil-mode)
   ;; Don't quit Emacs on `:q'.
   ;;
@@ -24,6 +26,7 @@
         evil-vsplit-window-right t
         evil-ex-complete-emacs-commands nil
         evil-ex-interactive-search-highlight 'selected-window)
+
   ;; when `visual-line-mode' enabled, exchange j/k with gj/gk
   (setq evil-respect-visual-line-mode t
         evil-want-integration t
@@ -48,6 +51,7 @@
    "wj" 'evil-window-down
    "wk" 'evil-window-up
    "wl" 'evil-window-right
+
    ;;"wm" 'maxiz
    "wn" 'evil-window-new
    "wp" 'evil-window-mru
@@ -60,7 +64,16 @@
    "ww" 'evil-window-next
    "wW" 'evil-window-prev
    "wx" 'evil-window-exchange
-   "w|" 'evil-window-set-width))
+   "w|" 'evil-window-set-width)
+
+  (general-def :states 'normal
+    "C-d" 'evil-scroll-down
+    "C-u" 'evil-scroll-up
+    ;;
+;;    "] t" '+evil/next-frame
+ ;;   "[ t" '+evil/previous-frame
+    "] f" '+evil/next-file
+    "[ f" '+evil/previous-file))
 
 
 (use-package evil-collection

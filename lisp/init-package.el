@@ -82,5 +82,9 @@
 
 (straight-use-package 'use-package)
 
+;; 用于阻止一些包在 modeline 上的添加信息已经与 use-package 集成，
+;; 可用 :diminish xxx-mode 配置当前包禁止显示在 modeline 上
+(use-package diminish)
+
 (provide 'init-package)
 ;;; init-package.el ends here

@@ -24,26 +24,31 @@
   :straight (:type built-in)
   :general
   (thomas-leader
-   "ob" 'browse-url
    "oo" 'browse-url-at-point
-   "os" 'browse-url-of-file)
+   "obi" 'browse-url
+   "obd" 'browse-url-of-dired-file
+   "obs" 'browse-url-of-file)
   :config
-  (when IS-WSL
-    (setq browse-url-chrome-program
-          "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"))
+  ;; 当使用 WSL2 环境时可以使用 wslview 作为默认打开浏览器打开连接。
+  ;; wlsview 是 wslu 工具集中的命令，可是根据传递的参数选择合适的
+  ;; Windows 软件查看他。就是有点慢，不知道是 wslview 自己的问题
+  ;; 还是 Windws 的配置匹配问题。
+  (if IS-WSL
+      (setq browse-url-browser-function 'browse-url-generic
+            browse-url-generic-program "wslview")
+    (setq browse-url-browser-function #'browse-url-chrome))
 
-  ;; 默认使用 Google Chrome
-  (setq browse-url-browser-function #'browse-url-chrome
-        browse-url-handlers '(("\\`file:" . browse-url-default-browser))))
+  ;; TODO 需要配置怎么通过默认 browser 打开文件
+  (setq browse-url-handlers '(("\\`file:'" . browse-url-default-browser))))
 
 ;; Pastebin service
 (use-package webpaste
   :commands webpaste-paste-buffer-or-region
   :general
   (thomas-leader
-   "r p b" 'webpaste-paste-buffer
-   "r p r" 'webpaste-paste-region
-   "r p p" 'webpaste-paste-buffer-or-region)
+   "rpb" 'webpaste-paste-buffer
+   "rpr" 'webpaste-paste-region
+   "rpp" 'webpaste-paste-buffer-or-region)
   :config
   (setq webpaste-open-in-browser t ;; After a successful paste, the returned URL from the provider will be sent to the killring.
         ;; Require confirmation before doing paste

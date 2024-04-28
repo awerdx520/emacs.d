@@ -22,7 +22,6 @@
   (ignore-errors (delete-window win)))
 
 ;; General term mode
-;;
 ;; If you use bash, directory track is supported natively.
 ;; See https://www.emacswiki.org/emacs/AnsiTermHints for more information.
 (use-package term
