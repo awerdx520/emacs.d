@@ -18,6 +18,9 @@
 (setq auth-sources (list (file-name-concat thomas-state-dir "authinfo.gpg")
                          "~/.authinfo.gpg"))
 
+(setq auto-save-file-name-transforms
+      `((".*" ,(expand-file-name "auto-save-list" thomas-cache-dir) t)))
+
 (setq use-dialog-box nil
       ;; 关闭相关设置
       inhibit-startup-screen t
@@ -165,8 +168,6 @@
     "c" '(:ignore t :wk "code")
     "cc" 'compile
     "cC" 'recompile
-    "cd" 'xref-find-definitions
-    "cD" 'xref-find-references
 
     ;; File
     "f" '(:ignore t :wk "file")
@@ -243,6 +244,13 @@
 
   (which-key-add-key-based-replacements thomas-leader-key "<leader>")
   (which-key-add-key-based-replacements thomas-localleader-key "<localleader>"))
+
+
+(use-package envrc
+  :hook (after-init . envrc-global-mode)
+  :config
+  ;; Ensure babel's execution environment matches the host buffer's.
+  (advice-add #'org-babel-execute-src-block :around #'envrc-propagate-environment))
 
 (provide 'init-base)
 ;;; init-base.el ends here

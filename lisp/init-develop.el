@@ -5,17 +5,11 @@
 
 ;;; Code:
 
-
-;;
-(use-package envrc
-  :hook (after-init . envrc-global-mode)
-  :config
-  ;; Ensure babel's execution environment matches the host buffer's.
-  (advice-add #'org-babel-execute-src-block :around #'envrc-propagate-environment))
-
 (defvar +project-ignore-project-list '("~" "/home/thomas" "/")
   "忽略指定目录作为项目目录.")
 
+
+;;
 (use-package project
   :straight (:type built-in)
   :init
@@ -173,7 +167,7 @@
         ;; fringe indicator
         (overlay-put ov 'before-string (propertize " "
                                                    'display '(left-fringe hideshow-folded-fringe
-                                                              hideshow-border-face)))
+                                                                          hideshow-border-face)))
         ;; folding indicator
         (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
   (setq hs-set-up-overlay #'hideshow-folded-overlay-fn))
@@ -202,15 +196,15 @@
 
 (use-package lsp-bridge
   :straight '(lsp-bridge  :fetcher github :repo "manateelazycat/lsp-bridge"
-              :files (:defaults "*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
-              :build (:not compile))
+                          :files (:defaults "*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
+                          :build (:not compile))
+  :hook (prog-mode . lsp-bridge-semantic-tokens-mode)
   :init
   (global-lsp-bridge-mode)
 
   (defvar +lsp-bridge-data-dir
-    (expand-file-name thomas-data-dir "lsp-bridge")
+    (expand-file-name "lsp-bridge" thomas-data-dir)
     "Lsp-Bridge 相关配置目录.")
-
   :general
   (thomas-leader
     "ca" 'lsp-bridge-code-action ; 弹出代码修复菜单
@@ -235,8 +229,25 @@
   (setq lsp-bridge-find-def-fallback-function #'xref-find-definitions)
   (setq lsp-bridge-find-ref-fallback-function #'xref-find-references)
   ;; 设置自定义 langserver 配置目录
-  (setq lsp-bridge-user-langserver-dir (expand-file-name +lsp-bridge-data-dir "langserver")
-        lsp-bridge-user-multiserver-dir (expand-file-name +lsp-bridge-data-dir "multiserver"))
+  (setq lsp-bridge-user-langserver-dir (expand-file-name "langserver" +lsp-bridge-data-dir)
+        lsp-bridge-user-multiserver-dir (expand-file-name "multiserver" +lsp-bridge-data-dir))
+  (defface lsp-bridge-semantic-tokens-variable-face
+    '((t (:inherit font-lock-variable-name-face)))
+    "Face used for variable name."
+    :group 'lsp-bridge-semantic-tokens)
+
+  (defface lsp-bridge-semantic-tokens-global-scope-face
+    '((t :weight extra-bold))
+    "Face used for globalScope token."
+    :group 'lsp-bridge-semantic-tokens)
+
+  (setq-default lsp-bridge-semantic-tokens-type-faces
+                [("variable" . lsp-bridge-semantic-tokens-variable-face)])
+
+  (setq-default lsp-bridge-semantic-tokens-type-modifier-faces
+                [("globalScope" . lsp-bridge-semantic-tokens-global-scope-face)])
+
+  (setq-default lsp-bridge-semantic-tokens-ignore-modifier-limit-types [])
   ;; 在 Org Babel 里使用 LSP 补全
   (setq lsp-bridge-enable-org-babel t))
 
