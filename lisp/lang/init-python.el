@@ -46,55 +46,6 @@ as the environment to run epc."
   (add-hook 'python-mode-hook (lambda () (setq-local lsp-bridge-get-single-lang-server-by-project
                                                      'thomas/lsp-bridge-get-single-lang-server-by-project))))
 
-;; (use-package python-pytest
-;; :commands python-pytest-dispatch)
-;; :init
-;; (map! :after python
-;;       :localleader
-;;       :map python-mode-map
-;;       :prefix ("t" . "test")
-;;       "a" #'python-pytest
-;;       "f" #'python-pytest-file-dwim
-;;       "F" #'python-pytest-file
-;;       "t" #'python-pytest-function-dwim
-;;       "T" #'python-pytest-function
-;;       "r" #'python-pytest-repeat
-;;       "p" #'python-pytest-dispatch)
-
-;;; Environment Management
-(use-package conda
-  :after python
-  :config
-  ;; The location of your anaconda home will be guessed from a list of common
-  ;; possibilities, starting with `conda-anaconda-home''s default value (which
-  ;; will consult a ANACONDA_HOME envvar, if it exists).
-  ;;
-  ;; If none of these work for you, `conda-anaconda-home' must be set
-  ;; explicitly. Afterwards, run M-x `conda-env-activate' to switch between
-  ;; environments
-  (or (cl-loop for dir in (list conda-anaconda-home
-                                "~/.anaconda"
-                                "~/.miniconda"
-                                "~/.miniconda3"
-                                "~/.miniforge3"
-                                "~/anaconda3"
-                                "~/miniconda3"
-                                "~/miniforge3"
-                                "~/opt/miniconda3"
-                                "/usr/bin/anaconda3"
-                                "/usr/local/anaconda3"
-                                "/usr/local/miniconda3"
-                                "/usr/local/Caskroom/miniconda/base"
-                                "~/.conda")
-               if (file-directory-p dir)
-               return (setq conda-anaconda-home (expand-file-name dir)
-                            conda-env-home-directory (expand-file-name dir)))
-      (message "Cannot find Anaconda installation"))
-
-  ;; conda 激活环境重启 lsp-bridge
-  (add-hook 'conda-postactivate-hook (lambda () (lsp-bridge-restart-process))))
-
-
 ;; python -m venv ENV_DIR
 (use-package pyvenv
   :commands pyvenv-deactivate pyvenv-activate
@@ -126,11 +77,7 @@ as the environment to run epc."
 (use-package cython-mode
   :mode "\\.p\\(yx\\|x[di]\\)\\'"
   :config
-  (setq cython-default-compile-format "cython -a %s")
-  (map! :map cython-mode-map
-        :localleader
-        :prefix "c"
-        :desc "Cython compile buffer"    "c" #'cython-compile))
+  (setq cython-default-compile-format "cython -a %s"))
 
 (use-package flycheck-cython
   :after cython-mode)
