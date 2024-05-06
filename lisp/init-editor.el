@@ -73,9 +73,7 @@
   :defer t
   :config
   (setq vundo-glyph-alist vundo-unicode-symbols
-        vundo-compact-display t)
-  (define-key vundo-mode-map [remap doom/escape] #'vundo-quit))
-
+        vundo-compact-display t))
 
 ;;
 ;;; File
@@ -88,7 +86,7 @@
 (use-package recentf
   :straight (:type built-in)
   :hook (after-init . recentf-mode)
-  :custom (recentf-save-file (expand-file-name  "recentf" thomas-cache-dir))
+  :custom (recentf-save-file (expand-file-name "recentf" thomas-cache-dir))
   :config
   (setq recentf-max-saved-items 300
         ;; The most sensible time to clean up your recent files list is when you quit

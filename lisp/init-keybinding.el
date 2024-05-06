@@ -38,67 +38,81 @@
         evil-symbol-word-search t)
   :general
   (thomas-leader
-   "w+" 'evil-window-increase-height
-   "w-" 'evil-window-decrease-height
-   "w:" 'evil-ex
-   "w<" 'evil-window-decrease-width
-   "w>" 'evil-window-decrease-width
-   "w_" 'evil-window-set-height
-   "wb" 'evil-window-bottom-right
-   "wc" 'evil-window-delete
-   "wd" 'evil-window-delete
-   "wh" 'evil-window-left
-   "wj" 'evil-window-down
-   "wk" 'evil-window-up
-   "wl" 'evil-window-right
+    "w+" 'evil-window-increase-height
+    "w-" 'evil-window-decrease-height
+    "w:" 'evil-ex
+    "w<" 'evil-window-decrease-width
+    "w>" 'evil-window-decrease-width
+    "w_" 'evil-window-set-height
+    "wb" 'evil-window-bottom-right
+    "wc" 'evil-window-delete
+    "wd" 'evil-window-delete
+    "wh" 'evil-window-left
+    "wj" 'evil-window-down
+    "wk" 'evil-window-up
+    "wl" 'evil-window-right
 
-   ;;"wm" 'maxiz
-   "wn" 'evil-window-new
-   "wp" 'evil-window-mru
-   "wq" 'evil-quit
-   "wr" 'evil-window-rotate-downwards
-   "wR" 'evil-window-rotate-upwards
-   "ws" 'evil-window-split
-   "wt" 'evil-window-top-left
-   "wv" 'evil-window-vsplit
-   "ww" 'evil-window-next
-   "wW" 'evil-window-prev
-   "wx" 'evil-window-exchange
-   "w|" 'evil-window-set-width)
+    ;;"wm" 'maxiz
+    "wn" 'evil-window-new
+    "wp" 'evil-window-mru
+    "wq" 'evil-quit
+    "wr" 'evil-window-rotate-downwards
+    "wR" 'evil-window-rotate-upwards
+    "ws" 'evil-window-split
+    "wt" 'evil-window-top-left
+    "wv" 'evil-window-vsplit
+    "ww" 'evil-window-next
+    "wW" 'evil-window-prev
+    "wx" 'evil-window-exchange
+    "w|" 'evil-window-set-width)
 
   (general-def :states 'normal
     "C-d" 'evil-scroll-down
     "C-u" 'evil-scroll-up
     ;;
-;;    "] t" '+evil/next-frame
- ;;   "[ t" '+evil/previous-frame
+    ;;    "] t" '+evil/next-frame
+    ;;   "[ t" '+evil/previous-frame
     "] f" '+evil/next-file
     "[ f" '+evil/previous-file))
 
-
+;; evil 默认键集合
 (use-package evil-collection
   :after evil
-  :hook (after-init . evil-collection-init)
   :bind (([remap evil-show-marks] . evil-collection-consult-mark)
          ([remap evil-show-jumps] . evil-collection-consult-jump-list))
-  :config
+  :init
   (setq evil-collection-setup-debugger-keys nil
-        evil-collection-calendar-want-org-bindings t
-        evil-collection-unimpaired-want-repeat-mode-integration t))
+        evil-collection-want-find-usages-bindings t
+        evil-collection-calendar-want-org-bindings t)
+  :config
+  (evil-collection-init))
+
+;; 使用 esc 键退出
+(use-package evil-escape
+  :after evil
+  :commands evil-escape
+  :hook (after-init . evil-escape-mode)
+  :init
+  (setq evil-escape-excluded-states '(normal visual multiedit emacs motion)
+        evil-escape-excluded-major-modes '(neotree-mode treemacs-mode vterm-mode)
+        evil-escape-key-sequence "jk"
+        evil-escape-delay 0.15)
+  :general
+  (general-def :states '(insert replace visual operator) :keymaps 'global
+    "\C-g" #'evil-escape)
+
+  :config
+  (defun +evil-inhibit-escape-in-minibuffer-fn ()
+    (and (minibufferp)
+         (or (not (bound-and-true-p evil-collection-setup-minibuffer))
+             (evil-normal-state-p))))
+  ;; `evil-escape' in the minibuffer is more disruptive than helpful. That is,
+  ;; unless we have `evil-collection-setup-minibuffer' enabled, in which case we
+  ;; want the same behavior in insert mode as we do in normal buffers.
+  (add-hook 'evil-escape-inhibit-functions #'+evil-inhibit-escape-in-minibuffer-fn))
 
 (use-package evil-surround
   :hook (after-init . global-evil-surround-mode))
-
-
-(with-eval-after-load 'view
-  (general-def :keymaps 'view-mode-map
-    :states 'normal
-    [escape] 'View-quit-all))
-
-(with-eval-after-load 'man
-  (general-def :keymaps 'Man-mode-map
-    :states 'normal
-    "q" 'kill-current-buffer))
 
 (provide 'init-keybinding)
 ;;; init-evil.el ends here
