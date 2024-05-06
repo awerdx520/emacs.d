@@ -29,6 +29,9 @@
   :hook ((term-mode . shell-mode-common-init)
          (term-mode . term-mode-prompt-regexp-setup)
          (term-exec . term-mode-set-sentinel))
+  :general
+  (thomas-leader
+    "ot" 'term)
   :config
   (defun term-mode-prompt-regexp-setup ()
     "Setup `term-prompt-regexp' for term-mode."

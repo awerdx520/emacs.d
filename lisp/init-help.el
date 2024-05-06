@@ -19,46 +19,8 @@
 ;;
 ;;; Code:
 
-;; Browse devdocs.io
-(use-package devdocs
-  :general
-  (thomas-leader
-   "pl" 'devdocs-lookup)
-  :config
-  (setq devdocs-data-dir (concat thomas-data-dir "devdocs"))
-  (add-to-list 'completion-category-overrides
-               '(devdocs (styles . (flex)))))
-
-;; Quick editing in `describe-variable'
-(with-eval-after-load 'help-fns
-  (put 'help-fns-edit-variable 'disabled nil))
-
-(use-package helpful
-  :commands helpful--read-symbol
-  :hook (helpful-mode . visual-line-mode)
-  :general
-  (general-def :keymaps 'override
-    [remap describe-function] #'helpful-callable
-    [remap describe-command]  #'helpful-command
-    [remap describe-variable] #'helpful-variable
-    [remap describe-key]      #'helpful-key
-    [remap describe-symbol]   #'helpful-symbol)
-  :init
-  ;; Make `apropos' et co search more extensively. They're more useful this way.
-  (setq apropos-do-all t)
-  (with-eval-after-load 'apropos
-    ;; patch apropos buttons to call helpful instead of help
-    (dolist (fun-bt '(apropos-function apropos-macro apropos-command))
-      (button-type-put
-       fun-bt 'action
-       (lambda (button)
-         (helpful-callable (button-get button 'apropos-symbol)))))
-    (dolist (var-bt '(apropos-variable apropos-user-option))
-      (button-type-put
-       var-bt 'action
-       (lambda (button)
-         (helpful-variable (button-get button 'apropos-symbol)))))))
-
+;;
+;;; built-in help mode
 (use-package help
   :straight (:type built-in)
   :general
@@ -102,6 +64,50 @@
    "h C-p" 'view-emacs-problems
    "h C-t" 'view-emacs-todo
    "h C-w" 'describe-no-warranty))
+;; Browse devdocs.io
+(use-package devdocs
+  :general
+  (thomas-leader
+   "pl" 'devdocs-lookup)
+  :config
+  (setq devdocs-data-dir (concat thomas-data-dir "devdocs"))
+  (add-to-list 'completion-category-overrides
+               '(devdocs (styles . (flex)))))
+
+;; Quick editing in `describe-variable'
+(with-eval-after-load 'help-fns
+  (put 'help-fns-edit-variable 'disabled nil))
+
+;; colorful help mode
+(use-package helpful
+  :general
+  (general-def :keymaps 'override
+    [remap describe-function] #'helpful-callable
+    [remap describe-command]  #'helpful-command
+    [remap describe-variable] #'helpful-variable
+    [remap describe-key]      #'helpful-key
+    [remap describe-symbol]   #'helpful-symbol)
+  (general-def :keymaps '(help-mode-map helpful-mode-map)
+    :states 'normal
+    "q" 'quit-window
+    [escape] 'quit-window
+    "Q" 'kill-current-buffer)
+  :init
+  ;; Make `apropos' et co search more extensively. They're more useful this way.
+  (setq apropos-do-all t)
+  (with-eval-after-load 'apropos
+    ;; patch apropos buttons to call helpful instead of help
+    (dolist (fun-bt '(apropos-function apropos-macro apropos-command))
+      (button-type-put
+       fun-bt 'action
+       (lambda (button)
+         (helpful-callable (button-get button 'apropos-symbol)))))
+    (dolist (var-bt '(apropos-variable apropos-user-option))
+      (button-type-put
+       var-bt 'action
+       (lambda (button)
+         (helpful-variable (button-get button 'apropos-symbol)))))))
+
 
 (provide 'init-help)
 ;;; init-help.el ends here
