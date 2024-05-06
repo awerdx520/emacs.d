@@ -357,6 +357,7 @@ This includes everything that calls `read--expression', e.g.
         tramp-completion-reread-directory-timeout 60
         tramp-verbose 1
         tramp-default-method "ssh"
+        tramp-persistency-file-name (expand-file-name "tramp" thomas-cache-dir)
         vc-ignore-dir-regexp (format "%s\\|%s\\|%s"
                                      vc-ignore-dir-regexp
                                      tramp-file-name-regexp

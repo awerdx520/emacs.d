@@ -27,6 +27,14 @@
         evil-ex-complete-emacs-commands nil
         evil-ex-interactive-search-highlight 'selected-window)
 
+  ;; 为不同模式定义不同光标颜色，在 terminal 模式下不能使用
+  (setq evil-emacs-state-cursor '("red" box)
+        evil-normal-state-cursor '("green" box)
+        evil-visual-state-cursor '("orange" box)
+        evil-insert-state-cursor '("red" bar)
+        evil-replace-state-cursor '("red" bar)
+        evil-operator-state-cursor '("red" hollow))
+
   ;; when `visual-line-mode' enabled, exchange j/k with gj/gk
   (setq evil-respect-visual-line-mode t
         evil-want-integration t
@@ -36,35 +44,41 @@
         evil-want-C-u-scroll t
         evil-want-abbrev-expand-on-insert-exit nil
         evil-symbol-word-search t)
+  (setq evil-goto-definition-functions
+        '(lsp-bridge-find-def evil-goto-definition-xref))
   :general
   (thomas-leader
-    "w+" 'evil-window-increase-height
-    "w-" 'evil-window-decrease-height
-    "w:" 'evil-ex
-    "w<" 'evil-window-decrease-width
-    "w>" 'evil-window-decrease-width
-    "w_" 'evil-window-set-height
-    "wb" 'evil-window-bottom-right
-    "wc" 'evil-window-delete
-    "wd" 'evil-window-delete
-    "wh" 'evil-window-left
-    "wj" 'evil-window-down
-    "wk" 'evil-window-up
-    "wl" 'evil-window-right
+   "w+" 'evil-window-increase-height
+   "w-" 'evil-window-decrease-height
+   "w:" 'evil-ex
+   "w<" 'evil-window-decrease-width
+   "w>" 'evil-window-decrease-width
+   "w_" 'evil-window-set-height
+   "wb" 'evil-window-bottom-right
+   "wc" 'evil-window-delete
+   "wd" 'evil-window-delete
+   "wh" 'evil-window-left
+   "wj" 'evil-window-down
+   "wk" 'evil-window-up
+   "wl" 'evil-window-right
 
-    ;;"wm" 'maxiz
-    "wn" 'evil-window-new
-    "wp" 'evil-window-mru
-    "wq" 'evil-quit
-    "wr" 'evil-window-rotate-downwards
-    "wR" 'evil-window-rotate-upwards
-    "ws" 'evil-window-split
-    "wt" 'evil-window-top-left
-    "wv" 'evil-window-vsplit
-    "ww" 'evil-window-next
-    "wW" 'evil-window-prev
-    "wx" 'evil-window-exchange
-    "w|" 'evil-window-set-width)
+   ;;"wm" 'maxiz
+   "wn" 'evil-window-new
+   "wp" 'evil-window-mru
+   "wq" 'evil-quit
+   "wr" 'evil-window-rotate-downwards
+   "wR" 'evil-window-rotate-upwards
+   "ws" 'evil-window-split
+   "wt" 'evil-window-top-left
+   "wv" 'evil-window-vsplit
+   "ww" 'evil-window-next
+   "wW" 'evil-window-prev
+   "wx" 'evil-window-exchange
+   "w|" 'evil-window-set-width)
+
+  (general-def :states 'normal :keymaps 'lsp-bridge-ref-mode-map
+    "RET" 'lsp-bridge-ref-open-file-and-stay
+    "SPC" 'lsp-bridge-ref-open-file)
 
   (general-def :states 'normal
     "C-d" 'evil-scroll-down
@@ -73,7 +87,33 @@
     ;;    "] t" '+evil/next-frame
     ;;   "[ t" '+evil/previous-frame
     "] f" '+evil/next-file
-    "[ f" '+evil/previous-file))
+    "[ f" '+evil/previous-file)
+
+  (general-def :states '(normal visual)
+    "gd" 'lsp-bridge-find-def
+    "gD" 'lsp-bridge-find-references
+    "gi" 'lsp-bridge-find-impl
+    "gf" 'project-find-file
+    "gt" 'lsp-bridge-find-type-def))
+
+(use-package evil-escape
+  :after evil
+  :hook (after-init . evil-escape-mode)
+  :init
+  (setq evil-escape-excluded-states '(normal visual multiedit emacs motion)
+        evil-escape-excluded-major-modes '(neotree-mode treemacs-mode vterm-mode)
+        evil-escape-key-sequence "jk"
+        evil-escape-delay 0.15)
+  (evil-define-key* '(insert replace visual operator) 'global "\C-g" #'evil-escape)
+  :config
+  ;; `evil-escape' in the minibuffer is more disruptive than helpful. That is,
+  ;; unless we have `evil-collection-setup-minibuffer' enabled, in which case we
+  ;; want the same behavior in insert mode as we do in normal buffers.
+  (defun +evil-inhibit-escape-in-minibuffer-fn ()
+    (and (minibufferp)
+         (or (not (bound-and-true-p evil-collection-setup-minibuffer))
+             (evil-normal-state-p))))
+  (add-hook 'evil-escape-inhibit-functions #'+evil-inhibit-escape-in-minibuffer-fn))
 
 ;; evil 默认键集合
 (use-package evil-collection
@@ -113,6 +153,9 @@
 
 (use-package evil-surround
   :hook (after-init . global-evil-surround-mode))
+
+(use-package evil-exchange
+  :commands evil-exchange)
 
 (provide 'init-keybinding)
 ;;; init-evil.el ends here
