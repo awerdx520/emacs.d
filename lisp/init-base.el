@@ -188,7 +188,6 @@
     "oA" 'org-agenda
     "of" 'make-frame
     "oF" 'select-frame-by-name
-    "ot" 'eshell
 
     ;; Project
     "p" '(:ignore t :wk "project")
