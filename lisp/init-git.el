@@ -1,6 +1,6 @@
 ;;; init-git.el --- Git is awesome -*- lexical-binding: t -*-
-
-;; Commentary:
+;;
+;;; Commentary:
 ;;
 ;; git-messenger has been superseded by {C-x v h} (`vc-region-history')
 
@@ -12,32 +12,14 @@
 (use-package magit
   :after transient
   :hook (git-commit-setup . git-commit-turn-on-flyspell)
-  :general
-  (thomas-leader
-    ;;
-    "g." 'magit-file-dispatch
-    "g/" 'magit-dispatch
-    "gb" 'magit-branch-checkout
-    "gC" 'magit-clone
-    "gD" 'magit-file-delete
-    "gg" 'magit-status
-    "gG" 'magit-status-here
-    "gL" 'magit-log-buffer-file
-    "gS" 'magit-stage-buffer-file
-    "gU" 'magit-unstage-buffer-file
-    ;;
-    "pt" 'magit-todos-list) ;; 列出项目 TODO
   :config
   (setq magit-diff-refine-hunk t
         magit-diff-paint-whitespace nil
-        magit-ediff-dwim-show-on-hunks t)
+        magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1)
   (add-hook 'magit-process-model-hook #'goto-address-mode))
 
 (use-package magit-todos
   :after magit
-  :general
-  (general-def :keymaps 'magit-todos-section-map
-    "j" nil)
   :config
   (magit-todos-mode +1)
   ;; make colon optional

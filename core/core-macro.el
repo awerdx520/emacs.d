@@ -1,4 +1,4 @@
-;;; init-macro.el 自定义宏 -*- lexical-binding: t; -*-
+;;; core-macro.el 自定义宏 -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2024 tangxin
 ;;
@@ -25,11 +25,5 @@
   "Append LISTS to SYM in place."
   `(setq ,sym (append ,sym ,@lists)))
 
-;;;###autoload
-(defmacro wsl--open-with (id &optional app dir)
-  `(defun ,(intern (format "wsl/%s" id)) ()
-     (interactive)
-     (wsl-open-with ,app ,dir)))
-
-(provide 'init-macro)
+(provide 'core-macro)
 ;;; init-macro.el ends here

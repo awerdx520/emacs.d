@@ -1,4 +1,4 @@
-;; init-const.el --- Define constants.	-*- lexical-binding: t -*-
+;; core-const.el --- Define constants.	-*- lexical-binding: t -*-
 
 ;; Copyright (C) 2006-2024 Vincent Zhang
 
@@ -50,21 +50,23 @@
        (string-match "-[Mm]icrosoft" operating-system-release))
   "Are we running on a GNU/Linux system?")
 
-(defvar thomas-emacs-dir user-emacs-directory
-  "The path to the currently loaded .emacs.d directory. Must end with a slash.")
+(defconst thomas-emacs-dir (file-truename user-emacs-directory)
+  "The path to the currently loaded .emacs.d directory.
 
-(defvar thomas-local-dir (concat thomas-emacs-dir ".local/")
+Must end with a slash.")
+
+(defconst thomas-local-dir (concat thomas-emacs-dir ".local/")
   "Root directory for local storage.
 
 Use this as a storage location for this system's installation of thomas Emacs.")
 
-(defvar thomas-data-dir (concat thomas-local-dir "etc/")
+(defconst thomas-data-dir (concat thomas-local-dir "etc/")
   "Where thomas stores its global data files.
 
 Data files contain shared and long-lived data that thomas, Emacs, and their
 packages require to function correctly or at all.")
 
-(defvar thomas-cache-dir (concat thomas-local-dir "cache/")
+(defconst thomas-cache-dir (concat thomas-local-dir "cache/")
   "Where thomas stores its global cache files.
 
 Cache files represent unessential data that shouldn't be problematic when
@@ -72,16 +74,26 @@ deleted (besides, perhaps, a one-time performance hit), lack portability (and so
 shouldn't be copied to other systems/configs), and are regenerated when needed,
 without user input (e.g. a `thomas sync`).")
 
-(defvar thomas-state-dir (concat thomas-local-dir "state/")
+(defconst thomas-state-dir (concat thomas-local-dir "state/")
   "Where Doom stores its global state files.
+
 State files contain unessential, unportable, but persistent data which, if lost
 won't cause breakage, but may be inconvenient as they cannot be automatically
 regenerated or restored. For example, a recently-opened file list is not
 essential, but losing it means losing this record, and restoring it requires
 revisiting all those files.")
 
+(defconst thomas-core-autoload-dir (expand-file-name "core/autoload/" thomas-emacs-dir)
+  "Core autoload directory.")
 
-(provide 'init-const)
+(defconst thomas-generate-autoload-dir (expand-file-name "@/" thomas-data-dir)
+  "`autoload' 文件生成目录位置.")
+
+(defconst thomas-autoload-file (expand-file-name  "core-autoloads.el" thomas-generate-autoload-dir)
+  "该文件负责通知 `emacs' 在 `core/autoload/*.el' 中哪里可以找到所有自动加载函数.")
+
+
+(provide 'core-const)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; init-const.el ends here

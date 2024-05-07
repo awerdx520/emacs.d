@@ -1,16 +1,16 @@
 ;; -*- lexical-binding: t -*-
 
 (use-package rime
+  :custom
+  (rime-user-data-dir (concat thomas-cache-dir "rime/"))
   :init
-  (setq default-input-method "rime"
-        rime-user-data-dir (concat thomas-cache-dir "rime/"))
+  (setq default-input-method "rime")
   :general
-  (general-def rime-active-mode-map
-    "M-j" 'rime-inline-ascii)
-
-  (general-def rime-mode-map
-    "M-j" 'rime-force-enable
-    "C-~" 'rime-send-keybinding)
+  (:keymaps 'rime-active-mode-map
+            "M-j" 'rime-inline-ascii)
+  (:keymaps 'rime-mode-map
+            "M-j" 'rime-force-enable
+            "C-~" 'rime-send-keybinding)
   :config
   (setq rime-show-candidate 'posframe ; 使用 posframe 展示 candidate
         rime-posframe-properties (list :internal-border-width 5
@@ -29,6 +29,7 @@
     (interactive)
     (rime-commit1)
     (evil-normal-state))
+
   ;; TODO 当前自动上屏功能不用
   (general-def rime-active-mode-map "<Esc>" 'rime-commit1-and-evil-normal)
 
@@ -45,8 +46,8 @@
                                   rime-predicate-current-uppercase-letter-p ; 将要输入的为大写字母时
                                   rime-predicate-space-after-cc-p ; 在中文字符且有空格之后
                                   ;; 代码
-                                  rime-predicate-prog-in-code-p ; 在 prog-mode 和 conf-mode 中除了注释和引号内字符串之外的区域
-                                  )))
+                                  rime-predicate-prog-in-code-p))) ; 在 prog-mode 和 conf-mode 中除了注释和引号内字符串之外的区域
+
 
 (use-package pangu-spacing
   :hook ((text-mode . pangu-spacing-mode)
@@ -59,8 +60,7 @@
   :init (setq ace-pinyin-use-avy t)
   :custom-face (aw-leading-char-face ((t (:foreground "white" :background "#2a6041")
                                          :weight bold :height 2.5 :box (:line-width 10 :color "#2a6041"))))
-  :config
-  (ace-pinyin-global-mode t))
+  :config (ace-pinyin-global-mode t))
 
 (use-package evil-pinyin
   :after evil

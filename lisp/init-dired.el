@@ -6,10 +6,8 @@
 ;;; Code:
 (use-package dired
   :straight (:type built-in)
-  :general
-  (general-def :keymaps 'dired-mode-map
-    :states '(normal global)
-    "C-c C-e" 'wdired-change-to-wdired-mode)
+  :general (:states '(normal global) :keymaps 'dired-mode-map
+                    "C-c C-e" 'wdired-change-to-wdired-mode)
   :init
   (setq dired-dwim-target t ; suggest a target for moving/copying intelligently
         dired-hide-details-hide-symlink-targets nil
@@ -68,6 +66,9 @@
   (setq dired-vc-rename-file t
         dired-do-revert-buffer t
         dired-create-destination-dirs 'ask))
+;;
+(use-package dired-rsync
+  :general (:keymaps 'dired-mode-map "C-c C-r" 'dired-rsync))
 
 ;; Make dired colorful
 (use-package diredfl
@@ -107,14 +108,18 @@
             ("\\.html?\\'" ,cmd)
             ("\\.md\\'" ,cmd))))
   :general
-  (thomas-localleader :keymaps 'dired-mode-map
-                      "h" 'dired-omit-mode))
+  (thomas-localleader-define :keymaps 'dired-mode-map
+                             "h" 'dired-omit-mode))
+
+(use-package dired-git-info
+  :after dired
+  :general (:states '(normal global) :keymaps 'dired-mode-map
+                    ")" 'dired-git-info-mode))
 
 ;; 使用 fd 搜索
 (use-package fd-dired
   :when (executable-find "fd")
-  :init
-  (global-set-key [remap find-dired] #'fd-dired))
+  :bind ([remap find-dired] . fd-dired))
 
 (provide 'init-dired)
 ;;; init-dired.el ends here

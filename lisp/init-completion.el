@@ -32,16 +32,15 @@
   (setq read-extended-command-predicate #'command-completion-default-include-p))
 
 (use-package vertico
-  :hook (after-init . vertico-mode)
+  :hook (thomas-first-input . vertico-mode)
   :general
-  (thomas-leader "'" 'vertico-repeat)
-  (general-def :states 'insert :keymaps 'vertico-map
-    "DEL" 'vertico-directory-delete-char
-    "M-RET" 'vertico-exit-input
-    "C-j"   'vertico-next
-    "C-M-j" 'vertico-next-group
-    "C-k"   'vertico-previous
-    "C-M-k" 'vertico-previous-group)
+  (:states 'insert :keymaps 'vertico-map
+           "DEL" 'vertico-directory-delete-char
+           "M-RET" 'vertico-exit-input
+           "C-j"   'vertico-next
+           "C-M-j" 'vertico-next-group
+           "C-k"   'vertico-previous
+           "C-M-k" 'vertico-previous-group)
   :config
   (setq vertico-sort-function #'vertico-sort-history-length-alpha
         vertico-cycle t
@@ -86,74 +85,47 @@
               ("C-;"     . embark-act)
               ("C-c C-c" . embark-export)
               ("C-c C-o" . embark-collect))
-  :general
-  (thomas-leader
-    "a" '(embark-act :wk "Actions"))
   :config
   (setq prefix-help-command 'embark-prefix-help-command))
 
 ;;
 ;;; Useful search and navigation commands
 (use-package consult
-  :general
-  (thomas-leader
-    "." 'consult-find
-    "RET" 'consult-bookmark
-    ;;
-    "bb" 'consult-buffer
-    "bB" 'consult-buffer-other-window
-    ;;
-    "fr" 'consult-recent-file
-
-    ;;
-    "ht" 'consult-theme
-    ;;
-    "pb" 'consult-project-buffer ;; 切换到项目中已经打开的 Buffer
-    "pg" 'consult-git-grep
-    ;;
-    "ir" 'consult-register
-    ;;
-    "sf" 'consult-locate
-    "si" 'consult-imenu
-    "sI" 'consult-imenu-multi
-    "sm" 'consult-bookmark
-    "sr" 'consult-mark)
   :config
   ;; Optionally configure the register formatting. This improves the register
   ;; preview for `consult-register', `consult-register-load',
   ;; `consult-register-store' and the Emacs built-ins.
   (setq register-preview-delay 0.5
         register-preview-function #'consult-register-format)
-
-  ;; Optionally tweak the register preview window.
-  ;; This adds thin lines, sorting and hides the mode line of the window.
-  (advice-add #'register-preview :override #'consult-register-window)
-  :config
+  ;;
   (setq consult-fontify-preserve nil
         consult-async-min-input 2
         consult-async-refresh-delay 0.15
         consult-async-input-throttle 0.2
-        consult-async-input-debounce 0.1))
+        consult-async-input-debounce 0.1)
+  ;; Optionally tweak the register preview window.
+  ;; This adds thin lines, sorting and hides the mode line of the window.
+  (advice-add #'register-preview :override #'consult-register-window))
+
 
 ;;
 (use-package consult-dir
   :defer t
   :general
-  (general-def [remap list-directory] #'consult-dir)
-  (general-def vertico-map
-    "C-x C-d" #'consult-dir
-    "C-x C-j" #'consult-dir-jump-file)
-  :config)
+  (:keymaps 'global [remap list-directory] #'consult-dir)
+  (:keymaps 'vertico-map
+            "C-x C-d" #'consult-dir
+            "C-x C-j" #'consult-dir-jump-file))
+
 
 ;; yassnippet
 (use-package consult-yasnippet
-  :defer t
-  :general (thomas-leader "is" #'consult-yasnippet))
+  :defer t)
 
 ;; flycheck
 (use-package consult-flycheck
-  :after (consult flycheck)
-  :general (thomas-leader "cx" #'consult-flycheck))
+  :after (consult flycheck))
+
 
 ;; Consult users will also want the embark-consult package.
 (use-package embark-consult
@@ -179,11 +151,12 @@ Supports exportion consult-grep to wgrep, file to wdeired, and consult-localtion
 
   (eval-after-load 'consult
     '(eval-after-load 'embark
-       '(progn
-          (require 'embark-consult)
-          (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))))
-
-  (define-key minibuffer-local-map (kbd "C-c C-e") 'embark-export-write))
+      '(progn
+         (require 'embark-consult)
+         (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))))
+  :bind
+  (:map minibuffer-local-map
+        ("C-c C-e" . embark-export-write)))
 
 (use-package wgrep
   :hook (grep-setup . wgrep-setup)

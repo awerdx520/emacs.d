@@ -21,12 +21,9 @@
 
 ;; Bookmark
 (use-package bookmark
-  :general
-  (thomas-leader
-   "bm" 'bookmark-set
-   "bM" 'bookmark-delete)
+  :custom
+  (bookmark-default-file (concat thomas-data-dir "bookmarks"))
   :config
-  (setq bookmark-default-file (concat thomas-data-dir "bookmarks"))
   (with-no-warnings
     ;; Display icons for bookmarks
     (defun my-bookmark-bmenu--revert ()

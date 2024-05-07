@@ -4,7 +4,6 @@
 ;;
 
 ;;; Code:
-
 (defun thomas/lsp-bridge-get-single-lang-server-by-project (project-path filepath)
   "Lsp-bridge virtualenv support.
 
