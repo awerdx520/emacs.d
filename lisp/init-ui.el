@@ -18,118 +18,18 @@
 ;;
 ;;
 ;;; Code:
+(require 'core-const)
 
-;;
-;;; Scrolling
-(setq hscroll-margin 2
-      hscroll-step 1
-      ;; Emacs spends too much effort recentering the screen if you scroll the
-      ;; cursor more than N lines past window edges (where N is the settings of
-      ;; `scroll-conservatively'). This is especially slow in larger files
-      ;; during large-scale scrolling commands. If kept over 100, the window is
-      ;; never automatically recentered. The default (0) triggers this too
-      ;; aggressively, so I've set it to 10 to recenter if scrolling too far
-      ;; off-screen.
-      scroll-conservatively 10
-      scroll-margin 0
-      scroll-preserve-screen-position t
-      ;; Reduce cursor lag by a tiny bit by not auto-adjusting `window-vscroll'
-      ;; for tall lines.
-      auto-window-vscroll nil
-      ;; mouse
-      mouse-wheel-scroll-amount '(2 ((shift) . hscroll))
-      mouse-wheel-scroll-amount-horizontal 2)
-
-
-;;
-;;; Cursor
-
-;; The blinking cursor is distracting, but also interferes with cursor settings
-;; in some minor modes that try to change it buffer-locally (like treemacs) and
-;; can cause freezing for folks (esp on macOS) with customized & color cursors.
-(blink-cursor-mode -1)
-
-;; Don't blink the paren matching the one at point, it's too distracting.
-(setq blink-matching-paren nil)
-
-;; Don't stretch the cursor to fit wide characters, it is disorienting,
-;; especially for tabs.
-(setq x-stretch-cursor nil)
-
-
-;;
-;;; Fringes
-
-;; Reduce the clutter in the fringes; we'd like to reserve that space for more
-;; useful information, like git-gutter and flycheck.
-(setq indicate-buffer-boundaries nil
-      indicate-empty-lines nil
-      left-margin-width 2
-      right-margin-width 2)
-
-;; 设置边缘 finge 宽度
-(when (display-graphic-p)
-  (set-fringe-mode 2))
-
-;;
-;;; Line numbers
-
-;; Explicitly define a width to reduce the cost of on-the-fly computation
-(setq-default display-line-numbers-width 3)
-
-;; Show absolute line numbers for narrowed regions to make it easier to tell the
-;; buffer is narrowed, and where you are, exactly.
-(setq-default display-line-numbers-widen t)
-
-(use-package page-break-lines
-  :hook (dashboard-mode . page-break-lines-mode))
-
-(use-package dashboard
-  :custom-face
-  (dashboard-items-face ((t (:weight normal))))
-  (dashboard-heading-face ((t (:weight bold))))
-  :init
-  ;; Format: "(icon title help action face prefix suffix)"
-  (setq dashboard-navigator-buttons `(((,(if (fboundp 'nerd-icons-octicon)
-                                             (nerd-icons-octicon "nf-oct-mark_github")
-                                           "¡ï")
-                                        "GitHub" "Browse" (lambda (&rest _) (browse-url homepage-url)))
-
-                                       (,(if (fboundp 'nerd-icons-octicon)
-                                             (nerd-icons-octicon "nf-oct-download")
-                                           "?")
-                                        "Upgrade" "Upgrade packages synchronously"
-                                        (lambda (&rest _) (package-upgrade-all nil)) success))))
+(use-package doom-themes
+  :demand t
+  ;; 包含大量漂亮的主题，
+  :hook ((thomas-load-theme . doom-themes-org-config)
+         (thomas-load-theme . doom-themes-visual-bell-config))
   :config
-  ;; 在 Server 模式下，创建 frame 时显示仪表盘
-  (setq initial-buffer-choice (lambda ()
-                                (get-buffer-create "*dashboard*")))
-  ;;
-  (setq dashboard-startup-banner '2
-        dashboard-projects-backend 'project-el)
-  ;;
-  (setq dashboard-set-init-info t
-        dashboard-set-navigator t)
-  (setq dashboard-items '((recents   . 5)
-                          (projects  . 7)
-                          (agenda . 5)
-                          (bookmarks . 5)))
-  (setq dashboard-page-separator "\n\f\n")
-  ;; TODO 设置 heading icon 存在找不到 nero-icons 字体的问题
-  (setq dashboard-set-heading-icons t
-        dashboard-set-file-icons t
-        dashboard-icon-type 'nerd-icons
-        dashboard-heading-icons '((agenda . "nf-oct-calendar")
-                                  (recents . "nf-oct-file")
-                                  (projects . "nf-oct-project")
-                                  (bookmarks . "nf-oct-bookmark")))
-  ;; 启动 dashboard 设置
-  (dashboard-setup-startup-hook))
-
-(use-package hide-mode-line
-  ;; Hide the mode line in completion popups and MAN pages because they serve
-  ;; little purpose there, and is better hidden.
-  :hook (completion-list-mode Man-mode))
+  (let ((theme (if (display-graphic-p)
+                   'doom-vibrant
+                 'doom-one-light)))
+    (load-theme theme t)))
 
 (use-package doom-modeline
   :hook (after-init . doom-modeline-mode)
@@ -157,9 +57,63 @@
     :after evil
     :config (global-anzu-mode +1)))
 
+
+(use-package dashboard
+  :demand t
+  :custom-face
+  (dashboard-items-face ((t (:weight normal))))
+  (dashboard-heading-face ((t (:weight bold))))
+  :general
+  (:states 'normal :keymaps 'dashboard-mode-map
+           "TAB" 'widget-forward
+           "RET" 'widget-button-press
+           "g" 'dashboard-refresh-buffer
+           "}" 'dashboard-next-section
+           "{" 'dashboard-previous-section)
+  :config
+  ;; 在 Server 模式下，创建 frame 时显示仪表盘
+  (setq initial-buffer-choice (lambda ()
+                                (get-buffer-create "*dashboard*"))
+        ;;
+        dashboard-startup-banner '2
+        dashboard-projects-backend 'project-el
+        ;;
+        dashboard-set-init-info t
+        dashboard-set-navigator t
+        ;;
+        dashboard-page-separator "\n\f\n")
+  ;;
+  (setq dashboard-items '((recents   . 5)
+                          (projects  . 7)
+                          (agenda . 5)
+                          (bookmarks . 5)))
+
+  ;; TODO 设置 heading icon 存在找不到 nero-icons 字体的问题
+  (setq dashboard-set-heading-icons t
+        dashboard-set-file-icons t
+        dashboard-icon-type 'nerd-icons
+        dashboard-heading-icons '((agenda . "nf-oct-calendar")
+                                  (recents . "nf-oct-file")
+                                  (projects . "nf-oct-project")
+                                  (bookmarks . "nf-oct-bookmark")))
+  ;; 启动 dashboard 设置
+  (dashboard-setup-startup-hook))
+
+
+
+(use-package page-break-lines
+  :hook (dashboard-mode . page-break-lines-mode))
+
+
+(use-package hide-mode-line
+  ;; Hide the mode line in completion popups and MAN pages because they serve
+  ;; little purpose there, and is better hidden.
+  :hook (completion-list-mode Man-mode))
+
 ;;
 ;;; 一些增强包
 (use-package hl-line
+  :straight (:type built-in)
   ;; 高亮当前行
   :hook (after-init . global-hl-line-mode)
   :init
@@ -211,14 +165,6 @@
   (when (display-graphic-p)
     (setq nerd-icons-font-family "Symbols Nerd Font Mono")))
 
-(use-package doom-themes
-  ;; 包含大量漂亮的主题，
-  :config
-  (doom-themes-org-config)
-  (let ((theme (if (display-graphic-p)
-                   'doom-vibrant
-                 'doom-one-light)))
-    (load-theme theme t)))
 
 (use-package paren
   ;; 高亮显示匹配的括号
@@ -248,6 +194,11 @@
   :config (setq highlight-numbers-generic-regexp
                 "\\_<[[:digit:]]+\\(?:\\.[0-9]*\\)?\\_>"))
 
+;; Colorize color names in buffers
+(use-package rainbow-mode
+  :diminish rainbow-mode
+  :hook ((emacs-lisp-mode conf-space-mode) . rainbow-mode))
+
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode)
   :config
@@ -259,70 +210,38 @@
 
 ;; Highlight TODO
 (use-package hl-todo
-  :hook (after-init . global-hl-todo-mode))
-
-
-(use-package transient
-  :straight (:type built-in)
-  :init
-  (setq transient-levels-file (concat thomas-data-dir "transient/levels")
-        transient-values-file (concat thomas-data-dir "transient/values")
-        transient-history-file (concat thomas-data-dir "transient/history"))
+  :hook (after-init . global-hl-todo-mode)
   :config
-  (transient-define-prefix scroll-other-window-menu ()
-    "Scroll other window."
-    :transient-suffix     'transient--do-stay
-    [["Line"
-      ("j" "next line" scroll-other-window-line)
-      ("k" "previous line" scroll-other-window-down-line)]
-     ["Page"
-      ("C-f" "next page" scroll-other-window)
-      ("C-b" "previous page" scroll-other-window-down)]])
-
-  (defun scroll-other-window-line ()
-    "Scroll up of one line in other window."
-    (interactive)
-    (scroll-other-window 1))
-
-  (defun scroll-other-window-down-line ()
-    "Scroll down of one line in other window."
-    (interactive)
-    (scroll-other-window-down 1))
-
-  (transient-define-prefix background-opacity-menu ()
-    "Set frame background opacity."
-    [:description
-     background-opacity-get-alpha-str
-     ("+" "increase" background-opacity-inc-alpha :transient t)
-     ("-" "decrease" background-opacity-dec-alpha :transient t)
-     ("=" "set to ?" background-opacity-set-alpha)])
-
-  (defun background-opacity-inc-alpha (&optional n)
-    (interactive)
-    (let* ((alpha (background-opacity-get-alpha))
-           (next-alpha (cl-incf alpha (or n 1))))
-      (set-frame-parameter nil 'alpha-background next-alpha)))
-
-  (defun background-opacity-dec-alpha ()
-    (interactive)
-    (background-opacity-inc-alpha -1))
-
-  (defun background-opacity-set-alpha (alpha)
-    (interactive "nSet to: ")
-    (set-frame-parameter nil 'alpha-background alpha))
-
-  (defun background-opacity-get-alpha ()
-    (pcase (frame-parameter nil 'alpha-background)
-      ((pred (not numberp)) 100)
-      (`,alpha alpha)))
-
-  (defun background-opacity-get-alpha-str ()
-    (format "Alpha %s%%" (background-opacity-get-alpha))))
+  (setq hl-todo-highlight-punctuation ":"
+        hl-todo-keyword-faces `(("BUG" error bold)
+                                ("FIXME" error bold)
+                                ("TODO" warning bold)
+                                ("NOTE" success bold)
+                                ("HACK" font-lock-constant-face bold)
+                                ("REVIEW" font-lock-keyword-face bold)
+                                ("DEPRECATED" font-lock-doc-face bold))))
 
 (use-package symbol-overlay
-  :hook (prog-mode . symbol-overlay-mode)
+  :hook (((prog-mode yaml-mode) . symbol-overlay-mode)
+         (iedit-mode . turn-off-symbol-overlay)
+         (iedit-mode-end . turn-on-symbol-overlay))
   :config
-  (setq symbol-overlay-scope t))
+  (setq symbol-overlay-scope t)
+  ;; Disable symbol highlighting while selecting
+  (defun turn-off-symbol-overlay (&rest _)
+    "Turn off symbol highlighting."
+    (interactive)
+    (symbol-overlay-mode -1))
+  (advice-add #'set-mark :after #'turn-off-symbol-overlay)
+
+  (defun turn-on-symbol-overlay (&rest _)
+    "Turn on symbol highlighting."
+    (interactive)
+    (when (derived-mode-p 'prog-mode 'yaml-mode)
+      (symbol-overlay-mode 1)))
+  (advice-add #'deactivate-mark :after #'turn-on-symbol-overlay))
+
+
 
 (provide 'init-ui)
 ;;; init-ui.el ends here

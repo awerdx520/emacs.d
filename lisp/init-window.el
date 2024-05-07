@@ -19,34 +19,6 @@
 ;;
 ;;; Code:
 
-;;
-;;; Windows/frames
-
-;; A simple frame title
-(setq frame-title-format '("%b – Thomas Emacs")
-      icon-title-format frame-title-format)
-
-
-;; Don't resize the frames in steps; it looks weird, especially in tiling window
-;; managers, where it can leave unseemly gaps.
-(setq frame-resize-pixelwise t)
-
-;; But do not resize windows pixelwise, this can cause crashes in some cases
-;; when resizing too many windows at once or rapidly.
-(setq window-resize-pixelwise nil)
-
-;; UX: GUIs are inconsistent across systems, desktop environments, and themes,
-;;   and don't match the look of Emacs. They also impose inconsistent shortcut
-;;   key paradigms. I'd rather Emacs be responsible for prompting.
-(setq use-dialog-box nil)
-(when (bound-and-true-p tooltip-mode)
-  (tooltip-mode -1))
-
-;; UX: Favor vertical splits over horizontal ones. Monitors are trending toward
-;;   wide, rather than tall.
-(setq split-width-threshold 160
-      split-height-threshold nil)
-
 (use-package winner
   ;; undo/redo changes to Emacs' window layout
   :preface (defvar winner-dont-bind-my-keys t) ; I'll bind keys myself
@@ -63,7 +35,7 @@
   (global-set-key [remap other-window] #'ace-window)
   :custom-face
   (aw-leading-char-face ((t (:foreground "white" :background "#2a6041"
-      :weight bold :height 2.5 :box (:line-width 10 :color "#2a6041")))))
+                             :weight bold :height 2.5 :box (:line-width 10 :color "#2a6041")))))
   :config
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
         aw-dispatch-always nil
@@ -72,8 +44,6 @@
         aw-scope 'frame
         aw-background t))
 
-;; Posframe can pop up a frame at point, this posframe is a child-frame connected to its root window’s buffer.
-(use-package posframe)
 
 ;; 弹出窗口管理
 (use-package popper
@@ -139,26 +109,27 @@
           "\\*Agenda Commands\\*" "\\*Org Select\\*" "\\*Capture\\*" "^CAPTURE-.*\\.org*"
           "\\*Gofmt Errors\\*$" "\\*Go Test\\*$" godoc-mode
           "\\*docker-containers\\*" "\\*docker-images\\*" "\\*docker-networks\\*" "\\*docker-volumes\\*"
-          "\\*prolog\\*" inferior-python-mode inf-ruby-mode swift-repl-mode
-          ;; "\\*rustfmt\\*$"
-          ;;rustic-compilation-mode rustic-cargo-clippy-mode
-          ;;rustic-cargo-outdated-mode
-          ;; rustic-cargo-test-moed
-          ))
+          "\\*prolog\\*" inferior-python-mode inf-ruby-mode swift-repl-mode))
+  ;; "\\*rustfmt\\*$"
+  ;;rustic-compilation-mode rustic-cargo-clippy-mode
+  ;;rustic-cargo-outdated-mode
+  ;; rustic-cargo-test-moed
+
 
   (when (display-grayscale-p)
     (setq popper-mode-line
           '(:eval
             (concat
              (propertize " " 'face 'mode-line-emphasis)
-             (all-the-icons-octicon "pin" :height 0.9 :v-adjust 0.0 :face 'mode-line-emphasis)
+             (nerd-icons-octicon "nf-oct-pin" :height 0.9 :v-adjust 0.0 :face 'mode-line-emphasis)
              (propertize " " 'face 'mode-line-emphasis)))))
 
   (setq popper-echo-dispatch-actions t
         popper-group-function nil)
   :config
-  (popper-echo-mode 1)
+  (popper-echo-mode +1)
 
+  ;;
   (with-no-warnings
     (defun my-popper-fit-window-height (win)
       "Determine the height of popup window WIN by fitting it to the buffer's content."

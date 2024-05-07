@@ -19,73 +19,33 @@
 ;;
 ;;; Code:
 
-;;
-;;; Undo
-(use-package undo-fu
-  :hook (after-init . undo-fu-mode)
-  :config
-  ;; Increase undo history limits to reduce likelihood of data loss
-  (setq undo-limit 400000           ; 400kb (default is 160kb)
-        undo-strong-limit 3000000   ; 3mb   (default is 240kb)
-        undo-outer-limit 48000000)  ; 48mb  (default is 24mb)
+(require 'core-const)
 
-  (define-minor-mode undo-fu-mode
-    "Enables `undo-fu' for the current session."
-    :keymap (let ((map (make-sparse-keymap)))
-              (define-key map [remap undo] #'undo-fu-only-undo)
-              (define-key map [remap redo] #'undo-fu-only-redo)
-              (define-key map (kbd "C-_")     #'undo-fu-only-undo)
-              (define-key map (kbd "M-_")     #'undo-fu-only-redo)
-              (define-key map (kbd "C-M-_")   #'undo-fu-only-redo-all)
-              (define-key map (kbd "C-x r u") #'undo-fu-session-save)
-              (define-key map (kbd "C-x r U") #'undo-fu-session-recover)
-              map)
-    :init-value nil
-    :global t))
+;; This package lets you enable minor modes based on file name and contents.
+;; To find the right modes, it checks filenames against patterns in `auto-minor-mode-alist'
+;; and file contents against `auto-minor-mode-magic-alist'.
+;; These work like the built-in Emacs variables `auto-mode-alist' and `magic-mode-alist'.
+;; Unlike major modes, all matching minor modes are enabled, not only the first match.
+(nconc
+ auto-mode-alist
+ '(("/LICENSE\\'" . text-mode)
+   ("\\.log\\'" . text-mode)
+   ("rc\\'" . conf-mode)
+   ("\\.\\(?:hex\\|nes\\)\\'" . hexl-mode)))
 
-
-(use-package undo-fu-session
-  :hook (undo-fu-mode . global-undo-fu-session-mode)
-  :custom (undo-fu-session-directory (expand-file-name "undo-fu-session" thomas-cache-dir))
-  :config
-  (setq undo-fu-session-incompatible-files
-        '("\\.gpg$" "/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'"))
-
-  (when (executable-find "zstd")
-    ;; There are other algorithms available, but zstd is the fastest, and speed
-    ;; is our priority within Emacs
-    (setq undo-fu-session-compression 'zst))
-
-  (defun undo-fu-make-hashed-session-file-name-a (file)
-    "HACK Fix #4993: we've advised `make-backup-file-name-1' to produced SHA1'ed
-        filenames to prevent file paths that are too long, so we force
-        `undo-fu-session--make-file-name' to use it instead of its own
-        home-grown overly-long-filename generator.
-        TODO PR this upstream; should be a universal issue"
-    (concat (let ((backup-directory-alist `(("." . ,undo-fu-session-directory))))
-              (make-backup-file-name-1 file)
-              (undo-fu-session--file-name-ext)))
-    (advice-add  'undo-fu-session--make-file-name
-                 :override #'undo-fu-make-hashed-session-file-name-a)))
-
-(use-package vundo
-  :when (> emacs-major-version 27)
-  :defer t
-  :config
-  (setq vundo-glyph-alist vundo-unicode-symbols
-        vundo-compact-display t))
+;; auto-revert
+(use-package auto-revert
+  :straight (:type built-in)
+  :diminish  auto-revert-mode
+  :hook (thomas-first-file . global-auto-revert-mode))
 
 ;;
 ;;; File
-;; Workaround with minified source files
-(use-package so-long
-  :straight (:type built-in)
-  :hook (after-init . global-so-long-mode))
-
 ;; Recently opened files
 (use-package recentf
   :straight (:type built-in)
-  :hook (after-init . recentf-mode)
+  :hook (thomas-first-file . recentf-mode)
+  :commands recentf-open-files
   :custom (recentf-save-file (expand-file-name "recentf" thomas-cache-dir))
   :config
   (setq recentf-max-saved-items 300
@@ -108,10 +68,11 @@
   (add-to-list 'recentf-filename-handlers #'thomas--recentf-file-truename-fn)
 
   ;; Add dired directories to recentf file list.
-  (add-hook 'dired-mode-hook (lambda () (recentf-add-file default-directory)))
+  (defun +recentf-add-file-fn()
+    (recentf-add-file default-directory))
+  (add-hook 'dired-mode-hook #'+recentf-add-file-fn)
 
   (add-hook 'kill-emacs-hook #'recentf-cleanup)
-
   ;; Anything in runtime folders
   (add-to-list 'recentf-exclude
                (concat "^" (regexp-quote (or (getenv "XDG_RUNTIME_DIR")
@@ -152,7 +113,7 @@ Else, call `comment-or-uncomment-region' on the current line."
 ;; 保存 session 相关配置，如：kill-ring 等变量
 (use-package savehist
   :straight (:type built-in)
-  :hook (after-init . savehist-mode)
+  :hook (thomas-first-input . savehist-mode)
   :custom
   (savehist-file (expand-file-name "savehist" thomas-cache-dir))
   :config
@@ -188,74 +149,54 @@ the unwritable tidbits."
                 (cl-remove-if-not #'savehist-printable register-alist)))
   (add-hook 'savehist-save-hook #'thomas-savehist-remove-unprintable-registers-h))
 
+;; Hiding structured data
+;; zm hide-all
+;; zr show-all
+;; za toggle-fold
+;; zo show-block
+;; zc hide-block
+(use-package hideshow
+  :straight (:type built-in)
+  :diminish hs-minor-mode
+  :hook (prog-mode . hs-minor-mode)
+  :config
+  (defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
+  (defface hideshow-border-face
+    '((((background light))
+       :background "rosy brown" :extend t)
+      (t
+       :background "sandy brown" :extend t))
+    "Face used for hideshow fringe."
+    :group 'hideshow)
+
+  (define-fringe-bitmap 'hideshow-folded-fringe
+    (vector #b00000000
+            #b00000000
+            #b00000000
+            #b11000011
+            #b11100111
+            #b01111110
+            #b00111100
+            #b00011000))
+
+  (defun hideshow-folded-overlay-fn (ov)
+    "Display a folded region indicator with the number of folded lines."
+    (when (eq 'code (overlay-get ov 'hs))
+      (let* ((nlines (count-lines (overlay-start ov) (overlay-end ov)))
+             (info (format " (%d)..." nlines)))
+        ;; fringe indicator
+        (overlay-put ov 'before-string (propertize " "
+                                                   'display '(left-fringe hideshow-folded-fringe
+                                                              hideshow-border-face)))
+        ;; folding indicator
+        (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
+  (setq hs-set-up-overlay #'hideshow-folded-overlay-fn))
 
 ;; 记录关闭之前打开 Buffer 光标位置
 (use-package saveplace
   :straight (:type built-in)
-  :hook (after-init . save-place-mode)
+  :hook (doom-first-file . save-place-mode)
   :custom (save-place-file (expand-file-name "saveplace" thomas-cache-dir)))
-
-;;
-;;; jump
-(use-package better-jumper
-  :hook (after-init . better-jumper-mode)
-  :commands thomas-set-jump-a thomas-set-jump-maybe-a thomas-set-jump-h
-  :preface
-  ;; REVIEW Suppress byte-compiler warning spawning a *Compile-Log* buffer at
-  ;; startup. This can be removed once gilbertw1/better-jumper#2 is merged.
-  (defvar better-jumper-local-mode nil)
-  :init
-  (with-eval-after-load 'evil
-    (general-def
-      [remap evil-jump-forward]  'better-jumper-jump-forward
-      [remap evil-jump-backward] 'better-jumper-jump-backward
-      [remap xref-pop-marker-stack] 'better-jumper-jump-backward))
-  (general-def
-    [remap xref-go-back] 'better-jumper-jump-backward
-    [remap xref-go-forward] 'better-jumper-jump-forward)
-  :config
-  :config
-  (defun thomas-set-jump-a (fn &rest args)
-    "Set a jump point and ensure fn doesn't set any new jump points."
-    (better-jumper-set-jump (if (markerp (car args)) (car args)))
-    (let ((evil--jumps-jumping t)
-          (better-jumper--jumping t))
-      (apply fn args)))
-
-  (defun thomas-set-jump-maybe-a (fn &rest args)
-    "Set a jump point if fn actually moves the point."
-    (let ((origin (point-marker))
-          (result
-           (let* ((evil--jumps-jumping t)
-                  (better-jumper--jumping t))
-             (apply fn args)))
-          (dest (point-marker)))
-      (unless (equal origin dest)
-        (with-current-buffer (marker-buffer origin)
-          (better-jumper-set-jump
-           (if (markerp (car args))
-               (car args)
-             origin))))
-      (set-marker origin nil)
-      (set-marker dest nil)
-      result))
-
-  (defun thomas-set-jump-h ()
-    "Run `better-jumper-set-jump' but return nil, for short-circuiting hooks."
-    (better-jumper-set-jump)
-    nil)
-
-  ;; Creates a jump point before killing a buffer. This allows you to undo
-  ;; killing a buffer easily (only works with file buffers though; it's not
-  ;; possible to resurrect special buffers).
-  ;;
-  ;; I'm not advising `kill-buffer' because I only want this to affect
-  ;; interactively killed buffers.
-  (advice-add #'kill-current-buffer :around #'thomas-set-jump-a)
-
-  ;; Create a jump point before jumping with imenu.
-  (advice-add #'imenu :around #'thomas-set-jump-a))
-
 
 ;;
 ;;; Edit
@@ -263,7 +204,7 @@ the unwritable tidbits."
 (use-package smartparens
   ;; Auto-close delimiters and blocks as you type. It's more powerful than that,
   ;; but that is all Doom uses it for.
-  :hook (find-file . smartparens-global-mode)
+  :hook (after-init . smartparens-global-mode)
   :commands sp-pair sp-local-pair sp-with-modes sp-point-in-comment sp-point-in-string
   :config
   ;; smartparens recognizes `slime-mrepl-mode', but not `sly-mrepl-mode', so...
@@ -325,16 +266,64 @@ This includes everything that calls `read--expression', e.g.
   ;; which causes folks to redundantly install their own.
   (setq ws-butler-keep-whitespace-before-point nil))
 
+
+(use-package transient
+  :init
+  (setq transient-levels-file (concat thomas-data-dir "transient/levels")
+        transient-values-file (concat thomas-data-dir "transient/values")
+        transient-history-file (concat thomas-data-dir "transient/history"))
+  :config
+  (transient-define-prefix scroll-other-window-menu ()
+    "Scroll other window."
+    :transient-suffix     'transient--do-stay
+    [["Line"
+      ("j" "next line" scroll-other-window-line)
+      ("k" "previous line" scroll-other-window-down-line)]
+     ["Page"
+      ("C-f" "next page" scroll-other-window)
+      ("C-b" "previous page" scroll-other-window-down)]])
+
+  (defun scroll-other-window-line ()
+    "Scroll up of one line in other window."
+    (interactive)
+    (scroll-other-window 1))
+
+  (defun scroll-other-window-down-line ()
+    "Scroll down of one line in other window."
+    (interactive)
+    (scroll-other-window-down 1))
+
+  (transient-define-prefix background-opacity-menu ()
+    "Set frame background opacity."
+    [:description
+     background-opacity-get-alpha-str
+     ("+" "increase" background-opacity-inc-alpha :transient t)
+     ("-" "decrease" background-opacity-dec-alpha :transient t)
+     ("=" "set to ?" background-opacity-set-alpha)])
+
+  (defun background-opacity-inc-alpha (&optional n)
+    (interactive)
+    (let* ((alpha (background-opacity-get-alpha))
+           (next-alpha (cl-incf alpha (or n 1))))
+      (set-frame-parameter nil 'alpha-background next-alpha)))
+
+  (defun background-opacity-dec-alpha ()
+    (interactive)
+    (background-opacity-inc-alpha -1))
+
+  (defun background-opacity-set-alpha (alpha)
+    (interactive "nSet to: ")
+    (set-frame-parameter nil 'alpha-background alpha))
+
+  (defun background-opacity-get-alpha ()
+    (pcase (frame-parameter nil 'alpha-background)
+      ((pred (not numberp)) 100)
+      (`,alpha alpha)))
+
+  (defun background-opacity-get-alpha-str ()
+    (format "Alpha %s%%" (background-opacity-get-alpha))))
 ;;
 ;;; Motion
-(use-package avy
-  :config
-  (setq avy-all-windows nil
-        avy-all-windows-alt t
-        avy-background t
-        ;; the unpredictability of this (when enabled) makes it a poor default
-        avy-single-candidate-jump nil))
-
 ;;
 ;;; Server
 ;; Use emacsclient to connect

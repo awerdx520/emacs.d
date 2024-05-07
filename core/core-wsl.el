@@ -5,4 +5,4 @@
     (set-selection-coding-system 'gbk)
   (set-selection-coding-system 'utf-8))
 
-(provide 'init-wsl)
+(provide 'core-wsl)

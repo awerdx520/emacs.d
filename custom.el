@@ -1,8 +1,7 @@
 ;;; custom.el -*- lexical-binding: t; -*-
 ;;;
-;; Startup Maximum
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-
+;;;
+;;;
 ;; Font size
 (defun font-installed-p (font-name)
   "Check if font with FONT-NAME is available."
@@ -50,11 +49,10 @@
                                                  :size (cond ((eq system-type 'gnu/linux)14.0)
                                                              ((eq system-type 'windows-nt) 15.0)))))))
 
+;; 添加字体
 (thomas-setup-font)
 (add-hook 'window-setup-hook #'thomas-setup-font)
 (add-hook 'server-after-make-frame-hook #'thomas-setup-font)
-
-;;;
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

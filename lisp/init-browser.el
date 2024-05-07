@@ -22,12 +22,6 @@
 ;; Needed by `webpaste'
 (use-package browse-url
   :straight (:type built-in)
-  :general
-  (thomas-leader
-   "oo" 'browse-url-at-point
-   "obi" 'browse-url
-   "obd" 'browse-url-of-dired-file
-   "obs" 'browse-url-of-file)
   :config
   ;; 当使用 WSL2 环境时可以使用 wslview 作为默认打开浏览器打开连接。
   ;; wlsview 是 wslu 工具集中的命令，可是根据传递的参数选择合适的
@@ -41,29 +35,9 @@
   ;; TODO 需要配置怎么通过默认 browser 打开文件
   (setq browse-url-handlers '(("\\`file:'" . browse-url-default-browser))))
 
-;; Pastebin service
-(use-package webpaste
-  :commands webpaste-paste-buffer-or-region
-  :general
-  (thomas-leader
-   "rpb" 'webpaste-paste-buffer
-   "rpr" 'webpaste-paste-region
-   "rpp" 'webpaste-paste-buffer-or-region)
-  :config
-  (setq webpaste-open-in-browser t ;; After a successful paste, the returned URL from the provider will be sent to the killring.
-        ;; Require confirmation before doing paste
-        webpaste-paste-confirmation t
-        ;; After a successful paste, the returned URL from the provider will be sent to the killring.
-        webpaste-add-to-killring t
-        webpaste-provider-priority '("paste.mozilla.org" "dpaste.org" "gist.github.com")))
-
-
 ;; web search
 (use-package webjump
   :straight (:type built-in)
-  :general
-  (thomas-leader
-   "so" 'webjump)
   :config
   (setq webjump-sites '(;; Internet search engines.
                         ("Google" .
@@ -102,6 +76,16 @@
                         ("x86 Instructions Reference" .
                          [simple-query "www.felixcloutier.com"
                                        "www.felixcloutier.com/x86/" ""]))))
+;; Pastebin service
+(use-package webpaste
+  :commands webpaste-paste-buffer-or-region
+  :config
+  (setq webpaste-open-in-browser t ;; After a successful paste, the returned URL from the provider will be sent to the killring.
+        ;; Require confirmation before doing paste
+        webpaste-paste-confirmation t
+        ;; After a successful paste, the returned URL from the provider will be sent to the killring.
+        webpaste-add-to-killring t
+        webpaste-provider-priority '("paste.mozilla.org" "dpaste.org" "gist.github.com")))
 
 (provide 'init-browser)
 ;;; init-browser.el ends here

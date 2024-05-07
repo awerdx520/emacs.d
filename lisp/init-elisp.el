@@ -67,7 +67,9 @@
   :config (flycheck-package-setup))
 
 (use-package elisp-demos
-  :defer t)
+  :defer t
+  :init
+  (advice-add #'helpful-update :after #'elisp-demos-advice-helpful-update))
 
 ;; Elisp Unittest
 (use-package buttercup

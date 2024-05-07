@@ -2,56 +2,78 @@
 ;;; Commentary:
 ;;; Code:
 ;;;
-;; --debug-init implies `debug-on-error'.
-(setq debug-on-error init-file-debug)
 
-;; Defer garbage collection further back in the startup process
-(setq gc-cons-threshold most-positive-fixnum)
-
-;; Prevent flashing of unstyled modeline at startup
-(setq-default mode-line-format nil)
+(when (version< emacs-version "29.1")
+  (error "Your Emacs is too old -- this config requires 28.1 or higher"))
 
 ;; Don't pass case-insensitive to `auto-mode-alist'
-(setq auto-mode-case-fold nil)
+(setq auto-mode-case-fold nil
+      site-run-file nil)
 
-;; Load customize config file
-(let ((dir (locate-user-emacs-file "lisp")))
-  (add-to-list 'load-path (file-name-as-directory  dir))
-  (add-to-list 'load-path (file-name-as-directory (expand-file-name "lang" dir))))
+;; Optimize loading performance
+(unless (or (daemonp) noninteractive init-file-debug)
+  (let ((old-file-name-handler-alist file-name-handler-alist))
+    (setq file-name-handler-alist nil)
+    (add-hook 'emacs-startup-hook
+              (lambda ()
+                "Recover file name handlers."
+                (setq file-name-handler-alist
+                      (delete-dups (append file-name-handler-alist old-file-name-handler-alist)))))))
 
-;; 依赖
-(require 'init-const)
-(require 'init-custom)
-(require 'init-funcs)
-(require 'init-macro)
-(require 'init-wsl)
+;; Optimize emacs garbage collect.
+(setq gc-cons-threshold most-positive-fixnum)
 
-;; packages
-(require 'init-package)
-(require 'init-base)
+;; Hook run after loading init files
+(add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold 800000)))
 
-;;
+;; Suppress flashing at startup
+(setq-default inhibit-message t
+              inhibit-redisplay t)
+
+(defun +window-inhibit-setting-fn ()
+  "Inhibit some message and redisplay."
+  (setq-default inhibit-message nil
+                inhibit-redisplay nil)
+  (redisplay))
+(add-hook 'window-setup-hook #'+window-inhibit-setting-fn)
+
+;; 加载 thomas-emacs 核心配置
+(load (expand-file-name "core/core" (file-truename user-emacs-directory)) nil 'nomessage)
+;; 初始化 thomas-emacs
+(thomas-initialize-core)
+
+;; Load custom
+(setq custom-file (expand-file-name "custom.el" thomas-emacs-dir))
+(when (file-exists-p custom-file)
+  (load custom-file))
+
+;; Be quiet at startup; don't load or display anything unnecessary
+(advice-add #'display-startup-echo-area-message :override #'ignore)
+
+(require 'init-evil)
 (require 'init-ui)
-(require 'init-editor)
 (require 'init-completion)
-(require 'init-snippets)
+(require 'init-editor)
 
+;; msic
+(require 'init-project)
 (require 'init-chinese)
+(require 'init-window)
+(require 'init-treesit)
+
+;; tools
+(require 'init-snippets)
+(require 'init-dired)
+(require 'init-spell)
+(require 'init-undo)
+(require 'init-direnv)
+(require 'init-git)
 (require 'init-bookmark)
 (require 'init-browser)
-(require 'init-window)
-(require 'init-dired)
-(require 'init-help)
-(require 'init-spell)
-(require 'init-syntax)
-(require 'init-git)
-(require 'init-treesit)
 (require 'init-format)
-(require 'init-shell)
-(require 'init-develop)
-;;
 
 ;; Language
+(require 'init-shell)
 (require 'init-text)
 ;;(require 'init-cpp)
 (require 'init-rust)
@@ -59,6 +81,7 @@
 (require 'init-python)
 ;;(require 'init-elisp)
 (require 'init-sh)
+(require 'init-lsp)
 
 (require 'init-keybinding)
 ;;;  init.el ends here
