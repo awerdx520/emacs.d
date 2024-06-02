@@ -74,7 +74,7 @@
 ;; Elisp Unittest
 (use-package buttercup
   :defer t
-  ;; TODO  :minor ("/test[/-].+\\.el$" . buttercup-minor-mode)
+  :minor ("/test[/-].+\\.el$" . buttercup-minor-mode)
   :hook (bufferp-minor-mode . evil-normalize-keymaps)
   :preface
   ;; buttercup.el doesn't define a keymap for `buttercup-minor-mode', as we have

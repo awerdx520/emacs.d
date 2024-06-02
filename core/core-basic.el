@@ -213,8 +213,6 @@
       `((".*" ,(expand-file-name "auto-save-list" thomas-cache-dir) t)))
 
 ;; Startup Maximum
-(push '(left-fringe . 8) default-frame-alist)
-(push '(right-fringe . 8) default-frame-alist)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; Be quiet at startup; don't load or display anything unnecessary
