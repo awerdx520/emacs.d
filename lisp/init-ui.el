@@ -88,7 +88,6 @@
                           (agenda . 5)
                           (bookmarks . 5)))
 
-  ;; TODO 设置 heading icon 存在找不到 nero-icons 字体的问题
   (setq dashboard-set-heading-icons t
         dashboard-set-file-icons t
         dashboard-icon-type 'nerd-icons
@@ -208,9 +207,12 @@
   ;; performance.
   (setq rainbow-delimiters-max-face-count 4))
 
-;; Highlight TODO
 (use-package hl-todo
-  :hook (after-init . global-hl-todo-mode)
+  :hook (thomas-first-file . global-hl-todo-mode)
+  :general
+  (:states '(normal visual)
+           "]t" 'hl-todo-next
+           "[t" 'hl-todo-previous)
   :config
   (setq hl-todo-highlight-punctuation ":"
         hl-todo-keyword-faces `(("BUG" error bold)
@@ -240,8 +242,6 @@
     (when (derived-mode-p 'prog-mode 'yaml-mode)
       (symbol-overlay-mode 1)))
   (advice-add #'deactivate-mark :after #'turn-on-symbol-overlay))
-
-
 
 (provide 'init-ui)
 ;;; init-ui.el ends here

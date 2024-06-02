@@ -34,7 +34,6 @@
 
 (use-package compile
   ;; Compilation Mode
-  ;; TODO understand
   :straight (:type built-in)
   :hook (compilation-filter . ansi-color-compilation-filter)
   :config
@@ -48,7 +47,6 @@
 
 (use-package comint
   ;; ComintMode 用于制作 shell 或 repl 之类的缓冲区，在其中与外部进程交互。
-  ;; TODO understand
   :straight (:type built-in)
   :config
   (setq comint-prompt-read-only t
