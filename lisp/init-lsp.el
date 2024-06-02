@@ -9,7 +9,6 @@
   :straight '(lsp-bridge  :fetcher github :repo "manateelazycat/lsp-bridge"
               :files (:defaults "*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
               :build (:not compile))
-
   :hook (prog-mode . lsp-bridge-semantic-tokens-mode)
   :general
   (:states '(normal visual)
@@ -25,14 +24,18 @@
            "RET" 'lsp-bridge-ref-open-file-and-stay
            "SPC" 'lsp-bridge-ref-open-file)
   :init
-  (setq lsp-bridge-enable-log t)
+  ;; (setq lsp-bridge-deferred-debug-on-signal t
+  ;;       lsp-bridge-enable-log nil )
+
   (global-lsp-bridge-mode)
   (defvar +lsp-bridge-data-dir
     (expand-file-name "lsp-bridge" thomas-data-dir)
     "Lsp-Bridge 相关配置目录.")
 
   :config
-  (setq lsp-bridge-c-lsp-server "ccls")
+  ;; 关闭补全直接显示文档
+  (setq acm-enable-doc nil)
+
   ;; 定期(以秒为单位)给远程服务器发送心跳包
   (setq lsp-bridge-remote-heartbeat-interval 10
         lsp-bridge-org-babel-lang-list '("c" "c++" "python" "java" "go" "rust" "scala"))

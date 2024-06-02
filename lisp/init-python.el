@@ -36,16 +36,27 @@ as the environment to run epc."
   ;; Stop the spam!
   (setq python-indent-guess-indent-offset-verbose nil)
   (setq lsp-bridge-python-command "/usr/bin/python")
+
   ;; Default to Python 3. Prefer the versioned Python binaries since some
   ;; systems link the unversioned one to Python 2.
   (when (and (executable-find "python3")
              (string= python-shell-interpreter "python"))
     (setq python-shell-interpreter "python3"))
-  ;; 添加重新获取 lsp-bridge
-  (add-hook 'python-mode-hook (lambda () (setq-local lsp-bridge-get-single-lang-server-by-project
-                                                     'thomas/lsp-bridge-get-single-lang-server-by-project))))
 
-;; python -m venv ENV_DIR
+  ;; 添加重新获取 lsp-bridge
+  (add-hook 'python-mode-hook (lambda ()
+                                (setq-local lsp-bridge-get-single-lang-server-by-project
+                                            'thomas/lsp-bridge-get-single-lang-server-by-project))))
+
+
+;; python 项目管理软件
+(use-package poetry
+  :after python
+  :init
+  (setq poetry-tracking-strategy 'switch-buffer)
+  (add-hook 'python-mode-hook #'poetry-tracking-mode))
+
+;; python 默认虚拟环境管理器
 (use-package pyvenv
   :commands pyvenv-deactivate pyvenv-activate
   :config
@@ -64,14 +75,6 @@ as the environment to run epc."
 
   ;; pyvenv 激活环境重启 lsp-bridge
   (add-hook 'pyvenv-post-activate-hooks (lambda () (lsp-bridge-restart-process))))
-
-
-(use-package poetry
-  :after python
-  :init
-  (setq poetry-tracking-strategy 'switch-buffer)
-  (add-hook 'python-mode-hook #'poetry-tracking-mode))
-
 
 (use-package cython-mode
   :mode "\\.p\\(yx\\|x[di]\\)\\'"
