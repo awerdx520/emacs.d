@@ -4,7 +4,6 @@
 ;;
 
 ;;; Code:
-
 (require 'core-basic)
 
 (thomas-leader-define

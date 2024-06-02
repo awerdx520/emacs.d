@@ -83,15 +83,6 @@ regenerated or restored. For example, a recently-opened file list is not
 essential, but losing it means losing this record, and restoring it requires
 revisiting all those files.")
 
-(defconst thomas-core-autoload-dir (expand-file-name "core/autoload/" thomas-emacs-dir)
-  "Core autoload directory.")
-
-(defconst thomas-generate-autoload-dir (expand-file-name "@/" thomas-data-dir)
-  "`autoload' 文件生成目录位置.")
-
-(defconst thomas-autoload-file (expand-file-name  "core-autoloads.el" thomas-generate-autoload-dir)
-  "该文件负责通知 `emacs' 在 `core/autoload/*.el' 中哪里可以找到所有自动加载函数.")
-
 
 (provide 'core-const)
 
