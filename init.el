@@ -2,13 +2,21 @@
 ;;; Commentary:
 ;;; Code:
 ;;;
-
 (when (version< emacs-version "29.1")
-  (error "Your Emacs is too old -- this config requires 28.1 or higher"))
+  (error "Your Emacs is too old -- this config requires 29.1 or higher"))
+
+;;
+;; Speed up startup
+;;
+
+;; Defer garbage collection further back in the startup process
+(setq gc-cons-threshold most-positive-fixnum)
+
+;; Prevent flashing of unstyled modeline at startup
+(setq-default mode-line-format nil)
 
 ;; Don't pass case-insensitive to `auto-mode-alist'
-(setq auto-mode-case-fold nil
-      site-run-file nil)
+(setq auto-mode-case-fold nil)
 
 ;; Optimize loading performance
 (unless (or (daemonp) noninteractive init-file-debug)
@@ -20,36 +28,13 @@
                 (setq file-name-handler-alist
                       (delete-dups (append file-name-handler-alist old-file-name-handler-alist)))))))
 
-;; Optimize emacs garbage collect.
-(setq gc-cons-threshold most-positive-fixnum)
+;; 将 core 目录添加到 `load-path' 中
+(add-to-list 'load-path (file-name-as-directory (locate-user-emacs-file "core")))
 
-;; Hook run after loading init files
-(add-hook 'emacs-startup-hook (lambda () (setq gc-cons-threshold 800000)))
+;;; 将配置文件添加到 `load-path' 中
+(add-to-list 'load-path (file-name-as-directory (locate-user-emacs-file "lisp")))
 
-;; Suppress flashing at startup
-(setq-default inhibit-message t
-              inhibit-redisplay t)
-
-(defun +window-inhibit-setting-fn ()
-  "Inhibit some message and redisplay."
-  (setq-default inhibit-message nil
-                inhibit-redisplay nil)
-  (redisplay))
-(add-hook 'window-setup-hook #'+window-inhibit-setting-fn)
-
-;; 加载 thomas-emacs 核心配置
-(load (expand-file-name "core/core" (file-truename user-emacs-directory)) nil 'nomessage)
-;; 初始化 thomas-emacs
-(thomas-initialize-core)
-
-;; Load custom
-(setq custom-file (expand-file-name "custom.el" thomas-emacs-dir))
-(when (file-exists-p custom-file)
-  (load custom-file))
-
-;; Be quiet at startup; don't load or display anything unnecessary
-(advice-add #'display-startup-echo-area-message :override #'ignore)
-
+(require 'core)
 (require 'init-evil)
 (require 'init-ui)
 (require 'init-completion)
@@ -83,5 +68,10 @@
 (require 'init-sh)
 (require 'init-lsp)
 
+;;
 (require 'init-keybinding)
+
+;;
+(when (file-exists-p custom-file)
+  (load custom-file))
 ;;;  init.el ends here

@@ -217,5 +217,8 @@
 (push '(right-fringe . 8) default-frame-alist)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+;; Be quiet at startup; don't load or display anything unnecessary
+(advice-add #'display-startup-echo-area-message :override #'ignore)
+
 (provide 'core-basic)
 ;;; core-basic.el ends here

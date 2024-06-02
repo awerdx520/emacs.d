@@ -18,33 +18,31 @@
 ;;
 ;;
 ;;; Code:
-(when (version<= emacs-version "28.2")
-  (user-error "不满足最小 Emacs 版本: %s" emacs-version))
+
+(require 'core-const) ; 常量配置
+(require 'core-macro) ; 自定义宏
 
 ;; 第一次输入事件定义
-(defvar thomas-first-input-hook nil
-  "Emacs 第一次输入钩子.")
-
+(defvar thomas-first-input-hook nil "Emacs 第一次输入钩子.")
 ;; 第一次运行命令时执行 `thomas-first-input-hook' 钩子然后清空钩子内容
-(add-hook 'pre-command-hook #'(lambda ()
-                                (when thomas-first-input-hook
-                                  (run-hooks 'thomas-first-input-hook))))
-(defvar thomas-first-file-hook nil
-  "Emacs 第一次启动文件钩子.")
+(add-hook 'pre-command-hook #'(lambda () (when thomas-first-input-hook)
+                                (run-hooks 'thomas-first-input-hook)))
 
+
+;; 第一次访问文件时需要执行的钩子
+(defvar thomas-first-file-hook nil "Emacs 第一次启动文件钩子.")
 (defun run-thomas-first-file-hooks ()
-  "执行 `doom-first-file-hook' 中钩子函数."
-  (when thomas-first-file-hook
-    (run-hooks 'thomas-first-file-hook)
-    (setq thomas-first-file-hook nil)))
+  "执行 `doom-first-file-hook' 中钩子函数.
+
+执行完钩子后需要清空钩子中的配置。"
+  (when thomas-first-file-hook (run-hooks 'thomas-first-file-hook)
+        (setq thomas-first-file-hook nil)))
 
 (add-hook 'find-file-hook #'run-thomas-first-file-hooks)
 (add-hook 'dired-initial-position-hook #'run-thomas-first-file-hooks)
 
 ;; 主题加载事件定义
-(defvar thomas-load-theme-hook nil
-  "Emacs 加载主题后执行配置钩子.")
-
+(defvar thomas-load-theme-hook nil "Emacs 加载主题后执行配置钩子.")
 (defun run-thomas-load-theme-hooks(&rest _)
   "执行 `thomas-load-theme-hook' 钩子函数."
   (run-hooks 'thomas-load-theme-hook))
@@ -53,21 +51,20 @@
 (advice-add #'load-theme :after #'run-thomas-load-theme-hooks)
 (add-hook 'thomas-load-theme-hook #'window-divider-mode)
 
-;;; 将配置文件添加到 `load-path' 中
-;; 将 core 目录添加到 `load-path' 中
-(add-to-list 'load-path (file-name-directory load-file-name))
-(add-to-list 'load-path (file-name-as-directory
-                         (locate-user-emacs-file "lisp")))
-
+;; 设置 Custom 文件路径
+(setq custom-file
+      (expand-file-name "custom.el" thomas-emacs-dir))
 
 ;;
-(defun thomas-initialize-core()
-  "为 Emacs 加载核心配置文件."
-  (require 'core-const) ; 常量配置
-  (require 'core-macro) ; 自定义宏
-  (require 'core-wsl)
-  (require 'core-basic) ; 基础配置
-  (require 'core-package))
+(require 'core-autoload)
+(require 'core-basic)
+(require 'core-package)
+(require 'core-wsl)
+
+;; 添加字体
+(thomas-setup-font)
+(add-hook 'window-setup-hook #'thomas-setup-font)
+(add-hook 'server-after-make-frame-hook #'thomas-setup-font)
 
 (provide 'core)
 ;;; core.el ends here
