@@ -28,9 +28,9 @@
   ;; Windows 软件查看他。就是有点慢，不知道是 wslview 自己的问题
   ;; 还是 Windws 的配置匹配问题。
   (if IS-WSL
-      (setq browse-url-browser-function 'browse-url-generic
-            browse-url-generic-program "wslview")
-    (setq browse-url-browser-function #'browse-url-chrome))
+      (setq browse-url-generic-program "wslview"
+            browse-url-browser-function 'browse-url-generic)
+    (setq browse-url-generic-program browse-url-chrome-program))
 
   ;; TODO 需要配置怎么通过默认 browser 打开文件
   (setq browse-url-handlers '(("\\`file:'" . browse-url-default-browser))))
@@ -80,11 +80,9 @@
 (use-package webpaste
   :commands webpaste-paste-buffer-or-region
   :config
-  (setq webpaste-open-in-browser t ;; After a successful paste, the returned URL from the provider will be sent to the killring.
-        ;; Require confirmation before doing paste
-        webpaste-paste-confirmation t
-        ;; After a successful paste, the returned URL from the provider will be sent to the killring.
-        webpaste-add-to-killring t
+  (setq webpaste-open-in-browser t
+        webpaste-paste-confirmation t ; 在执行粘贴之前需要确认
+        webpaste-add-to-killring t ; 成功粘贴后将返回的 url 自动保存到 killring中。
         webpaste-provider-priority '("paste.mozilla.org" "dpaste.org" "gist.github.com")))
 
 (provide 'init-browser)
