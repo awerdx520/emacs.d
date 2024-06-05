@@ -35,7 +35,6 @@ as the environment to run epc."
   :config
   ;; Stop the spam!
   (setq python-indent-guess-indent-offset-verbose nil)
-  (setq lsp-bridge-python-command "/usr/bin/python")
 
   ;; Default to Python 3. Prefer the versioned Python binaries since some
   ;; systems link the unversioned one to Python 2.
