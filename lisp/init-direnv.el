@@ -19,12 +19,15 @@
 ;;
 ;;; Code:
 
+
+
 ;; Tips for next keystroke
 (use-package envrc
   :hook (thomas-first-file . envrc-global-mode)
   :config
   ;; Ensure babel's execution environment matches the host buffer's.
   (advice-add #'org-babel-execute-src-block :around #'envrc-propagate-environment))
+
 
 
 (provide 'init-direnv)
