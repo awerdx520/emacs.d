@@ -21,6 +21,7 @@
 
 (defvar +snippets-dir (expand-file-name "snippets/" thomas-emacs-dir)
   "Directory where `yasnippet' will search for your private snippets.")
+
 ;;
 (use-package yasnippet
   :commands (yas-minor-mode-on
@@ -57,7 +58,6 @@
   :after yasnippet
   :config
   (setq aya-persist-snippets-dir +snippets-dir))
-
 
 (provide 'init-snippets)
 ;;; init-snippets.el ends here

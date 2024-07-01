@@ -93,9 +93,9 @@
   (add-to-list 'so-long-target-modes 'text-mode)
   ;; 禁用某些对于大缓冲区来说可能不必要/昂贵的模式
   (appendq! so-long-minor-modes '(rainbow-mode flycheck-mode eldoc-mode
-                                  ws-butler-mode highlight-numbers-mode
-                                  rainbow-delimiters-mode
-                                  highlight-indent-guides-mode)))
+                                               ws-butler-mode highlight-numbers-mode
+                                               rainbow-delimiters-mode
+                                               highlight-indent-guides-mode)))
 
 (use-package general
   :config
@@ -242,6 +242,15 @@
   ;; Quick editing in `describe-variable'
   (with-eval-after-load 'help-fns
     (put 'help-fns-edit-variable 'disabled nil)))
+
+;; TODO 优化 shell 启动时间
+(use-package exec-path-from-shell
+  :config
+  ;; 设成nil 则不从 .zshrc 读 只从 .zshenv读（可以加快速度，但是需要你将环境变量相关的都放到 .zshenv 中，而非 .zshrc 中)
+  (setq exec-path-from-shell-check-startup-files nil
+        exec-path-from-shell-variables '("LOCATION" "PATH" "MANPATH" "GOROOT" "GOPATH" "EDITOR" "PYTHONPATH")
+        exec-path-from-shell-arguments '("-l"))
+  (exec-path-from-shell-initialize))
 
 (provide 'core-package)
 ;;; core-package.el ends here
