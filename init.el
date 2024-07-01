@@ -64,6 +64,7 @@
 (require 'init-rust)
 ;;(require 'init-bazel)
 (require 'init-python)
+(require 'init-go)
 ;;(require 'init-elisp)
 (require 'init-sh)
 (require 'init-lsp)
