@@ -56,6 +56,7 @@
 (require 'init-bookmark)
 (require 'init-browser)
 (require 'init-format)
+(require 'init-translate)
 
 ;; Language
 (require 'init-shell)
