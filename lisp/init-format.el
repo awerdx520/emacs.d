@@ -19,20 +19,6 @@
 ;;
 ;;; Code:
 
-
-;;
-;; (use-package format-all
-;;   :commands format-all-mode
-;;   :hook (prog-mode . format-all-mode)
-;;   :config
-;;   (add-hook 'format-all-mode-hook #'format-all-ensure-formatter)
-;;   (setq-default format-all-formatters '(("C"     (astyle "--mode=c"))
-;;                                         ("Shell" (shfmt "-i" "4" "-ci"))
-;;                                         ("JSON" (prettier))
-;;                                         ("YAML" (prettier))
-;;                                         ("TOML" (taplo "fmt"))
-;;                                         ("Python" (black "-S")))))
-
 (defcustom +format-on-save-disabled-modes
   '(sql-mode           ; sqlformat is currently broken
     tex-mode           ; latexindent is broken
