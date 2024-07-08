@@ -23,12 +23,13 @@
            "RET" 'lsp-bridge-ref-open-file-and-stay
            "SPC" 'lsp-bridge-ref-open-file)
   :init
-  ;; (setq lsp-bridge-deferred-debug-on-signal t
-  ;;       lsp-bridge-enable-log nil )
+  ;;(setq lsp-bridge-deferred-debug-on-signal t
+  ;;     lsp-bridge-enable-log t )
 
   ;; 开启全局 lsp-bridge
   (global-lsp-bridge-mode)
   :config
+  (setq c-basic-offset 4)
   ;; 定期(以秒为单位)给远程服务器发送心跳包
   (setq lsp-bridge-remote-heartbeat-interval 10
         lsp-bridge-org-babel-lang-list '("c" "c++" "python" "java" "go" "rust" "scala"))
