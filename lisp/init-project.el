@@ -4,9 +4,12 @@
 ;;
 
 ;;; Code:
-
-(defvar +project-ignore-project-list '("~" "/home/thomas" "/")
+(defvar project-ignore-directory-list '("/home/thomas" "/" "/var" "/proc" "/usr")
   "忽略指定目录作为项目目录.")
+
+(defvar project-flag-list '((".project")
+                            ("go.mod" "Cargo.toml" "project.clj" "pom.xml" "package.json") ;; higher priority
+                            ("Makefile" "README.org" "README.md" "Readme.org" "Readme.md")))
 
 ;;
 (use-package project
@@ -17,20 +20,48 @@
     "Return root directory of current PROJECT."
     (cdr project))
 
-  (defun thomas/project-try-flag (dir)
+  (defun project-try-local (dir)
     "Determine if DIR is a non-Git project."
-    (unless (member (expand-file-name "" dir)
-                    +project-ignore-project-list)
+    (unless (member (expand-file-name "" dir) project-ignore-directory-list)
       (catch 'ret
-        (let ((pr-flags '((".project")
-                          ("go.mod" "Cargo.toml" "project.clj" "pom.xml" "package.json") ;; higher priority
-                          ("Makefile" "README.org" "README.md"))))
+        (let ((pr-flags project-flag-list))
           (dolist (current-level pr-flags)
             (dolist (f current-level)
               (when-let ((root (locate-dominating-file dir f)))
-                (throw 'ret (cons 'local root)))))))))
+                (when (not (member (expand-file-name "" root) project-ignore-directory-list))
+                  (throw 'ret (cons 'local root))))))))))
 
-  (setq project-find-functions '(project-try-vc thomas/project-try-flag)))
+  (setq project-find-functions '(project-try-local project-try-vc)))
+
+(use-package projection
+  :hook (after-init . global-projection-hook-mode)
+  :after project
+  :config
+  ;; Require projections immediately after project.el.
+  (with-eval-after-load 'project
+    (require 'projection))
+
+  ;; Uncomment if you want to disable prompts for compile commands customized in .dir-locals.el
+  (put 'projection-commands-configure-project 'safe-local-variable #'stringp)
+  (put 'projection-commands-build-project 'safe-local-variable #'stringp)
+  (put 'projection-commands-test-project 'safe-local-variable #'stringp)
+  (put 'projection-commands-run-project 'safe-local-variable #'stringp)
+  (put 'projection-commands-package-project 'safe-local-variable #'stringp)
+  (put 'projection-commands-install-project 'safe-local-variable #'stringp))
+
+(use-package projection-multi
+  ;; Allow interactively selecting available compilation targets from the current
+  ;; project type.
+  ;; :init
+  ;; (define-key global-map "RET" #'projection-multi-compile)
+  )
+
+(use-package projection-multi-embark
+  :after embark
+  :after projection-multi
+  :demand t
+  ;; Add the projection set-command bindings to `compile-multi-embark-command-map'.
+  :config (projection-multi-embark-setup-command-map))
 
 (use-package compile
   ;; Compilation Mode
@@ -54,26 +85,6 @@
         comint-buffer-maximum-size 2048)
   (add-to-list 'comint-output-filter-functions 'ansi-color-process-output))
 
-;; The unified debugger
-(use-package gud
-  :straight (:type built-in)
-  :hook (gud-mode . gud-tooltip-mode)
-  :config
-  (setq gud-highlight-current-line t))
-
-;; GDB specific config
-(use-package gdb-mi
-  :straight (:type built-in)
-  :commands gdb
-  :config
-  (setq gdb-show-main t
-        gdb-display-io-nopopup t
-        gdb-show-changed-values t
-        gdb-delete-out-of-scope t
-        gdb-use-colon-colon-notation t
-        gdb-debuginfod-enable-setting nil
-        gdb-restore-window-configuration-after-quit t))
-
 ;; Insert SPDX license header
 (use-package spdx
   :hook (prog-mode . spdx-tempo-setup)
@@ -92,6 +103,7 @@
   (setq xref-search-program (cond ((executable-find "rg") 'ripgrep)
                                   ((executable-find "ugrep") 'ugrep)
                                   (t 'grep))
+
         xref-history-storage 'xref-window-local-history
         xref-show-xrefs-function #'xref-show-definitions-completing-read
         xref-show-definitions-function #'xref-show-definitions-completing-read))
@@ -107,7 +119,6 @@
   :custom (devdocs-data-dir (concat thomas-data-dir "devdocs"))
   :config (add-to-list 'completion-category-overrides
                        '(devdocs (styles . (flex)))))
-
 
 ;; Jump to definition, used as a fallback of lsp-find-definition
 (use-package dumb-jump
@@ -139,7 +150,6 @@
 
 (use-package restclient
   :mode ("\\.http\\'" . restclient-mode))
-
 
 
 (provide 'init-project)
