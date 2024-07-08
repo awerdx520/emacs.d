@@ -21,18 +21,56 @@
 
 
 ;;
-(use-package format-all
-  :commands format-all-mode
-  :hook (prog-mode . format-all-mode)
-  :config
-  (add-hook 'format-all-mode-hook #'format-all-ensure-formatter)
-  (setq-default format-all-formatters '(("C"     (astyle "--mode=c"))
-                                        ("Shell" (shfmt "-i" "4" "-ci"))
-                                        ("JSON" (prettier))
-                                        ("YAML" (prettier))
-                                        ("TOML" (taplo "fmt"))
-                                        ("Python" (black "-S")))))
+;; (use-package format-all
+;;   :commands format-all-mode
+;;   :hook (prog-mode . format-all-mode)
+;;   :config
+;;   (add-hook 'format-all-mode-hook #'format-all-ensure-formatter)
+;;   (setq-default format-all-formatters '(("C"     (astyle "--mode=c"))
+;;                                         ("Shell" (shfmt "-i" "4" "-ci"))
+;;                                         ("JSON" (prettier))
+;;                                         ("YAML" (prettier))
+;;                                         ("TOML" (taplo "fmt"))
+;;                                         ("Python" (black "-S")))))
 
+(defcustom +format-on-save-disabled-modes
+  '(sql-mode           ; sqlformat is currently broken
+    tex-mode           ; latexindent is broken
+    latex-mode
+    org-msg-edit-mode) ; doesn't need a formatter
+  "A list of major modes in which to not reformat the buffer upon saving.
+
+If it is t, it is disabled in all modes, the same as if the +onsave flag wasn't
+  used at all.
+If nil, formatting is enabled in all modes."
+  :type '(list symbol))
+
+(defvaralias '+format-with 'apheleia-formatter)
+(defvaralias '+format-inhibit 'apheleia-inhibit)
+
+(use-package apheleia
+  :init
+  (add-hook 'thomas-first-file-hook #'apheleia-global-mode)
+  ;; apheleia autoloads `apheleia-inhibit-functions' so it will be immediately
+  ;; available to mutate early.
+  (defun +format-maybe-inhibit-h ()
+    "Check if formatting should be disabled for current buffer.
+This is controlled by `+format-on-save-disabled-modes'."
+    (or (eq major-mode 'fundamental-mode)
+        (string-blank-p (buffer-name))
+        (eq +format-on-save-disabled-modes t)
+        (not (null (memq major-mode +format-on-save-disabled-modes)))))
+
+  (add-hook 'apheleia-inhibit-functions #'+format-maybe-inhibit-h)
+  :config
+  (setq +format-with-lsp nil)
+  ;; 设置 Formatter
+  (setf (alist-get 'python-mode apheleia-mode-alist) 'ruff)
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'ruff)
+
+  (setq apheleia-remote-algorithm 'local)
+  (with-eval-after-load 'lsp-bridge
+    (add-hook 'apheleia-post-format-hook #'lsp-bridge-update-tramp-docker-file-mod-time)))
 
 (provide 'init-format)
 ;;; init-format.el ends here
