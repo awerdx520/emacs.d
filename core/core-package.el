@@ -111,7 +111,6 @@
     :prefix thomas-localleader-key
     :keymaps 'override))
 
-
 (use-package better-jumper
   :hook (thomas-first-input . better-jumper-mode)
   :commands thomas-set-jump-a thomas-set-jump-maybe-a thomas-set-jump-h

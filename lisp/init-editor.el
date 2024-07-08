@@ -36,7 +36,7 @@
 ;; auto-revert
 (use-package auto-revert
   :straight (:type built-in)
-  :diminish  auto-revert-mode
+  :diminish auto-revert-mode
   :hook (thomas-first-file . global-auto-revert-mode))
 
 ;;
@@ -187,7 +187,7 @@ the unwritable tidbits."
         ;; fringe indicator
         (overlay-put ov 'before-string (propertize " "
                                                    'display '(left-fringe hideshow-folded-fringe
-                                                              hideshow-border-face)))
+                                                                          hideshow-border-face)))
         ;; folding indicator
         (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
   (setq hs-set-up-overlay #'hideshow-folded-overlay-fn))
@@ -195,7 +195,7 @@ the unwritable tidbits."
 ;; 记录关闭之前打开 Buffer 光标位置
 (use-package saveplace
   :straight (:type built-in)
-  :hook (doom-first-file . save-place-mode)
+  :hook (thomas-first-file . save-place-mode)
   :custom (save-place-file (expand-file-name "saveplace" thomas-cache-dir)))
 
 ;;

@@ -32,7 +32,7 @@
 ;; 第一次访问文件时需要执行的钩子
 (defvar thomas-first-file-hook nil "Emacs 第一次启动文件钩子.")
 (defun run-thomas-first-file-hooks ()
-  "执行 `doom-first-file-hook' 中钩子函数.
+  "执行 `thomas-first-file-hook' 中钩子函数.
 
 执行完钩子后需要清空钩子中的配置。"
   (when thomas-first-file-hook (run-hooks 'thomas-first-file-hook)
