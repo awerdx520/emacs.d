@@ -25,7 +25,8 @@
            "RET" 'lsp-bridge-ref-open-file-and-stay
            "SPC" 'lsp-bridge-ref-open-file)
   :config
-  (setq c-basic-offset 4)
+  (setq-default c-basic-offset 4
+                c-ts-mode-indent-offset 4)
 
   ;; 关闭补全直接显示文档
   (setq acm-enable-doc nil)

@@ -47,6 +47,7 @@
 (require 'init-treesit)
 
 ;; tools
+(require 'init-eval)
 (require 'init-snippets)
 (require 'init-dired)
 (require 'init-spell)

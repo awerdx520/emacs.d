@@ -108,12 +108,6 @@
         xref-show-xrefs-function #'xref-show-definitions-completing-read
         xref-show-definitions-function #'xref-show-definitions-completing-read))
 
-;; Quickrun codes, including cpp. awesome!
-(use-package quickrun
-  :config
-  (setq quickrun-focus-p nil
-        quickrun-input-file-extension ".qr"))
-
 ;; Browse devdocs.io
 (use-package devdocs
   :custom (devdocs-data-dir (concat thomas-data-dir "devdocs"))
