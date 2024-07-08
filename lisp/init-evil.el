@@ -155,5 +155,40 @@
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
 
+(use-package evil-matchit
+  :config
+  (global-evil-matchit-mode 1))
+
+;; proted numbert.vim,
+;; 用于增加或减少当前点下的数据
+(use-package evil-numbers
+  :general
+  (:states '(normal visual)
+           "g=" 'evil-numbers/inc-at-pt
+           "g-" 'evil-numbers/dec-at-pt))
+
+;; 用于 Evil 的简易文本交换操作程序。 这是 Tom McDonald 的 vim-exchange 移植版本。
+(use-package evil-exchange
+  :config
+  (evil-exchange-install))
+
+;; 使用 *, # 进行前向后向搜索 visual 的值
+(use-package evil-visualstar
+  :hook (after-init . global-evil-visualstar-mode))
+
+;; Evil 中用于分隔参数的Motion和文本对象。
+(use-package evil-args
+  :general
+  ;; 替换 treesit 中定义的函数参数 textobject
+  (:keymaps 'evil-inner-text-objects-map "a" 'evil-inner-arg)
+  (:keymaps 'evil-outer-text-objects-map "a" 'evil-outer-arg)
+  ;; Motion
+  (:states '(normal motion)
+           "L" 'evil-forward-arg
+           "H" 'evil-backward-arg)
+  (:states '(normal) "K" 'evil-jump-out-args))
+
+;;(use-package evil-mc)
+
 (provide 'init-evil)
 ;; init-evil ends here

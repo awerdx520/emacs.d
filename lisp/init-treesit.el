@@ -33,7 +33,8 @@
   :general
   ;; Mapping textobjects
   (:keymaps 'evil-inner-text-objects-map
-            "a" (evil-textobj-tree-sitter-get-textobj ("parameter.outer" "call.inner"))
+            ;; use evil-args 替代
+            ;; "a" (evil-textobj-tree-sitter-get-textobj ("parameter.outer" "call.inner"))
             ;; bind `function.inner`(function block without name and args) to `f` for use in things like `vif`, `yif`
             "f" (evil-textobj-tree-sitter-get-textobj "function.inner")
             "F" (evil-textobj-tree-sitter-get-textobj "call.inner")
@@ -42,7 +43,8 @@
             "l" (evil-textobj-tree-sitter-get-textobj "loop.inner"))
 
   (:keymaps 'evil-outer-text-objects-map
-            "a" (evil-textobj-tree-sitter-get-textobj ("parameter.outer" "call.outer"))
+            ;; 用 evil-args 替代
+            ;; "a" (evil-textobj-tree-sitter-get-textobj ("parameter.outer" "call.outer"))
             ;; bind `function.outer`(entire function block) to `f` for use in things like `vaf`, `yaf`
             "f" (evil-textobj-tree-sitter-get-textobj "function.outer")
             "F" (evil-textobj-tree-sitter-get-textobj "call.outer")
