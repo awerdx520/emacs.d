@@ -118,7 +118,7 @@
   :init
   (defvar global-hl-line-modes
     '(prog-mode text-mode conf-mode special-mode
-      org-agenda-mode dired-mode)
+                org-agenda-mode dired-mode)
     "What modes to enable `hl-line-mode' in.")
   :config
   ;; HACK I reimplement `global-hl-line-mode' so we can white/blacklist modes in
@@ -181,7 +181,7 @@
   (setq whitespace-line-column nil
         whitespace-style
         '(face indentation tabs tab-mark spaces space-mark newline newline-mark
-          trailing lines-tail)
+               trailing lines-tail)
         whitespace-display-mappings
         '((tab-mark ?\t [?› ?\t])
           (newline-mark ?\n [?¬ ?\n])
@@ -242,6 +242,7 @@
     (when (derived-mode-p 'prog-mode 'yaml-mode)
       (symbol-overlay-mode 1)))
   (advice-add #'deactivate-mark :after #'turn-on-symbol-overlay))
+
 
 (provide 'init-ui)
 ;;; init-ui.el ends here

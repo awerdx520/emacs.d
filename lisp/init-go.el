@@ -1,5 +1,4 @@
 ;;; init-go.el Golang -*- lexical-binding: t; -*-
-
 (use-package go-mode
   :mode (("\\.go\\'" . go-ts-mode)))
 
