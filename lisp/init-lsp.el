@@ -25,9 +25,6 @@
            "RET" 'lsp-bridge-ref-open-file-and-stay
            "SPC" 'lsp-bridge-ref-open-file)
   :config
-  (setq-default c-basic-offset 4
-                c-ts-mode-indent-offset 4)
-
   ;; 关闭补全直接显示文档
   (setq acm-enable-doc nil)
 
@@ -36,7 +33,7 @@
 
   ;; 设 lsp-bridge.py 启动环境
   (setq lsp-bridge-python-command "/home/thomas/.conda/envs/lsp-bridge/bin/python"
-        lsp-bridge-enable-auto-format-code t)
+        lsp-bridge-enable-auto-format-code nil)
 
   (setq lsp-bridge-org-babel-lang-list '("c" "c++" "python" "java" "go" "rust" "scala")
         ;; 开启 org-bable 补全

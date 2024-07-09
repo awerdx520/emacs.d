@@ -1,6 +1,7 @@
 ;;; init-go.el Golang -*- lexical-binding: t; -*-
 (use-package go-mode
-  :mode (("\\.go\\'" . go-ts-mode)))
+  :mode (("\\.go\\'" . go-ts-mode))
+  :custom (go-ts-mode-indent-offset 4))
 
 ;; 回答有关 Go 源代码问题的工具, 集到 go-mode 中
 (use-package go-guru
