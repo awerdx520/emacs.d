@@ -105,6 +105,7 @@
   "hl" 'view-lossage
   "hL" 'describe-language-environment
   "hm" 'describe-mode
+  "hM" 'describe-keymap
   "ho" 'describe-symbol
   "hP" 'find-library
   "hq" 'help-quit

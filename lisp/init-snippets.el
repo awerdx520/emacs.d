@@ -59,5 +59,10 @@
   :config
   (setq aya-persist-snippets-dir +snippets-dir))
 
+;; yassnippet
+(use-package consult-yasnippet
+  :after (yasnippet consult)
+  :defer t)
+
 (provide 'init-snippets)
 ;;; init-snippets.el ends here

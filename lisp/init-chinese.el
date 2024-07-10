@@ -1,10 +1,9 @@
 ;; -*- lexical-binding: t -*-
 
 (use-package rime
-  :custom
-  (rime-user-data-dir (concat thomas-cache-dir "rime/"))
   :init
-  (setq default-input-method "rime")
+  (setq default-input-method "rime"
+        rime-user-data-dir (concat thomas-cache-dir "rime/"))
   :general
   (:keymaps 'rime-active-mode-map
             "M-j" 'rime-inline-ascii)

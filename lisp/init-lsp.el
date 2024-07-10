@@ -33,6 +33,7 @@
 
   ;; 设 lsp-bridge.py 启动环境
   (setq lsp-bridge-python-command "/home/thomas/.conda/envs/lsp-bridge/bin/python"
+        ;; 关闭 lsp 自动补全使用，apheleia 的格式化程序
         lsp-bridge-enable-auto-format-code nil)
 
   (setq lsp-bridge-org-babel-lang-list '("c" "c++" "python" "java" "go" "rust" "scala")

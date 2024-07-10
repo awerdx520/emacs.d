@@ -46,6 +46,15 @@
         vertico-cycle t
         vertico-count 17)
 
+  ;; Use `consult-completion-in-region' if Vertico is enabled.
+  ;; Otherwise use the default `completion--in-region' function.
+  (setq completion-in-region-function
+        (lambda (&rest args)
+          (apply (if vertico-mode
+                     #'consult-completion-in-region
+                   #'completion--in-region)
+                 args)))
+
   ;; Cleans up path when moving directories with shadowed paths syntax, e.g.
   ;; cleans ~/foo/bar/// to /, and ~/foo/bar/~/ to ~/.
   (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
@@ -59,8 +68,10 @@
 (use-package orderless
   :init
   (setq completion-styles '(orderless basic)
+        ;; 此外，需要首先尝试 basic 完成样式（而不是作为后备），TRAMP 主机名完成才能正常工作。
+        ;; partial-completion 样式允许您使用通配符来完成文件和部分路径，例如， /u/s/l 代表 /usr/share/local 。
         completion-category-defaults nil
-        completion-category-overrides nil)
+        completion-category-overrides '((file (styles basic partial-completion))))
   :config
   (defun eh-orderless-regexp (orig_func component)
     (let ((result (funcall orig_func component)))
@@ -118,10 +129,6 @@
             "C-x C-j" #'consult-dir-jump-file))
 
 
-;; yassnippet
-(use-package consult-yasnippet
-  :defer t)
-
 ;; flycheck
 (use-package consult-flycheck
   :after (consult flycheck))
@@ -151,9 +158,9 @@ Supports exportion consult-grep to wgrep, file to wdeired, and consult-localtion
 
   (eval-after-load 'consult
     '(eval-after-load 'embark
-      '(progn
-         (require 'embark-consult)
-         (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))))
+       '(progn
+          (require 'embark-consult)
+          (add-hook 'embark-collect-mode-hook #'consult-preview-at-point-mode))))
   :bind
   (:map minibuffer-local-map
         ("C-c C-e" . embark-export-write)))
