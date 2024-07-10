@@ -35,7 +35,7 @@
   (global-set-key [remap other-window] #'ace-window)
   :custom-face
   (aw-leading-char-face ((t (:foreground "white" :background "#2a6041"
-                             :weight bold :height 2.5 :box (:line-width 10 :color "#2a6041")))))
+                                         :weight bold :height 2.5 :box (:line-width 10 :color "#2a6041")))))
   :config
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
         aw-dispatch-always nil
@@ -44,20 +44,25 @@
         aw-scope 'frame
         aw-background t))
 
+;; (use-package shackle
+;;   :hook (after-init . shackle-mode)
+;;   :init
+;;   (setq shackle-default-size 0.35
+;;         shackle-default-alignment 'below)
+
+;;   (setq shackle-rules '((magit-diff-mode :align 'below :size 0.6)
+;;                         ("*Messages*" :align 'below :size 0.4)
+;;                         (term-mode :align 'below :size 0.4))))
+
 
 ;; 弹出窗口管理
 (use-package popper
-  :defines popper-echo-dispatch-actions
-  :commands popper-group-by-directory
-  :bind (:map popper-mode-map
-              ("s-`" . popper-toggle-latest)
-              ("s-o"   . popper-cycle)
-              ("M-`" . popper-toggle-type))
-  :hook (emacs-startup . popper-mode)
   :init
   (setq popper-reference-buffers
-        '("\\*Messages\\*"
-          "Output\\*$" "\\*Pp Eval Output\\*$"
+        '("\\*Messages\\*" ;; Emacs 信息窗口
+          ;; 抑制所有以 Output* 结尾的缓冲区和完成缓冲区，可以通过 popoer-toggle
+          ("Output\\*$" . hide)
+          "\\*Pp Eval Output\\*$"
           "\\*Compile-Log\\*"
           "\\*Completions\\*"
           "\\*Warnings\\*"
@@ -72,7 +77,6 @@
           "\\*Kill Ring\\*"
           "\\*Embark Export:.*\\*"
           "\\*Edit Annotation.*\\*"
-          "\\*Flutter\\*"
           bookmark-bmenu-mode
           lsp-bridge-ref-mode
           comint-mode
@@ -83,72 +87,68 @@
           occur-mode
           gnus-article-mode devdocs-mode
           grep-mode occur-mode rg-mode deadgrep-mode ag-mode pt-mode
-          ivy-occur-mode ivy-occur-grep-mode
           process-menu-mode list-environment-mode cargo-process-mode
-          youdao-dictionary-mode osx-dictionary-mode fanyi-mode
+          "^\\*gt-result\\*$" ; 翻译
+
+          ;; 从主模式 fundamental-mode 派生的任何少于 10 行的缓冲区都将被视为弹出窗口。
+          (lambda (buf) (with-current-buffer buf
+                          (and (derived-mode-p 'fundamental-mode)
+                               (< (count-lines (point-min) (point-max))
+                                  10))))
+
+          ;;         "\\*rustfmt\\*$" rustic-compilation-mode rustic-cargo-clippy-mode
+          ;;          rustic-cargo-outdated-mode rustic-cargo-test-moed
 
           "^\\*eshell.*\\*.*$" eshell-mode
           "^\\*shell.*\\*.*$"  shell-mode
           "^\\*terminal.*\\*.*$" term-mode
           "^\\*vterm.*\\*.*$"  vterm-mode
 
-          "\\*DAP Templates\\*$" dap-server-log-mode
           "\\*ELP Profiling Restuls\\*" profiler-report-mode
           "\\*Flycheck errors\\*$" " \\*Flycheck checker\\*$"
-          "\\*Paradox Report\\*$" "\\*package update results\\*$" "\\*Package-Lint\\*$"
           "\\*[Wo]*Man.*\\*$"
           "\\*ert\\*$" overseer-buffer-mode
-          "\\*gud-debug\\*$"
           "\\*quickrun\\*$"
-          "\\*tldr\\*$"
           "\\*vc-.*\\*$"
           "\\*eldoc\\*"
-          "^\\*elfeed-entry\\*$"
           "^\\*macro expansion\\**"
 
           "\\*Agenda Commands\\*" "\\*Org Select\\*" "\\*Capture\\*" "^CAPTURE-.*\\.org*"
-          "\\*Gofmt Errors\\*$" "\\*Go Test\\*$" godoc-mode
-          "\\*docker-containers\\*" "\\*docker-images\\*" "\\*docker-networks\\*" "\\*docker-volumes\\*"
-          "\\*prolog\\*" inferior-python-mode inf-ruby-mode swift-repl-mode))
-  ;; "\\*rustfmt\\*$"
-  ;;rustic-compilation-mode rustic-cargo-clippy-mode
-  ;;rustic-cargo-outdated-mode
-  ;; rustic-cargo-test-moed
+          "\\*Gofmt Errors\\*$" "\\*Go Test\\*$" godoc-mode ; golang
+          "\\*docker-containers\\*" "\\*docker-images\\*" "\\*docker-networks\\*" "\\*docker-volumes\\*" ; docker
+          ))
 
-
-  (when (display-grayscale-p)
-    (setq popper-mode-line
-          '(:eval
-            (concat
-             (propertize " " 'face 'mode-line-emphasis)
-             (nerd-icons-octicon "nf-oct-pin" :height 0.9 :v-adjust 0.0 :face 'mode-line-emphasis)
-             (propertize " " 'face 'mode-line-emphasis)))))
 
   (setq popper-echo-dispatch-actions t
-        popper-group-function nil)
-  :config
+        ;; group by project.el  project root, with  fall back to  default-directory
+        popper-group-function #'popper-group-by-directory
+
+        ;; 关闭 popper 控制弹出窗口位置, 使用 shackle 包控制
+        popper-display-control nil)
+
+  ;; 自适应弹出窗口高度
+  (defun +popper-fit-window-height (win)
+    "Determine the height of popup window WIN by fitting it to the buffer's content."
+    (fit-window-to-buffer win (floor (frame-height) 3)
+                          (floor (frame-height) 3)))
+
+  (setq popper-window-height #'+popper-fit-window-height)
+
+  ;; 开启 popper-mode
+  (popper-mode +1)
   (popper-echo-mode +1)
-
+  :config
   ;;
-  (with-no-warnings
-    (defun my-popper-fit-window-height (win)
-      "Determine the height of popup window WIN by fitting it to the buffer's content."
-      (fit-window-to-buffer
-       win
-       (floor (frame-height) 3)
-       (floor (frame-height) 3)))
-    (setq popper-window-height #'my-popper-fit-window-height)
-
-    (defun popper-close-window-hack (&rest _)
-      "Close popper window via `C-g'."
-      ;; `C-g' can deactivate region
-      (when (and (called-interactively-p 'interactive)
-                 (not (region-active-p))
-                 popper-open-popup-alist)
-        (let ((window (caar popper-open-popup-alist)))
-          (when (window-live-p window)
-            (delete-window window)))))
-    (advice-add #'keyboard-quit :before #'popper-close-window-hack)))
+  (defun +popper-close-window-hack (&rest _)
+    "Close popper window via `C-g'."
+    ;; `C-g' can deactivate region
+    (when (and (called-interactively-p 'interactive)
+               (not (region-active-p))
+               popper-open-popup-alist)
+      (let ((window (caar popper-open-popup-alist)))
+        (when (window-live-p window)
+          (delete-window window)))))
+  (advice-add #'keyboard-quit :before #'+popper-close-window-hack))
 
 (provide 'init-window)
 ;;; init-window.el ends here
