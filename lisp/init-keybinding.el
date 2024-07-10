@@ -46,6 +46,7 @@
   "c" '(:ignore t :wk "code")
   "cc" 'compile
   "cC" 'recompile
+  "cf" 'apheleia-format-buffer
   "ca" 'lsp-bridge-code-action ; 弹出代码修复菜单
   "cj" 'lsp-bridge-find-def ; 跳转到定义位置
   "cJ" 'lsp-bridge-find-def-other-window ; 在其他窗口跳转到定义位置
