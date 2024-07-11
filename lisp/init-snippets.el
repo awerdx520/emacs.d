@@ -19,9 +19,6 @@
 ;;
 ;;; Code:
 
-(defvar +snippets-dir (expand-file-name "snippets/" thomas-emacs-dir)
-  "Directory where `yasnippet' will search for your private snippets.")
-
 ;;
 (use-package yasnippet
   :commands (yas-minor-mode-on
@@ -34,30 +31,25 @@
              yas-activate-extra-mode
              yas-deactivate-extra-mode
              yas-maybe-expand-abbrev-key-filter)
-  :diminish yas-minor-mode
+  :hook (prog-mode . yas-minor-mode)
   :init
   ;; Reduce default verbosity. 3 is too chatty about initializing yasnippet. 2
   ;; is just right (only shows errors).
-  (defvar yas-verbosity 2)
-  ;; Remove default ~/.emacs.d/snippets
-  (defvar yas-snippet-dirs nil)
+  (setq yas-verbosity 2)
   :config
-  (add-to-list 'yas-snippet-dirs '+snippets-dir)
-  ;; default snippets library, if available
-  (add-to-list 'load-path +snippets-dir)
   ;; HACK In case `+snippets-dir' and `doom-snippets-dir' are the same, or
   ;;      duplicates exist in `yas-snippet-dirs'.
   (advice-add #'yas-snippet-dirs :filter-return #'delete-dups)
-  ;; If in a daemon session, front-load this expensive work:
-  (yas-global-mode +1))
+  ;; 加载所有 snippets 菜单
+  (yas-reload-all))
 
+;; 添加常用 snippets 片段
 (use-package yasnippet-snippets
   :after yasnippt)
 
+;; 创建代码片段
 (use-package auto-yasnippet
-  :after yasnippet
-  :config
-  (setq aya-persist-snippets-dir +snippets-dir))
+  :after yasnippet)
 
 ;; yassnippet
 (use-package consult-yasnippet
