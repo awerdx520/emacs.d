@@ -111,8 +111,10 @@
 ;; Browse devdocs.io
 (use-package devdocs
   :custom (devdocs-data-dir (concat thomas-data-dir "devdocs"))
-  :config (add-to-list 'completion-category-overrides
-                       '(devdocs (styles . (flex)))))
+  :config
+  (add-to-list 'completion-category-overrides '(devdocs (styles . (flex))))
+  (add-hook 'python-ts-mode-hook (lambda ()
+                                   (setq-local devdocs-current-docs '("python~3.11")) )))
 
 ;; Jump to definition, used as a fallback of lsp-find-definition
 (use-package dumb-jump
