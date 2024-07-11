@@ -25,6 +25,14 @@
   ;; make colon optional
   (setq magit-todos-keyword-suffix "\\(?:([^)]+)\\)?:?"))
 
+(use-package gitignore-templates
+  :general
+  (thomas-leader-define
+    "ig" 'gitignore-templates-insert
+    "iG" 'gitignore-templates-new-file)
+  :config
+  (setq gitignore-templates-api 'github))
+
 
 ;; NOTE: `diff-hl' depends on `vc'
 (use-package vc
@@ -72,6 +80,8 @@
   :mode (("\\.gitignore\\'"     . conf-unix-mode)
          ("\\.gitconfig\\'"     . conf-unix-mode)
          ("\\.gitattributes\\'" . conf-unix-mode)))
+
+
 
 (provide 'init-git)
 
