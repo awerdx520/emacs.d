@@ -18,7 +18,9 @@
 ;; 在 eldoc 中显示变量，函数类型信息以及函数当前参数位置
 ;; TODO 没有起作用
 (use-package go-eldoc
-  :hook (go-mode . go-eldoc-setup))
+  :hook (go-ts-mode . go-eldoc-setup))
+
+(use-package gotest)
 
 ;;
 ;; (use-package gorepl-mode
