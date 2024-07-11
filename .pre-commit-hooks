@@ -1,0 +1,16 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+    - id: trailing-whitespace # 修剪尾随空白
+    - id: end-of-file-fixer   # 确保文件以换行符结尾并且仅以换行符结尾
+    - id: check-yaml
+    - id: check-added-large-files
+    - id: detect-private-key  # 检查私钥是否存在
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.16.1
+    hooks:
+      - id: gitleaks
