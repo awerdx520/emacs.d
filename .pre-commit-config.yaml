@@ -10,7 +10,10 @@ repos:
     - id: check-added-large-files
     - id: detect-private-key  # 检查私钥是否存在
 
-  - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.16.1
+  - repo: https://github.com/thoughtworks/talisman
+    rev: 'v1.28.0'  # Update me!
     hooks:
-      - id: gitleaks
+      # both pre-commit and pre-push supported
+      # - id: talisman-commit
+      - id: talisman-push
+        entry: cmd --githook pre-commit
