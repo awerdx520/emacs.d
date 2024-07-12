@@ -62,6 +62,35 @@
          ("C-f" . forward-char)
          ("M-n" . next-complete-history-element)
          ("M-p" . previous-complete-history-element))
+  :general
+  (thomas-leader-define
+    "w:" 'evil-ex
+    "w+" 'evil-window-increase-height
+    "w-" 'evil-window-decrease-height
+    "w<" 'evil-window-decrease-width
+    "w>" 'evil-window-decrease-width
+    "w_" 'evil-window-set-height
+    "wb" 'evil-window-bottom-right
+    "wc" 'evil-window-delete
+    "wd" 'evil-window-delete
+    "wh" 'evil-window-left
+    "wj" 'evil-window-down
+    "wk" 'evil-window-up
+    "wl" 'evil-window-right
+
+    ;;"wm" 'maxiz
+    "wn" 'evil-window-new
+    "wp" 'evil-window-mru
+    "wq" 'evil-quit
+    "wr" 'evil-window-rotate-downwards
+    "wR" 'evil-window-rotate-upwards
+    "ws" 'evil-window-split
+    "wt" 'evil-window-top-left
+    "wv" 'evil-window-vsplit
+    "ww" 'evil-window-next
+    "wW" 'evil-window-prev
+    "wx" 'evil-window-exchange
+    "w|" 'evil-window-set-width )
   :config
   ;; Specify major mode uses EMACS original state.
   (dolist (p '((minibuffer-inactive-mode . emacs)

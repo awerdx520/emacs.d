@@ -12,6 +12,21 @@
 (use-package magit
   :after transient
   :hook (git-commit-setup . git-commit-turn-on-flyspell)
+  :general
+  (thomas-leader-define
+    ;; git
+    "g." 'magit-file-dispatch
+    "g/" 'magit-dispatch
+    "gb" 'magit-branch-checkout
+    "gC" 'magit-clone
+    "gD" 'magit-file-delete
+    "gg" 'magit-status
+    "gG" 'magit-status-here
+    "gL" 'magit-log-buffer-file
+    "gS" 'magit-stage-buffer-file
+    "gU" 'magit-unstage-buffer-file
+    ;; projet
+    "pt" 'magit-todos-list)
   :config
   (setq magit-diff-refine-hunk t
         magit-diff-paint-whitespace nil

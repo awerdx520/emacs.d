@@ -22,6 +22,12 @@
 ;; Needed by `webpaste'
 (use-package browse-url
   :straight (:type built-in)
+  :general
+  (thomas-leader-define
+    "oo" 'browse-url-at-point
+    "obi" 'browse-url
+    "obd" 'browse-url-of-dired-file
+    "obs" 'browse-url-of-file)
   :config
   ;; 当使用 WSL2 环境时可以使用 wslview 作为默认打开浏览器打开连接。
   ;; wlsview 是 wslu 工具集中的命令，可是根据传递的参数选择合适的
@@ -38,6 +44,8 @@
 ;; web search
 (use-package webjump
   :straight (:type built-in)
+  :general
+  (thomas-leader-define "so" 'webjump)
   :config
   (setq webjump-sites '(;; Internet search engines.
                         ("Google" .
@@ -79,6 +87,11 @@
 ;; Pastebin service
 (use-package webpaste
   :commands webpaste-paste-buffer-or-region
+  :general
+  (thomas-leader-define
+    "rpb" 'webpaste-paste-buffer
+    "rpr" 'webpaste-paste-region
+    "rpp" 'webpaste-paste-buffer-or-region)
   :config
   (setq webpaste-open-in-browser t
         webpaste-paste-confirmation t ; 在执行粘贴之前需要确认

@@ -11,6 +11,21 @@
                           :build (:not compile))
   :hook (prog-mode . lsp-bridge-mode)
   :general
+  (thomas-leader-define
+    ;; code
+    "ca" 'lsp-bridge-code-action ; 弹出代码修复菜单
+    "cj" 'lsp-bridge-find-def ; 跳转到定义位置
+    "cJ" 'lsp-bridge-find-def-other-window ; 在其他窗口跳转到定义位置
+    "cr" 'lsp-bridge-rename ; 重命名
+    "ci" 'lsp-bridge-find-impl ; 跳转到接口实现位置
+    "cI" 'lsp-bridge-find-impl-other-window ; 在其他窗口跳转到接口实现位置
+    "ct" 'lsp-bridge-find-type-def ; 跳转到类型定义位置
+    "cT" 'lsp-bridge-find-type-def-other-window ; 在其他窗口跳转到类型定义位置
+    "cD" 'lsp-bridge-find-references ; 查看代码引用
+    "ck" 'lsp-bridge-show-documentation
+    "cx" 'lsp-bridge-diagnostic-list ); 列出所有诊断信息
+
+  ;;  evil
   (:states '(normal visual)
            "gd" 'lsp-bridge-find-def
            "gD" 'lsp-bridge-find-references

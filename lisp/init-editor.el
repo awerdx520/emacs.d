@@ -258,7 +258,7 @@ This includes everything that calls `read--expression', e.g.
 ;; 删除末尾空白
 (use-package ws-butler
   ;; a less intrusive `delete-trailing-whitespaces' on save
-  :hook (after-init . ws-butler-mode)
+  :hook (prog-mode . ws-butler-mode)
   :config
   ;; ws-butler normally preserves whitespace in the buffer (but strips it from
   ;; the written file). While sometimes convenient, this behavior is not
@@ -325,28 +325,17 @@ This includes everything that calls `read--expression', e.g.
 ;;
 ;;; Motion
 ;;
-;;; Server
-;; Use emacsclient to connect
-(use-package server
-  :when (display-graphic-p)
-  :straight (:type built-in)
-  :hook (after-init . server-mode)
-  :config
-  (when-let (name (getenv "EMACS_SERVER_NAME"))
-    (setq server-name name))
-  (unless (server-running-p)
-    (server-start)))
-
 ;; transparent remote access
 (use-package tramp
-  :straight (:type built-in)
   :defer t
+  :straight (:type built-in)
   :config
-  (setq remote-file-name-inhibit-cache 60
-        tramp-completion-reread-directory-timeout 60
-        tramp-verbose 1
+  (setq tramp-verbose 1
         tramp-default-method "ssh"
-        tramp-persistency-file-name (expand-file-name "tramp" thomas-cache-dir)
+        tramp-completion-reread-directory-timeout 60
+        tramp-persistency-file-name (expand-file-name "tramp" thomas-cache-dir))
+
+  (setq remote-file-name-inhibit-cache 60
         vc-ignore-dir-regexp (format "%s\\|%s\\|%s"
                                      vc-ignore-dir-regexp
                                      tramp-file-name-regexp

@@ -63,13 +63,6 @@
 (setq byte-compile-warnings '(cl-functions))
 (straight-use-package 'use-package)
 
-;;
-;;; 安装一些核心包
-;;;
-;; 用于阻止一些包在 modeline 上的添加信息已经与 use-package 集成，
-;; 可用 :diminish xxx-mode 配置当前包禁止显示在 modeline 上
-(use-package diminish)
-
 ;; 添加性能测试
 (use-package benchmark-init
   :demand t
@@ -77,7 +70,14 @@
   (require 'benchmark-init-modes)
   (add-hook 'after-init-hook #'benchmark-init/deactivate))
 
-;; Posframe can pop up a frame at point, this posframe is a child-frame connected to its root window’s buffer.
+;;
+;;; 安装一些核心包
+;;;
+;; 用于阻止一些包在 modeline 上的添加信息已经与 use-package 集成，
+;; 可用 :diminish xxx-mode 配置当前包禁止显示在 modeline 上
+(use-package diminish)
+
+;; 弹出框架
 (use-package posframe)
 
 ;; Workaround with minified source files
@@ -207,41 +207,6 @@
         ;; the unpredictability of this (when enabled) makes it a poor default
         avy-single-candidate-jump nil))
 
-;; colorful help mode
-(use-package helpful
-  :general
-  (:keymaps 'override
-            [remap describe-function] #'helpful-callable
-            [remap describe-command]  #'helpful-command
-            [remap describe-variable] #'helpful-variable
-            [remap describe-key]      #'helpful-key
-            [remap describe-symbol]   #'helpful-symbol)
-  (:states 'normal :keymaps '(help-mode-map helpful-mode-map)
-           "q" 'quit-window
-           [escape] 'quit-window
-           "Q" 'kill-current-buffer)
-  :init
-  ;; Make `apropos' et co search more extensively. They're more useful this way.
-  (setq apropos-do-all t)
-
-  (with-eval-after-load 'apropos
-    ;; patch apropos buttons to call helpful instead of help
-    (dolist (fun-bt '(apropos-function apropos-macro apropos-command))
-      (button-type-put
-       fun-bt 'action
-       (lambda (button)
-         (helpful-callable (button-get button 'apropos-symbol)))))
-
-    (dolist (var-bt '(apropos-variable apropos-user-option))
-      (button-type-put
-       var-bt 'action
-       (lambda (button)
-         (helpful-variable (button-get button 'apropos-symbol))))))
-
-  ;; Quick editing in `describe-variable'
-  (with-eval-after-load 'help-fns
-    (put 'help-fns-edit-variable 'disabled nil)))
-
 ;; TODO 优化 shell 启动时间
 (use-package exec-path-from-shell
   :config
@@ -250,6 +215,9 @@
         exec-path-from-shell-variables '("LOCATION" "PATH" "MANPATH" "GOROOT" "GOPATH" "EDITOR" "PYTHONPATH")
         exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-initialize))
+
+;; 加载 help 配置
+(require 'core-help)
 
 (provide 'core-package)
 ;;; core-package.el ends here

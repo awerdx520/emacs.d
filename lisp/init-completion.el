@@ -34,6 +34,9 @@
 (use-package vertico
   :hook (thomas-first-input . vertico-mode)
   :general
+  (thomas-leader-define
+    "'" 'vertico-repeat)
+  ;;
   (:states 'insert :keymaps 'vertico-map
            "DEL" 'vertico-directory-delete-char
            "M-RET" 'vertico-exit-input
@@ -96,12 +99,39 @@
               ("C-;"     . embark-act)
               ("C-c C-c" . embark-export)
               ("C-c C-o" . embark-collect))
+  :general
+  (thomas-leader-define
+    "a" '(embark-act :wk "Actions"))
   :config
   (setq prefix-help-command 'embark-prefix-help-command))
 
 ;;
 ;;; Useful search and navigation commands
 (use-package consult
+  :general
+  (thomas-leader-define
+    ;; top
+    "." 'consult-find
+    "RET" 'consult-bookmark
+    ;; buffer
+    "bb" 'consult-buffer
+    "bB" 'consult-buffer-other-window
+    ;; file
+    "fr" 'consult-recent-file
+    ;; help
+    "ht" 'consult-theme
+    ;; insert
+    "ir" 'consult-register
+    "is" 'consult-yasnippet
+    ;; project
+    "pb" 'consult-project-buffer ;; 切换到项目中已经打开的 Buffer
+    "pg" 'consult-git-grep
+    ;; search
+    "sf" 'consult-locate
+    "si" 'consult-imenu
+    "sI" 'consult-imenu-multi
+    "sm" 'consult-bookmark
+    "sr" 'consult-mark)
   :config
   ;; Optionally configure the register formatting. This improves the register
   ;; preview for `consult-register', `consult-register-load',
