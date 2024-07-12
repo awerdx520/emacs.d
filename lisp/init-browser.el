@@ -48,42 +48,70 @@
   (thomas-leader-define "so" 'webjump)
   :config
   (setq webjump-sites '(;; Internet search engines.
-                        ("Google" .
+                        ("Google -- 全球搜索网站" .
                          [simple-query "www.google.com"
                                        "www.google.com/search?q=" ""])
-                        ("Wikipedia" .
-                         [simple-query "wikipedia.org" "wikipedia.org/wiki/" ""])
-                        ("Ludwig Guru" .
-                         [simple-query "ludwig.guru" "ludwig.guru/s/" ""])
-                        ("Stack Overflow" .
-                         [simple-query "stackoverflow.com" "stackoverflow.com/search?q=" ""])
-                        ("Archlinux Wiki" .
-                         [simple-query "archlinuxcn.org" "wiki.archlinuxcn.org/wzh/index.php?search=" "&title=Special%3A%E6%90%9C%E7%B4%A2&profile=advanced&fulltext=1&ns0=1"])
+                        ("Baidu -- 中文搜索网站" .
+                         [simple-query "www.baidu.com"
+                                       "www.baidu.com/s?wd=" ""])
+                        ("DuckDuckGo -- 隐私搜索网站" .
+                         [simple-query "www.duckduckgo.com"
+                                       "www.duckduckgo.com/search?q=" ""])
 
-                        ("AUR" .
+                        ;; Emacs
+                        ("Emacs China -- Emacs 中文论坛" .
+                         [simple-query "emacs-china.org" "emacs-china.org/search?q=" ""])
+                        ("Melpa -- Milkypostman 的 Emacs Lisp 软件包存档" .
+                         [simple-query "melpa.org" "melpa.org/#/?q=vs" ""])
+
+                        ;; Linux
+                        ("Archlinux Wiki -- Archlinux wiki帮助页面" .
+                         [simple-query "archlinuxcn.org" "wiki.archlinuxcn.org/wzh/index.php?search=" "&title=Special%3A%E6%90%9C%E7%B4%A2&profile=advanced&fulltext=1&ns0=1"])
+                        ("AUR -- Arch 用户软件仓库" .
                          [simple-query "archlinux.org" "aur.archlinux.org/packages?O=0&K=" ""])
-                        ("Man Search" .
+                        ("Man Search -- Arch Linux 软件包的手册页面" .
                          [simple-query "archlinux.org" "man.archlinux.org/search?q=" ""])
-                        ("Man Go" .
+                        ("Man Go -- Arch Linux 手册精准搜索" .
                          [simple-query "archlinux.org" "man.archlinux.org/search?q=" "&go=Go"])
-                        ("StackOverflow" .
+
+                        ;; Develop
+                        ("Stack Overflow -- 程序设计领域的问答网站" .
                          [simple-query "stackoverflow.com" "stackoverflow.com/search?q=" ""])
-                        ("Github"         .
-                         [smple-query "github.com"     "github.com/search?ref=simplesearch&q=" ""])
-                        ("Wolfram alpha"    .
-                         [smple-query "wolframalpha.com"   "wolframalpha.com/input/?i=" ""])
-                        ("MDN"  .
-                         [smple-query "mozilla.org"               "developer.mozilla.org/en-US/search?q=" ""])
-                        ("Rust Docs" .
-                         [smple-query "rust-lang.org"  "doc.rust-lang.org/std/?search=" ""])
-                        ;; Code search
-                        ("Code Search" .
+                        ("Github -- 全球最大男性交友平台"         .
+                         [simple-query "github.com" "github.com/search?ref=simplesearch&q=" ""])
+                        ("MDN -- 前端或网络相关开发资源"  .
+                         [simple-query "mozilla.org" "developer.mozilla.org/en-US/search?q=" ""])
+                        ("Rust Docs -- Rust 帮助页面" .
+                         [simple-query "rust-lang.org"  "doc.rust-lang.org/std/?search=" ""])
+                        ("Rust Crate -- Rust crates 包搜索" .
+                         [simple-query "crates.io"  "crates.io/search?q=" ""])
+                        ("Golang Pkg -- Golang 包搜索" .
+                         [simple-query "pkg.go.dev"  "pkg.go.dev/search?q=net" ""])
+                        ("Regex101 -- 在线正则表达式测试和调试" . "regex101.com")
+                        ("Code Search -- 代码搜索和具有代码图上下文的人工智能助手" .
                          [simple-query "sourcegraph.com" "sourcegraph.com/search?q=context:global+" "&patternType=literal"])
 
-                        ;; Language specific engines.
-                        ("x86 Instructions Reference" .
-                         [simple-query "www.felixcloutier.com"
-                                       "www.felixcloutier.com/x86/" ""]))))
+                        ;; AI
+                        ("Huggingface Model -- Huggingface 模型搜索" .
+                         [simple-query "huggingface.co"  "huggingface.co/models?sort=trending&search=" ""])
+                        ("Huggingface Dataset -- Huggingface 数据集搜索" .
+                         [simple-query "huggingface.co"  "huggingface.co/dataset?sort=trending&search=" ""])
+                        ("Ollama Modle -- Ollama 模型搜索" .
+                         [simple-query "ollama.com"  "ollama.com/library?q=" ""])
+
+                        ;; Wiki
+                        ("Wikipedia -- 维基百科" .
+                         [simple-query "wikipedia.org" "wikipedia.org/wiki/" ""])
+                        ("Annas Archive -- 安娜的档案（人类历史上最大的完全开放的图书馆）" .
+                         [simple-query "zh.annas-archive.org" "zh.annas-archive.org/search?q=" ""])
+
+                        ;; Video
+
+
+                        ;; Writing
+                        ("Ludwig Guru -- 您的英语写作平台" .
+                         [simple-query "ludwig.guru" "ludwig.guru/s/" ""]))))
+
 ;; Pastebin service
 (use-package webpaste
   :commands webpaste-paste-buffer-or-region
