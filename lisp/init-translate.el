@@ -7,6 +7,7 @@
   :commands gt-do-translate
   :general
   (thomas-leader-define
+    "d" '(:ignore t :wk "do")
     "d." 'gt-do-translate)
   :config
   (setq gt-langs '(en zh)

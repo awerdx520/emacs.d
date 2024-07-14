@@ -4,7 +4,7 @@
 ;;
 
 ;;; Code:
-(require 'core-basic)
+(require 'general)
 
 (thomas-leader-define
   ;; Top

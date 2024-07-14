@@ -3,7 +3,12 @@
 (use-package quickrun
   :general
   (thomas-leader-define
-    "er" 'quickrun)
+    "e" '(:ignore t :wk "eval")
+    "ea" 'quickrun-with-arg
+    "eq" 'quickrun
+    "er" 'quickrun-region
+    "es" 'quickrun-shell
+    "ep" 'quickrun-replace-region)
   :config
   (setq quickrun-focus-p nil
         quickrun-input-file-extension ".qr"))

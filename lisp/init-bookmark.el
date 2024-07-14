@@ -26,7 +26,7 @@
   :config
   (with-no-warnings
     ;; Display icons for bookmarks
-    (defun my-bookmark-bmenu--revert ()
+    (defun +bookmark-bmenu--revert ()
       "Re-populate `tabulated-list-entries'."
       (let (entries)
         (dolist (full-record (bookmark-maybe-sort-alist))
@@ -72,9 +72,9 @@
         (tabulated-list-init-header)
         (setq tabulated-list-entries entries))
       (tabulated-list-print t))
-    (advice-add #'bookmark-bmenu--revert :override #'my-bookmark-bmenu--revert)
+    (advice-add #'bookmark-bmenu--revert :override #'+bookmark-bmenu--revert)
 
-    (defun my-bookmark-bmenu-list ()
+    (defun +bookmark-bmenu-list ()
       "Display a list of existing bookmarks.
 The list is displayed in a buffer named `*Bookmark List*'.
 The leftmost column displays a D if the bookmark is flagged for
@@ -87,7 +87,7 @@ deletion, or > if it is flagged for displaying."
           (set-buffer buf)))
       (bookmark-bmenu-mode)
       (bookmark-bmenu--revert))
-    (advice-add #'bookmark-bmenu-list :override #'my-bookmark-bmenu-list)
+    (advice-add #'bookmark-bmenu-list :override #'+bookmark-bmenu-list)
 
     (define-derived-mode bookmark-bmenu-mode tabulated-list-mode "Bookmark Menu"
       (setq truncate-lines t)

@@ -62,6 +62,12 @@
       use-package-compute-statistics nil)
 (setq byte-compile-warnings '(cl-functions))
 (straight-use-package 'use-package)
+;;
+;;; 安装一些核心包
+;;;
+;; 用于阻止一些包在 modeline 上的添加信息已经与 use-package 集成，
+;; 可用 :diminish xxx-mode 配置当前包禁止显示在 modeline 上
+(use-package diminish)
 
 ;; 添加性能测试
 (use-package benchmark-init
@@ -70,32 +76,16 @@
   (require 'benchmark-init-modes)
   (add-hook 'after-init-hook #'benchmark-init/deactivate))
 
-;;
-;;; 安装一些核心包
-;;;
-;; 用于阻止一些包在 modeline 上的添加信息已经与 use-package 集成，
-;; 可用 :diminish xxx-mode 配置当前包禁止显示在 modeline 上
-(use-package diminish)
+(use-package gcmh
+  :straight (:host github :repo "emacsmirror/gcmh")
+  :hook (thomas-first-input . gcmh-mode)
+  :init
+  (setq gcmh-idle-delay 'auto
+        gcmh-auto-idle-delay-factor 10
+        gcmh-high-cons-threshold #x1000000)) ; 16MB
 
 ;; 弹出框架
 (use-package posframe)
-
-;; Workaround with minified source files
-(use-package so-long
-  :straight (:type built-in)
-  :hook (thomas-first-file . global-so-long-mode)
-  :config
-  (setq so-long-threshold 10240)
-  ;; 保持 save-place 不在大型/长文件中运行
-  (appendq! so-long-variable-overrides '((font-lock-maximum-decoration . 1)
-                                         (save-place-alist . nil)))
-  ;; Text files could possibly be too long too
-  (add-to-list 'so-long-target-modes 'text-mode)
-  ;; 禁用某些对于大缓冲区来说可能不必要/昂贵的模式
-  (appendq! so-long-minor-modes '(rainbow-mode flycheck-mode eldoc-mode
-                                               ws-butler-mode highlight-numbers-mode
-                                               rainbow-delimiters-mode
-                                               highlight-indent-guides-mode)))
 
 (use-package general
   :config
@@ -110,6 +100,46 @@
     :states '(normal visual motion evilified)
     :prefix thomas-localleader-key
     :keymaps 'override))
+
+(use-package which-key
+  :diminish which-key-mode "Ⓚ"
+  :hook (after-init . which-key-mode)
+  :config
+  (setq which-key-sort-order #'which-key-key-order-alpha
+        which-key-sort-uppercase-first nil
+        which-key-add-column-padding 1
+        which-key-max-display-columns nil
+        which-key-min-display-lines 6
+        which-key-side-window-slot -10)
+
+  (put 'which-key-replacement-alist 'initial-value which-key-replacement-alist)
+  ;; general improvements to which-key readability
+  (which-key-setup-side-window-bottom)
+  (defun +which-key-set-line-spaceing-fn ()
+    "Set `which-key' line spacing"
+    (setq line-spacing 3))
+  (add-hook 'which-key-init-buffer-hook #'+which-key-set-line-spaceing-fn)
+  ;;
+  (which-key-add-key-based-replacements thomas-leader-key "<leader>")
+  (which-key-add-key-based-replacements thomas-localleader-key "<localleader>"))
+
+;;
+(use-package avy
+  :config
+  (setq avy-all-windows nil
+        avy-all-windows-alt t
+        avy-background t
+        ;; the unpredictability of this (when enabled) makes it a poor default
+        avy-single-candidate-jump nil))
+
+;; TODO 优化 shell 启动时间
+(use-package exec-path-from-shell
+  :config
+  ;; 设成nil 则不从 .zshrc 读 只从 .zshenv读（可以加快速度，但是需要你将环境变量相关的都放到 .zshenv 中，而非 .zshrc 中)
+  (setq exec-path-from-shell-check-startup-files nil
+        exec-path-from-shell-variables '("LOCATION" "PATH" "MANPATH" "GOROOT" "GOPATH" "EDITOR" "PYTHONPATH")
+        exec-path-from-shell-arguments '("-l"))
+  (exec-path-from-shell-initialize))
 
 (use-package better-jumper
   :hook (thomas-first-input . better-jumper-mode)
@@ -169,53 +199,22 @@
   ;; Create a jump point before jumping with imenu.
   (advice-add #'imenu :around #'thomas-set-jump-a))
 
-(use-package gcmh
-  :straight (:host github :repo "emacsmirror/gcmh")
-  :hook (thomas-first-input . gcmh-mode)
-  :init
-  (setq gcmh-idle-delay 'auto
-        gcmh-auto-idle-delay-factor 10
-        gcmh-high-cons-threshold #x1000000)) ; 16MB
-
-(use-package which-key
-  :diminish which-key-mode "Ⓚ"
-  :hook (after-init . which-key-mode)
+;; Workaround with minified source files
+(use-package so-long
+  :straight (:type built-in)
+  :hook (thomas-first-file . global-so-long-mode)
   :config
-  (setq which-key-sort-order #'which-key-key-order-alpha
-        which-key-sort-uppercase-first nil
-        which-key-add-column-padding 1
-        which-key-max-display-columns nil
-        which-key-min-display-lines 6
-        which-key-side-window-slot -10)
-
-  (put 'which-key-replacement-alist 'initial-value which-key-replacement-alist)
-  ;; general improvements to which-key readability
-  (which-key-setup-side-window-bottom)
-  (defun +which-key-set-line-spaceing-fn ()
-    "Set `which-key' line spacing"
-    (setq line-spacing 3))
-  (add-hook 'which-key-init-buffer-hook #'+which-key-set-line-spaceing-fn)
-  ;;
-  (which-key-add-key-based-replacements thomas-leader-key "<leader>")
-  (which-key-add-key-based-replacements thomas-localleader-key "<localleader>"))
-
-(use-package avy
-  :config
-  (setq avy-all-windows nil
-        avy-all-windows-alt t
-        avy-background t
-        ;; the unpredictability of this (when enabled) makes it a poor default
-        avy-single-candidate-jump nil))
-
-;; TODO 优化 shell 启动时间
-(use-package exec-path-from-shell
-  :config
-  ;; 设成nil 则不从 .zshrc 读 只从 .zshenv读（可以加快速度，但是需要你将环境变量相关的都放到 .zshenv 中，而非 .zshrc 中)
-  (setq exec-path-from-shell-check-startup-files nil
-        exec-path-from-shell-variables '("LOCATION" "PATH" "MANPATH" "GOROOT" "GOPATH" "EDITOR" "PYTHONPATH")
-        exec-path-from-shell-arguments '("-l"))
-  (exec-path-from-shell-initialize))
-
+  (setq so-long-threshold 10240)
+  ;; 保持 save-place 不在大型/长文件中运行
+  (appendq! so-long-variable-overrides '((font-lock-maximum-decoration . 1)
+                                         (save-place-alist . nil)))
+  ;; Text files could possibly be too long too
+  (add-to-list 'so-long-target-modes 'text-mode)
+  ;; 禁用某些对于大缓冲区来说可能不必要/昂贵的模式
+  (appendq! so-long-minor-modes '(rainbow-mode flycheck-mode eldoc-mode
+                                               ws-butler-mode highlight-numbers-mode
+                                               rainbow-delimiters-mode
+                                               highlight-indent-guides-mode)))
 ;; 加载 help 配置
 (require 'core-help)
 

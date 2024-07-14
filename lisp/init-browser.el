@@ -41,7 +41,7 @@
   ;; TODO 需要配置怎么通过默认 browser 打开文件
   (setq browse-url-handlers '(("\\`file:'" . browse-url-default-browser))))
 
-;; web search
+
 (use-package webjump
   :straight (:type built-in)
   :general
@@ -112,11 +112,11 @@
                         ("Ludwig Guru -- 您的英语写作平台" .
                          [simple-query "ludwig.guru" "ludwig.guru/s/" ""]))))
 
-;; Pastebin service
 (use-package webpaste
   :commands webpaste-paste-buffer-or-region
   :general
   (thomas-leader-define
+    "rp" '(:ignore t :wk "webpaste")
     "rpb" 'webpaste-paste-buffer
     "rpr" 'webpaste-paste-region
     "rpp" 'webpaste-paste-buffer-or-region)
