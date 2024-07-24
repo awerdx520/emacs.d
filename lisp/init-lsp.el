@@ -41,19 +41,20 @@
            "SPC" 'lsp-bridge-ref-open-file)
   :config
   ;; 关闭补全直接显示文档
-  (setq acm-enable-doc nil)
+  (setq acm-enable-doc nil
+        acm-enable-quick-access t
+        lsp-bridge-enable-hover-diagnostic t
+        ;; 开启 org-bable 补全
+        lsp-bridge-enable-org-babel t
+        lsp-bridge-org-babel-lang-list '("c" "c++" "python" "java" "go" "rust" "scala"))
+
+  ;; TODO 未生效，弹出窗口显示签名
+  ;;  (setq lsp-bridge-signature-show-function 'lsp-bridge-signature-show-with-frame)
 
   ;; 定期(以秒为单位)给远程服务器发送心跳包
-  (setq lsp-bridge-remote-heartbeat-interval 10)
-
-  ;; 设 lsp-bridge.py 启动环境
-  (setq lsp-bridge-python-command "/home/thomas/.conda/envs/lsp-bridge/bin/python"
-        ;; 关闭 lsp 自动补全使用，apheleia 的格式化程序
-        lsp-bridge-enable-auto-format-code nil)
-
-  (setq lsp-bridge-org-babel-lang-list '("c" "c++" "python" "java" "go" "rust" "scala")
-        ;; 开启 org-bable 补全
-        lsp-bridge-enable-org-babel t)
+  (setq lsp-bridge-remote-heartbeat-interval 10
+        ;; 设 lsp-bridge.py 启动环境
+        lsp-bridge-python-command "/home/thomas/.conda/envs/lsp-bridge/bin/python")
 
   ;; 跳转定义和引用的 fallback function
   (setq lsp-bridge-find-def-fallback-function #'xref-find-definitions
