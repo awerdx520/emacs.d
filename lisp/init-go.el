@@ -16,9 +16,9 @@
 (use-package go-gen-test)
 
 ;; 在 eldoc 中显示变量，函数类型信息以及函数当前参数位置
-;; TODO 没有起作用
-(use-package go-eldoc
-  :hook (go-ts-mode . go-eldoc-setup))
+;; TODO gocode 导致输入卡顿
+;; (use-package go-eldoc
+;;   :hook (go-ts-mode . go-eldoc-setup))
 
 (use-package gotest)
 
