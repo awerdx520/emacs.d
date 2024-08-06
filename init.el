@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 ;;;
+(require 'cl)
 (when (version< emacs-version "29.1")
   (error "Your Emacs is too old -- this config requires 29.1 or higher"))
 
@@ -64,6 +65,7 @@
 (require 'init-text)
 ;;(require 'init-cpp)
 (require 'init-rust)
+(require 'init-scala)
 ;;(require 'init-bazel)
 (require 'init-python)
 (require 'init-go)
