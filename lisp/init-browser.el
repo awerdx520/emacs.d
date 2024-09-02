@@ -62,7 +62,7 @@
                         ("Emacs China -- Emacs 中文论坛" .
                          [simple-query "emacs-china.org" "emacs-china.org/search?q=" ""])
                         ("Melpa -- Milkypostman 的 Emacs Lisp 软件包存档" .
-                         [simple-query "melpa.org" "melpa.org/#/?q=vs" ""])
+                         [simple-query "melpa.org" "melpa.org/#/?q=" ""])
 
                         ;; Linux
                         ("Archlinux Wiki -- Archlinux wiki帮助页面" .
@@ -86,7 +86,9 @@
                         ("Rust Crate -- Rust crates 包搜索" .
                          [simple-query "crates.io"  "crates.io/search?q=" ""])
                         ("Golang Pkg -- Golang 包搜索" .
-                         [simple-query "pkg.go.dev"  "pkg.go.dev/search?q=net" ""])
+                         [simple-query "pkg.go.dev"  "pkg.go.dev/search?q=" ""])
+                        ("PyPI -- Python 软件包索引查找、安装和发布 Python 软件包" .
+                         [simple-query "pypi.org"  "pypi.org/search/?q=" ""])
                         ("Regex101 -- 在线正则表达式测试和调试" . "regex101.com")
                         ("Code Search -- 代码搜索和具有代码图上下文的人工智能助手" .
                          [simple-query "sourcegraph.com" "sourcegraph.com/search?q=context:global+" "&patternType=literal"])
