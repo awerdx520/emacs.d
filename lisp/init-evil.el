@@ -4,6 +4,69 @@
 ;;
 
 ;;; Code:
+;;
+;;; Undo
+(use-package undo-fu
+  :hook (after-init . undo-fu-mode)
+  :config
+  ;; Increase undo history limits to reduce likelihood of data loss
+  (setq undo-limit 400000           ; 400kb (default is 160kb)
+        undo-strong-limit 3000000   ; 3mb   (default is 240kb)
+        undo-outer-limit 48000000)  ; 48mb  (default is 24mb)
+
+  (define-minor-mode undo-fu-mode
+    "Enables `undo-fu' for the current session."
+    :keymap (let ((map (make-sparse-keymap)))
+              (define-key map [remap undo] #'undo-fu-only-undo)
+              (define-key map [remap redo] #'undo-fu-only-redo)
+              (define-key map (kbd "C-_")     #'undo-fu-only-undo)
+              (define-key map (kbd "M-_")     #'undo-fu-only-redo)
+              (define-key map (kbd "C-M-_")   #'undo-fu-only-redo-all)
+              (define-key map (kbd "C-x r u") #'undo-fu-session-save)
+              (define-key map (kbd "C-x r U") #'undo-fu-session-recover)
+              map)
+    :init-value nil
+    :global t))
+
+
+(use-package undo-fu-session
+  :hook (undo-fu-mode . global-undo-fu-session-mode)
+  :custom (undo-fu-session-directory (expand-file-name "undo-fu-session" thomas-cache-dir))
+  :config
+  (setq undo-fu-session-incompatible-files
+        '("\\.gpg$" "/COMMIT_EDITMSG\\'" "/git-rebase-todo\\'"))
+
+  (when (executable-find "zstd")
+    ;; There are other algorithms available, but zstd is the fastest, and speed
+    ;; is our priority within Emacs
+    (setq undo-fu-session-compression 'zst))
+
+  (defun undo-fu-make-hashed-session-file-name-a (file)
+    "HACK Fix #4993: we've advised `make-backup-file-name-1' to produced SHA1'ed
+        filenames to prevent file paths that are too long, so we force
+        `undo-fu-session--make-file-name' to use it instead of its own
+        home-grown overly-long-filename generator.
+        TODO PR this upstream; should be a universal issue"
+    (concat (let ((backup-directory-alist `(("." . ,undo-fu-session-directory))))
+              (make-backup-file-name-1 file)
+              (undo-fu-session--file-name-ext)))
+    (advice-add  'undo-fu-session--make-file-name
+                 :override #'undo-fu-make-hashed-session-file-name-a)))
+
+(use-package vundo
+  :when (> emacs-major-version 27)
+  :defer t
+  :config
+  (setq vundo-glyph-alist vundo-unicode-symbols
+        vundo-compact-display t))
+
+(use-package avy
+  :config
+  (setq avy-all-windows nil
+        avy-all-windows-alt t
+        avy-background t
+        ;; the unpredictability of this (when enabled) makes it a poor default
+        avy-single-candidate-jump nil))
 
 (use-package evil
   :demand t
@@ -218,6 +281,71 @@
   (:states '(normal) "K" 'evil-jump-out-args))
 
 ;;(use-package evil-mc)
+
+;; https://github.com/nvim-treesitter/nvim-treesitter-textobjects#built-in-textobjects
+(use-package evil-textobj-tree-sitter
+  :after (evil treesit)
+  :init
+  (defun +tree-sitter-goto-textobj (group &optional previous end query)
+    "Thin wrapper that returns the symbol of a named function, used in keybindings."
+    (let ((sym (intern (format "+goto%s%s-%s" (if previous "-previous" "") (if end "-end" "") group))))
+      (fset sym (lambda ()
+                  (interactive)
+                  (evil-textobj-tree-sitter-goto-textobj group previous end query)))
+      sym))
+  :general
+  ;; Mapping textobjects
+  (:keymaps 'evil-inner-text-objects-map
+            ;; use evil-args 替代
+            ;; "a" (evil-textobj-tree-sitter-get-textobj ("parameter.outer" "call.inner"))
+            ;; bind `function.inner`(function block without name and args) to `f` for use in things like `vif`, `yif`
+            "f" (evil-textobj-tree-sitter-get-textobj "function.inner")
+            "F" (evil-textobj-tree-sitter-get-textobj "call.inner")
+            "C" (evil-textobj-tree-sitter-get-textobj "class.inner")
+            "v" (evil-textobj-tree-sitter-get-textobj "conditional.inner")
+            "l" (evil-textobj-tree-sitter-get-textobj "loop.inner"))
+
+  (:keymaps 'evil-outer-text-objects-map
+            ;; 用 evil-args 替代
+            ;; "a" (evil-textobj-tree-sitter-get-textobj ("parameter.outer" "call.outer"))
+            ;; bind `function.outer`(entire function block) to `f` for use in things like `vaf`, `yaf`
+            "f" (evil-textobj-tree-sitter-get-textobj "function.outer")
+            "F" (evil-textobj-tree-sitter-get-textobj "call.outer")
+            "C" (evil-textobj-tree-sitter-get-textobj "class.outer")
+            "c" (evil-textobj-tree-sitter-get-textobj "comment.outer")
+            "v" (evil-textobj-tree-sitter-get-textobj "conditional.outer")
+            "l" (evil-textobj-tree-sitter-get-textobj "loop.outer")
+            ;; Not Working
+            "m" (evil-textobj-tree-sitter-get-textobj "import"
+                  '((python-mode . [(import_statement) @import])
+                    (rust-mode . [(use_declaration) @import]))))
+  ;; Goto
+  (:states '(normal) ; Previous
+           "[ga" (+tree-sitter-goto-textobj "parameter.outer" t)
+           "[gf" (+tree-sitter-goto-textobj "function.outer" t)
+           "[gF" (+tree-sitter-goto-textobj "call.outer" t)
+           "[gC" (+tree-sitter-goto-textobj "class.outer" t)
+           "[gc" (+tree-sitter-goto-textobj "comment.outer" t)
+           "[gv" (+tree-sitter-goto-textobj "conditional.outer" t)
+           "[gl" (+tree-sitter-goto-textobj "loop.outer" t)
+           )
+
+  (:states '(normal) ; Next
+           "]ga" (+tree-sitter-goto-textobj "parameter.outer")
+           "]gf" (+tree-sitter-goto-textobj "function.outer")
+           "]gF" (+tree-sitter-goto-textobj "call.outer")
+           "]gC" (+tree-sitter-goto-textobj "class.outer")
+           "]gc" (+tree-sitter-goto-textobj "comment.outer")
+           "]gv" (+tree-sitter-goto-textobj "conditional.outer")
+           "]gl" (+tree-sitter-goto-textobj "loop.outer")))
+
+(with-eval-after-load 'which-key
+  (setq which-key-allow-multiple-replacements t)
+  (push '(("" . "\\`+?evil-textobj-tree-sitter-function--\\(.*\\)\\(?:.inner\\|.outer\\)") . (nil . "\\1"))
+        which-key-replacement-alist))
+
+
+
 
 (provide 'init-evil)
 ;; init-evil ends here

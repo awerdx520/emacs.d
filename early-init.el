@@ -16,6 +16,10 @@
 (setq native-comp-deferred-compilation nil ;; obsolete since 29.1
       native-comp-jit-compilation nil)
 
+;; Set eln-cache dir
+(when (boundp 'native-comp-eln-load-path)
+  (startup-redirect-eln-cache (expand-file-name ".local/cache/eln-cache/" user-emacs-directory)))
+
 ;; Package initialize occurs automatically, before `user-init-file' is
 ;; loaded, but after `early-init-file'. We handle package
 ;; initialization, so we must prevent Emacs from doing it early!
@@ -49,7 +53,6 @@
   (tooltip-mode -1))
 (when (featurep 'ns)
   (push '(ns-transparent-titlebar . t) default-frame-alist))
-(setq-default mode-line-format nil)
 
 
 ;;; early-init.el ends here

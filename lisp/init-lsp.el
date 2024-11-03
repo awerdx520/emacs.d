@@ -56,9 +56,10 @@
         ;; 设 lsp-bridge.py 启动环境
         lsp-bridge-python-command "/home/thomas/.conda/envs/lsp-bridge/bin/python")
 
-  ;; 跳转定义和引用的 fallback function
+  ;; 跳转定义和引用的 fallback function 未生效
   (setq lsp-bridge-find-def-fallback-function #'xref-find-definitions
-        lsp-bridge-find-ref-fallback-function #'xref-find-references)
+        lsp-bridge-find-ref-fallback-function #'xref-find-references
+        lsp-bridge-find-def-select-in-open-windows t)
 
   ;; 添加 lsp-bringe-find-def 到 evil 跳转函数中
   (with-eval-after-load 'evil

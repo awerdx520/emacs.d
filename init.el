@@ -2,7 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 ;;;
-(require 'cl)
 (when (version< emacs-version "29.1")
   (error "Your Emacs is too old -- this config requires 29.1 or higher"))
 
@@ -12,9 +11,6 @@
 
 ;; Defer garbage collection further back in the startup process
 (setq gc-cons-threshold most-positive-fixnum)
-
-;; Prevent flashing of unstyled modeline at startup
-(setq-default mode-line-format nil)
 
 ;; Don't pass case-insensitive to `auto-mode-alist'
 (setq auto-mode-case-fold nil)
@@ -29,52 +25,55 @@
                 (setq file-name-handler-alist
                       (delete-dups (append file-name-handler-alist old-file-name-handler-alist)))))))
 
-;; 将 core 目录添加到 `load-path' 中
-(add-to-list 'load-path (file-name-as-directory (locate-user-emacs-file "core")))
-
 ;;; 将配置文件添加到 `load-path' 中
 (add-to-list 'load-path (file-name-as-directory (locate-user-emacs-file "lisp")))
 
-(require 'core)
-(require 'init-evil)
-(require 'init-ui)
-(require 'init-completion)
-(require 'init-editor)
+;; 设置 Custom 文件路径
+(setq custom-file
+      (expand-file-name "custom.el"  user-emacs-directory))
 
-;; msic
-(require 'init-project)
-(require 'init-chinese)
+;; Packages
+(require 'init-package)
+
+;; 添加性能测试
+(use-package benchmark-init
+  :demand t
+  :config
+  (require 'benchmark-init-modes)
+  (add-hook 'after-init-hook #'benchmark-init/deactivate))
+
+;; Core
+(require 'init-base)
+(require 'init-completion)
+(require 'init-evil)
+(require 'init-editor)
+(require 'init-ui)
 (require 'init-window)
-(require 'init-treesit)
 
 ;; tools
-(require 'init-eval)
-(require 'init-snippets)
+(require 'init-help)
 (require 'init-dired)
-(require 'init-spell)
-(require 'init-undo)
-(require 'init-direnv)
-(require 'init-git)
-(require 'init-bookmark)
-(require 'init-browser)
+(require 'init-trans)
+(require 'init-browse)
 (require 'init-format)
-(require 'init-translate)
+(require 'init-snippets)
+;;(require 'init-shell)
+(require 'init-vcs)
+(require 'init-project)
+(require 'init-lsp)
+;;(require 'init-org)
+;;(require 'init-llm)
 
-;; Language
-(require 'init-shell)
-(require 'init-text)
-;;(require 'init-cpp)
-(require 'init-rust)
-(require 'init-scala)
-;;(require 'init-bazel)
+;; Programming
+;;(require 'init-text)
+;;(require 'init-rust)
+;;(require 'init-scala)
 (require 'init-python)
 (require 'init-go)
-;;(require 'init-elisp)
-(require 'init-sh)
-(require 'init-lsp)
+;;(require 'init-sh)
 
 ;;
-(require 'init-keybinding)
+;;(require 'init-keybinding)
 
 ;;
 (when (file-exists-p custom-file)

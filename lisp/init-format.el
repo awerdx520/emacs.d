@@ -35,8 +35,8 @@ If nil, formatting is enabled in all modes."
 (defvaralias '+format-inhibit 'apheleia-inhibit)
 
 (use-package apheleia
+  :hook (find-file . apheleia-global-mode)
   :init
-  (add-hook 'thomas-first-file-hook #'apheleia-global-mode)
   ;; apheleia autoloads `apheleia-inhibit-functions' so it will be immediately
   ;; available to mutate early.
   (defun +format-maybe-inhibit-h ()
@@ -48,6 +48,9 @@ This is controlled by `+format-on-save-disabled-modes'."
         (not (null (memq major-mode +format-on-save-disabled-modes)))))
 
   (add-hook 'apheleia-inhibit-functions #'+format-maybe-inhibit-h)
+  :general
+  (thomas-leader-define
+    "cf" 'apheleia-format-buffer)
   :config
   (setq +format-with-lsp nil)
   ;; 设置 Formatter

@@ -19,8 +19,6 @@
 ;;
 ;;; Code:
 
-(require 'core-const)
-
 ;; This package lets you enable minor modes based on file name and contents.
 ;; To find the right modes, it checks filenames against patterns in `auto-minor-mode-alist'
 ;; and file contents against `auto-minor-mode-magic-alist'.
@@ -33,53 +31,12 @@
    ("rc\\'" . conf-mode)
    ("\\.\\(?:hex\\|nes\\)\\'" . hexl-mode)))
 
-;; auto-revert
-(use-package auto-revert
+;; autorevert
+(use-package autorevert
   :straight (:type built-in)
   :diminish auto-revert-mode
-  :hook (thomas-first-file . global-auto-revert-mode))
+  :hook (find-file . global-auto-revert-mode))
 
-;;
-;;; File
-;; Recently opened files
-(use-package recentf
-  :straight (:type built-in)
-  :hook (thomas-first-file . recentf-mode)
-  :commands recentf-open-files
-  :custom (recentf-save-file (expand-file-name "recentf" thomas-cache-dir))
-  :config
-  (setq recentf-max-saved-items 300
-        ;; The most sensible time to clean up your recent files list is when you quit
-        ;; Emacs (unless this is a long-running daemon session).
-        recentf-auto-cleanup (when (daemonp) 300))
-
-  (defun thomas--recentf-file-truename-fn (file)
-    (if (or (not (file-remote-p file))
-            (equal "sudo" (file-remote-p file 'method)))
-        (abbreviate-file-name (file-truename (tramp-file-name-localname file)))
-      file))
-
-  ;; REVIEW: Use this in lieu of `doom--recentf-file-truename-fn' when we drop
-  ;;   28 support. See emacs-mirror/emacs@32906819addd.
-  ;; (setq recentf-show-abbreviated t)
-  ;; Resolve symlinks, strip out the /sudo:X@ prefix in local tramp paths, and
-  ;; abbreviate $HOME -> ~ in filepaths (more portable, more readable, & saves
-  ;; space)
-  (add-to-list 'recentf-filename-handlers #'thomas--recentf-file-truename-fn)
-
-  ;; Add dired directories to recentf file list.
-  (defun +recentf-add-file-fn()
-    (recentf-add-file default-directory))
-  (add-hook 'dired-mode-hook #'+recentf-add-file-fn)
-
-  (add-hook 'kill-emacs-hook #'recentf-cleanup)
-  ;; Anything in runtime folders
-  (add-to-list 'recentf-exclude
-               (concat "^" (regexp-quote (or (getenv "XDG_RUNTIME_DIR")
-                                             "/run")))))
-
-
-;;
 ;;; Comment
 (use-package newcomment
   :straight (:type built-in)
@@ -110,45 +67,6 @@ Else, call `comment-or-uncomment-region' on the current line."
 
 ;;
 ;;; Session
-;; 保存 session 相关配置，如：kill-ring 等变量
-(use-package savehist
-  :straight (:type built-in)
-  :hook (thomas-first-input . savehist-mode)
-  :custom
-  (savehist-file (expand-file-name "savehist" thomas-cache-dir))
-  :config
-  (setq savehist-save-minibuffer-history t
-        savehist-autosave-interval nil     ; save on kill only
-        savehist-additional-variables
-        '(kill-ring                        ; persist clipboard
-          register-alist                   ; persist macros
-          mark-ring global-mark-ring       ; persist marks
-          search-ring regexp-search-ring)) ; persist searches
-
-  (defun thomas-savehist-unpropertize-variables-h ()
-    "Remove text properties from `kill-ring' to reduce savehist cache size."
-    (setq kill-ring
-          (mapcar #'substring-no-properties
-                  (cl-remove-if-not #'stringp kill-ring))
-          register-alist
-          (cl-loop for (reg . item) in register-alist
-                   if (stringp item)
-                   collect (cons reg (substring-no-properties item))
-                   else collect (cons reg item))))
-  (add-hook 'savehist-save-hook #'thomas-savehist-unpropertize-variables-h)
-
-  (defun thomas-savehist-remove-unprintable-registers-h ()
-    "Remove unwriteable registers (e.g. containing window configurations).
-Otherwise, `savehist' would discard `register-alist' entirely if we don't omit
-the unwritable tidbits."
-
-    ;; Save new value in the temp buffer savehist is running
-    ;; `savehist-save-hook' in. We don't want to actually remove the
-    ;; unserializable registers in the current session!
-    (setq-local register-alist
-                (cl-remove-if-not #'savehist-printable register-alist)))
-  (add-hook 'savehist-save-hook #'thomas-savehist-remove-unprintable-registers-h))
-
 ;; Hiding structured data
 ;; zm hide-all
 ;; zr show-all
@@ -192,13 +110,6 @@ the unwritable tidbits."
         (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
   (setq hs-set-up-overlay #'hideshow-folded-overlay-fn))
 
-;; 记录关闭之前打开 Buffer 光标位置
-(use-package saveplace
-  :straight (:type built-in)
-  :hook (thomas-first-file . save-place-mode)
-  :custom (save-place-file (expand-file-name "saveplace" thomas-cache-dir)))
-
-;;
 ;;; Edit
 ;; 智能添加 parens 符号
 (use-package smartparens
@@ -266,7 +177,6 @@ This includes everything that calls `read--expression', e.g.
   ;; which causes folks to redundantly install their own.
   (setq ws-butler-keep-whitespace-before-point nil))
 
-
 (use-package transient
   :init
   (setq transient-levels-file (concat thomas-data-dir "transient/levels")
@@ -322,24 +232,105 @@ This includes everything that calls `read--expression', e.g.
 
   (defun background-opacity-get-alpha-str ()
     (format "Alpha %s%%" (background-opacity-get-alpha))))
-;;
-;;; Motion
-;;
-;; transparent remote access
-(use-package tramp
-  :defer t
+
+;; 配置输入法
+(use-package rime
+  :init
+  (setq default-input-method "rime"
+        rime-user-data-dir (concat thomas-cache-dir "rime/"))
+  :config
+  (setq rime-show-candidate 'posframe ; 使用 posframe 展示 candidate
+        rime-posframe-properties (list :internal-border-width 5
+                                       :left-fringe 3)
+        ;; 关闭编码显示
+        rime-show-preedit nil
+        ;; 对任意无关函数自动上屏
+        rime-commit1-forall t)
+
+  ;; 使用 `rime-commit1-forall' 设置，不能使得在输入时按 ESC 时首项也自动上屏，这里给出针对性的配置方法。
+  ;; 机制：在 emacs-rime 的输入状态下，ESC 被绑定到了 rime--escape 函数上，此函数显然不是“与 emacs-rime 无关的函数”。
+  ;; 实例：以 evil 插件为例，若要使得 ESC 能自动上屏并切换到 evil 的 normal state，可以先自定义函数，并将此函数绑定到 ESC 上。
+  ;;（注：至少对于 evil 插件而言， C-[ 和 ESC 被 emacs 当作同一按键，所以不需要对 C-[ 另行绑键。）
+  (defun +rime-commit1-and-evil-normal ()
+    "Commit the 1st item if exists, then go to evil normal state."
+    (interactive)
+    (rime-commit1)
+    (evil-normal-state))
+
+  ;; TODO 当前自动上屏功能不用
+  (general-def rime-active-mode-map "<Esc>" '+rime-commit1-and-evil-normal)
+
+  ;; 由于 `Emacs' 不能捕获 `shift' 修饰键，不能像 `windows' 下那样使用 `shift' 键来进入 `inline_mode',
+  ;; 但是可以通过将 `shift' 键为重新映射到新的键上，如：shift -> C-\ 。
+  ;; 但是这个和切换输入法项目没有任何优势，所以决定不开启 `inline_mode' 。
+  ;; 使用 `toggle-input-method' 命令切换输入的方式来解决输入包含空格的长英文模式。
+  ;; https://github.com/DogLooksGood/emacs-rime/issues/8
+  (setq rime-disable-predicates '(rime-predicate-evil-mode-p ; 在英文字符串之后（必须为以字母开头的英文字符串）
+                                  rime-predicate-ace-window-p ; 激活 ace-window-mode
+
+                                  ;; 字符
+                                  rime-predicate-after-alphabet-char-p ; 在英文字符串之后（必须为以字母开头的英文字符串）
+                                  rime-predicate-punctuation-after-ascii-p ; 当要在任意英文字符之后输入符号时
+                                  rime-predicate-current-uppercase-letter-p ; 将要输入的为大写字母时
+                                  rime-predicate-space-after-cc-p ; 在中文字符且有空格之后
+
+                                  ;; 代码
+                                  rime-predicate-prog-in-code-p))) ; 在 prog-mode 和 conf-mode 中除了注释和引号内字符串之外的区域
+;; 在中英文字符之间添加空格。
+(use-package pangu-spacing
+  :hook ((text-mode . pangu-spacing-mode)
+         ;; Always insert `real' space in org-mode.
+         (org-mode . (lambda ()
+                       (set (make-local-variable
+                             'pangu-spacing-real-insert-separtor) t)))))
+
+;; avy 拼音跳转支持
+(use-package ace-pinyin
+  :after avy
+  :init (setq ace-pinyin-use-avy t)
+  :custom-face (aw-leading-char-face ((t (:foreground "white" :background "#2a6041")
+                                         :weight bold :height 2.5 :box (:line-width 10 :color "#2a6041"))))
+  :config (ace-pinyin-global-mode t))
+
+(use-package evil-pinyin
+  :after evil
+  :config
+  (setq-default evil-pinyin-with-search-rule 'always)
+  (global-evil-pinyin-mode 1))
+
+
+;; 拼写检查
+;; Interactive spell checker
+;; z= `ispell-word'
+(use-package ispell
+  :straight (:type built-in)
+  :general
+  (general-def :states 'normal
+    "z=" 'ispell-word)
+  :config
+  ;; MacOS is broken
+  (when (eq system-type 'darwin)
+    (setenv "DICTIONARY" "en_US"))
+
+  ;; no spell checking for org special blocks
+  (setq ispell-skip-region-alist '((":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:")
+                                       ("#\\+begin_src" . "#\\+end_src")
+                                       ("#\\+begin_example" . "#\\+end_example")))
+  :config
+  (setq ispell-really-hunspell t
+        ispell-program-name "hunspell"
+        ispell-dictionary "en_US"
+        ispell-following-word t
+        ispell-personal-dictionary (expand-file-name thomas-cache-dir "hunspell_dict.txt")))
+
+;; Spell check on-the-fly
+(use-package flyspell
   :straight (:type built-in)
   :config
-  (setq tramp-verbose 1
-        tramp-default-method "ssh"
-        tramp-completion-reread-directory-timeout 60
-        tramp-persistency-file-name (expand-file-name "tramp" thomas-cache-dir))
-
-  (setq remote-file-name-inhibit-cache 60
-        vc-ignore-dir-regexp (format "%s\\|%s\\|%s"
-                                     vc-ignore-dir-regexp
-                                     tramp-file-name-regexp
-                                     "[/\\\\]node_modules")))
+  ;; Use M-C-i instead if M-TAB is shadowed by your window manager
+  (setq flyspell-use-meta-tab t
+        flyspell-issue-welcome-flag nil
+        flyspell-issue-message-flag nil))
 
 (provide 'init-editor)
 ;;; init-editor.el ends here

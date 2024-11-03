@@ -18,7 +18,14 @@
 ;;
 ;;
 ;;; Code:
-(require 'core-const)
+
+;; Suppress GUI features
+(setq use-file-dialog nil
+      use-dialog-box nil
+      inhibit-startup-screen t
+      inhibit-startup-echo-area-message user-login-name
+      inhibit-default-init t
+      initial-scratch-message nil)
 
 (use-package doom-themes
   :demand t
@@ -97,8 +104,6 @@
                                   (bookmarks . "nf-oct-bookmark")))
   ;; 启动 dashboard 设置
   (dashboard-setup-startup-hook))
-
-
 
 (use-package page-break-lines
   :hook (dashboard-mode . page-break-lines-mode))
@@ -208,7 +213,7 @@
   (setq rainbow-delimiters-max-face-count 4))
 
 (use-package hl-todo
-  :hook (thomas-first-file . global-hl-todo-mode)
+  :hook (find-file . global-hl-todo-mode)
   :general
   (:states '(normal visual)
            "]t" 'hl-todo-next
@@ -242,7 +247,6 @@
     (when (derived-mode-p 'prog-mode 'yaml-mode)
       (symbol-overlay-mode 1)))
   (advice-add #'deactivate-mark :after #'turn-on-symbol-overlay))
-
 
 (provide 'init-ui)
 ;;; init-ui.el ends here

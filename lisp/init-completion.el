@@ -1,4 +1,4 @@
-;;; init-minibuffer.el --- Config for minibuffer completion -*- lexical-binding: t -*-
+;;; init-completion.el --- Config for minibuffer completion -*- lexical-binding: t -*-
 
 ;;; Commentary:
 ;;
@@ -21,6 +21,7 @@
   ;; Do not allow the cursor in the minibuffer prompt
   (setq minibuffer-prompt-properties
         '(read-only t cursor-intangible t face minibuffer-prompt))
+
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
   ;; Support opening new minibuffers from inside existing minibuffers.
@@ -32,7 +33,7 @@
   (setq read-extended-command-predicate #'command-completion-default-include-p))
 
 (use-package vertico
-  :hook (thomas-first-input . vertico-mode)
+  :hook (after-init . vertico-mode)
   :general
   (thomas-leader-define
     "'" 'vertico-repeat)
@@ -212,4 +213,4 @@ Supports exportion consult-grep to wgrep, file to wdeired, and consult-localtion
   (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
 
 (provide 'init-completion)
-;;; init-minibuffer.el ends here
+;;; init-completion.el ends here

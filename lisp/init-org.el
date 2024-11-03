@@ -1,3 +1,4 @@
+
 (use-package org-download
   :config
   (when IS-WSL
@@ -14,3 +15,8 @@
                   "Please install the \"wl-paste\" program included in wl-clipboard"))))
           (org-download-screenshot basename))))))
 
+(use-package org-modern
+  :hook ((org-mode . org-modern-mode)
+         (org-agenda-finalize . org-modern-agenda)))
+
+(provide 'init-org)
