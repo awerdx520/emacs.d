@@ -25,12 +25,16 @@
     "ck" 'lsp-bridge-show-documentation
     "cx" 'lsp-bridge-diagnostic-list ); 列出所有诊断信息
 
+  (:states '(normal visual) :keymaps 'evil-collection-unimpaired-mode-map
+           "]e" nil
+           "[e" nil)
+
   ;;  evil
   (:states '(normal visual)
+           "gf" 'project-find-file
            "gd" 'lsp-bridge-find-def
            "gD" 'lsp-bridge-find-references
            "gi" 'lsp-bridge-find-impl
-           "gf" 'project-find-file
            "gt" 'lsp-bridge-find-type-def
 
            "]e" 'lsp-bridge-diagnostic-jump-next

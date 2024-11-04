@@ -94,13 +94,6 @@
   (setq evil-respect-visual-line-mode t ; when `visual-line-mode' enabled, exchange j/k with gj/gk
         evil-symbol-word-search t)
 
-  ;; 为不同模式定义不同光标颜色，在 terminal 模式下不能使用
-  (setq evil-emacs-state-cursor '("red" box)
-        evil-normal-state-cursor '("green" box)
-        evil-visual-state-cursor '("orange" box)
-        evil-insert-state-cursor '("red" bar)
-        evil-replace-state-cursor '("red" bar)
-        evil-operator-state-cursor '("red" hollow))
   ;; Don't quit Emacs on `:q'.
   ;;
   ;; Rebind `f'/`s' to mimic `evil-snipe'.
@@ -110,7 +103,7 @@
 
          :map evil-insert-state-map
          ("C-e" . move-end-of-line)
-         ;;("M-j" . yas-expand)
+         ("M-j" . yas-expand)
          :map evil-visual-state-map
          ("C-e" . move-end-of-line)
 
