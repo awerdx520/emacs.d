@@ -3,11 +3,10 @@
 ;;
 ;; dired-narrow is superseded by `consult-focus-lines'.
 
+
 ;;; Code:
 (use-package dired
   :straight (:type built-in)
-  :general (:states '(normal global) :keymaps 'dired-mode-map
-                    "C-c C-e" 'wdired-change-to-wdired-mode)
   :init
   (setq dired-dwim-target t ; suggest a target for moving/copying intelligently
         dired-hide-details-hide-symlink-targets nil
@@ -29,7 +28,17 @@
         image-dired-temp-rotate-image-file (concat image-dired-dir "temp-rotate-image")
         ;; Screens are larger nowadays, we can afford slightly larger thumbnails
         image-dired-thumb-size 150)
+
   :config
+  (with-eval-after-load 'evil-collection-dired
+    (defun +thomas/dired-copy-absolute-path()
+      "Copy absolute path in Dired."
+      (interactive)
+      (dired-copy-filename-as-kill 0))
+
+    (general-def :states 'normal :keymaps 'dired-mode-map
+      "W" '+thomas/dired-copy-absolute-path))
+
   ;; 修改自 https://www.emacswiki.org/emacs/DiredOmitMode
   (define-advice dired-do-print (:override (&optional _))
     "Show/hide dotfiles."
