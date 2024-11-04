@@ -27,6 +27,18 @@
       inhibit-default-init t
       initial-scratch-message nil)
 
+;; 设置字体
+(+thomas/setup-fonts)
+(add-hook 'window-setup-hook #'+thomas/setup-fonts)
+(add-hook 'server-after-make-frame-hook #'+thomas/setup-fonts)
+
+;; Initial frame
+(setq initial-frame-alist '((top . 0.5)
+                            (left . 0.5)
+                            (width . 0.628)
+                            (height . 0.8)
+                            (fullscreen . maximized)))
+
 (use-package doom-themes
   :demand t
   ;; 包含大量漂亮的主题，
@@ -116,9 +128,9 @@
 
 ;;
 ;;; 一些增强包
+;; 高亮当前行
 (use-package hl-line
   :straight (:type built-in)
-  ;; 高亮当前行
   :hook (after-init . global-hl-line-mode)
   :init
   (defvar global-hl-line-modes
