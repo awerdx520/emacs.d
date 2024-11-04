@@ -82,7 +82,7 @@
         recentf-save-file (expand-file-name "recentf" thomas-cache-dir)
         ;; The most sensible time to clean up your recent files list is when you quit
         ;; Emacs (unless this is a long-running daemon session).
-        recentf-auto-cleanup (when (daemonp) 300)
+        recentf-auto-cleanup (if (daemonp) 300 'mode)
         recentf-exclude
         '("\\.?cache" ".cask" "url" "COMMIT_EDITMSG\\'" "bookmarks"
           "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\|bmp\\|xpm\\)$"
