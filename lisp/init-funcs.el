@@ -28,7 +28,13 @@ input and search the whole buffer for it."
             (rxt-quote-pcre
              (buffer-substring-no-properties start end))))
         (call-interactively #'consult-line)))))
-
+;;;
+(defun +thomas/search-emacsd (regexp)
+  "Conduct a text search in files under `thomas-emacs-dir'"
+  (interactive (list (project--read-regexp)))
+  (let ((default-directory thomas-emacs-dir)
+        (vc-directory-exclusion-list '(".git" ".local")))
+    (project-find-regexp regexp)))
 
 ;; file
 (defun +thomas/glob (&rest segments)
@@ -77,6 +83,14 @@ If the glob ends in a slash, only returns matching directories."
   "Open file preceding this one, alphabetically, in the same directory."
   (interactive "p")
   (find-file (+thomas/find--current-buffer-n-pos-file (- count))))
+
+(defun +thomas/find-file-in-emacsd (&optional include-all)
+  "Find user emacs dir file"
+  (interactive "P")
+  (let  ((default-directory user-emacs-directory)
+         (vc-directory-exclusion-list '(".git" ".local")))
+    (project-find-file include-all)))
+
 
 (defmacro appendq! (sym &rest lists)
   "Append LISTS to SYM in place."

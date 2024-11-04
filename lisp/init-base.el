@@ -187,6 +187,10 @@
     :non-normal-key thomas-localleader-key
     :keymaps 'override)
   :config
+  (general-def :states '(normal visual)
+    "]f" '+thomas/find-next-file
+    "[f" '+thomas/find-previous-file)
+
   (thomas-leader-define
     ;; Top
     ":" 'execute-extended-command
@@ -221,6 +225,7 @@
     ;; File
     "f" '(:ignore t :wk "file")
     "ff" 'find-file
+    "fe" '+thomas/find-file-in-emacsd
 
     ;; Git
     "g" '(:ignore t :wk "git")
@@ -249,21 +254,20 @@
     "qK" 'save-buffers-kill-emacs
     "qq" 'save-buffers-kill-terminal
 
-
-
     ;; Remote
     "r" '(:ignore t :wk "remote")
 
     ;; Search
     "s" '(:ignore t :wk "search")
+    "sb" '+thomas/search-buffer
+    "se" '+thomas/search-emacsd
 
     ;; Window
     "w" '(:ignore t :wk "window")
     "w=" 'balance-windows
     "wf" 'ffap-other-window
     "wT" 'tear-off-window
-    "w C-o" 'delete-other-windows
-    ))
+    "w C-o" 'delete-other-windows))
 
 (use-package which-key
   :diminish which-key-mode "Ⓚ"

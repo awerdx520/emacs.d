@@ -61,7 +61,7 @@ Nil to use font supports ligatures.")
     "pv" 'project-vc-dir
     "px" 'project-execute-extended-command
     "pr" 'project-query-replace-regexp
-    "ps" 'project-shell
+    "ps" 'save-some-buffers
     "sp" 'project-find-regexp
     "pk" 'project-kill-buffers); kill 所有项目 buffer
   :config
