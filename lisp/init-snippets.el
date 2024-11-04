@@ -108,9 +108,6 @@ don't have a :trigger property in `+file-templates-alist'.")
     ("/shell\\.nix$" :trigger "__shell.nix")
     (nix-mode)
     ;; Org
-    (doom-docs-org-mode
-     :trigger +file-templates-insert-doom-docs-fn
-     :mode org-mode)
     (org-journal-mode :ignore t)
     (org-mode)
     ;; PHP
@@ -144,6 +141,13 @@ don't have a :trigger property in `+file-templates-alist'.")
 symbol or regexp string. The CDR is a plist. See `set-file-template!' for more
 information.")
 
+
+;;;###autoload
+(defun +thomas/project-p (dir)
+  "Return t if DIR (defaults to `default-directory') is a valid project."
+  (when-let ((project (project-current nil dir)))
+    (project-root project)))
+
 ;;
 ;;; Libary
 
@@ -152,7 +156,7 @@ information.")
   "Auto insert a yasnippet snippet into current file and enter insert mode (if
 evil is loaded and enabled)."
   (when (and pred (not ignore))
-    (when (if project (doom-project-p) t)
+    (when (if project (+thomas/project-p) t)
       (unless mode
         (setq mode
               (if (and (symbolp pred) (not (booleanp pred)))
