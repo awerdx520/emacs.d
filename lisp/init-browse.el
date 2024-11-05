@@ -5,7 +5,8 @@
   :straight (:type built-in)
   :general
   (thomas-leader-define
-    "oo" 'browse-url-at-point
+    "o." 'browse-url-at-point
+    "ob" '(:ignore t :wk "browse")
     "obi" 'browse-url
     "obd" 'browse-url-of-dired-file
     "obs" 'browse-url-of-file)

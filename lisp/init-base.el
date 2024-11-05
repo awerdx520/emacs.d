@@ -222,6 +222,9 @@
     "cc" 'compile
     "cC" 'recompile
 
+    ;; do
+    "d" '(:ignore t :wk "do")
+
     ;; File
     "f" '(:ignore t :wk "file")
     "ff" 'find-file
