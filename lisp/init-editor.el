@@ -314,8 +314,8 @@ This includes everything that calls `read--expression', e.g.
 
   ;; no spell checking for org special blocks
   (setq ispell-skip-region-alist '((":\\(PROPERTIES\\|LOGBOOK\\):" . ":END:")
-                                       ("#\\+begin_src" . "#\\+end_src")
-                                       ("#\\+begin_example" . "#\\+end_example")))
+                                   ("#\\+begin_src" . "#\\+end_src")
+                                   ("#\\+begin_example" . "#\\+end_example")))
   :config
   (setq ispell-really-hunspell t
         ispell-program-name "hunspell"
@@ -331,6 +331,14 @@ This includes everything that calls `read--expression', e.g.
   (setq flyspell-use-meta-tab t
         flyspell-issue-welcome-flag nil
         flyspell-issue-message-flag nil))
+
+(use-package persistent-scratch
+  :init
+  (setq persistent-scratch-save-file
+        (expand-file-name ".persistent-scratch" thomas-cache-dir))
+  :config
+  (persistent-scratch-setup-default))
+
 
 (provide 'init-editor)
 ;;; init-editor.el ends here

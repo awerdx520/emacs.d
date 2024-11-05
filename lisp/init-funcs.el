@@ -152,6 +152,20 @@ If the glob ends in a slash, only returns matching directories."
                       (set-fontset-font t 'han (font-spec :family font))))))
 
 
+;;
+;;; Buffer
+
+(defun +thomas/switch-to-scratch-buffer ()
+  "Switch to the scratch buffer. If the buffer doesn't exist,
+use persistent restore it."
+  (interactive)
+  (let* ((scratch-buffer-name "*scratch*")
+         (scratch-buffer (get-buffer scratch-buffer-name)))
+    (unless scratch-buffer
+      (persistent-scratch-restore)
+      (setq scratch-buffer (get-buffer scratch-buffer-name)))
+    (switch-to-buffer scratch-buffer)))
+
 
 
 (provide 'init-funcs)

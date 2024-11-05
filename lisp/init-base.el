@@ -215,7 +215,7 @@
     "bs" 'save-buffer
     "bS" 'evil-write-all
     "bz" 'bury-buffer
-
+    "bx" '+thomas/switch-to-scratch-buffer
 
     ;; Code
     "c" '(:ignore t :wk "code")
