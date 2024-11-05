@@ -9,7 +9,8 @@
   :straight '(lsp-bridge  :fetcher github :repo "manateelazycat/lsp-bridge"
                           :files (:defaults "*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
                           :build (:not compile))
-  :hook (prog-mode . lsp-bridge-mode)
+  :init
+  (global-lsp-bridge-mode)
   :general
   (thomas-leader-define
     ;; code
