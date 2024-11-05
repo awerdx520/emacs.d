@@ -148,7 +148,7 @@ If the glob ends in a slash, only returns matching directories."
                            "LXGW WenKai Mono" "PingFang SC" "Microsoft Yahei UI" "Simhei")
              when (font-installed-p font)
              return (progn
-                      (setq face-font-rescale-alist `((,font . 1.3)))
+                      (setq face-font-rescale-alist `((,font . 1.1)))
                       (set-fontset-font t 'han (font-spec :family font))))))
 
 
