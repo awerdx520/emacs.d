@@ -61,7 +61,7 @@
 (require 'init-vcs)
 (require 'init-project)
 (require 'init-lsp)
-;;(require 'init-org)
+(require 'init-org)
 ;;(require 'init-llm)
 
 ;; Programming
