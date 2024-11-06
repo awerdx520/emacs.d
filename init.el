@@ -55,7 +55,7 @@
 (require 'init-browse)
 (require 'init-format)
 (require 'init-snippets)
-;;(require 'init-shell)
+(require 'init-shell)
 (require 'init-vcs)
 (require 'init-project)
 (require 'init-lsp)

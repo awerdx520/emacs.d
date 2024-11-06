@@ -5,41 +5,38 @@
 
 ;;; Code:
 
-(defun shell-mode-common-init ()
-  "The common initialization procedure for term/shell."
-  (setq-local scroll-margin 0)
-  (setq-local truncate-lines t)
-  (setq-local global-hl-line-mode nil))
-
-(defun shell-self-destroy-sentinel (proc _exit-msg)
-  "Make PROC self destroyable."
-  (when (memq (process-status proc) '(exit signal stop))
-    (kill-buffer (process-buffer proc))
-    (ignore-errors (delete-window))))
-
-(defun shell-delete-window (&optional win)
-  "Delete WIN wrapper."
-  (ignore-errors (delete-window win)))
-
-;; General term mode
-;; If you use bash, directory track is supported natively.
-;; See https://www.emacswiki.org/emacs/AnsiTermHints for more information.
-(use-package term
-  :straight (:type built-in)
-  :hook ((term-mode . shell-mode-common-init)
-         (term-mode . term-mode-prompt-regexp-setup)
-         (term-exec . term-mode-set-sentinel))
+(use-package vterm
+  :hook (vterm-mode . hide-mode-line-mode)
+  :general
+  (thomas-leader-define "ot" 'vterm)
+  (:keymaps 'vterm-mode-map "C-q" 'vterm-send-next-key)
+  :preface
+  ;; HACK Because vterm clusmily forces vterm-module.so's compilation on us when
+  ;;      the package is loaded, this is necessary to prevent it when
+  ;;      byte-compiling this file (`use-package' blocks eagerly loads packages
+  ;;      when compiled).
+  (when noninteractive
+    (advice-add #'vterm-module-compile :override #'ignore)
+    (provide 'vterm-module))
   :config
-  (defun term-mode-prompt-regexp-setup ()
-    "Setup `term-prompt-regexp' for term-mode."
-    (setq-local term-prompt-regexp "^[^#$%>\n]*[#$%>] *"))
+  ;; TODO Popup
+  ;;
 
-  (defun term-mode-set-sentinel ()
-    "Close buffer after exit."
-    (when-let ((proc (ignore-errors (get-buffer-process (current-buffer)))))
-      (set-process-sentinel proc #'shell-self-destroy-sentinel))))
+  ;; Once vterm is dead, the vterm buffer is useless. Why keep it around? We can
+  ;; spawn another if want one.
+  (setq vterm-kill-buffer-on-exit t)
+
+  ;; 5000 lines of scrollback, instead of 1000
+  (setq vterm-max-scrollback 5000)
+
+  (defun +thomas/set-vterm-settings ( )
+    (setq confirm-kill-processes nil ; Don't prompt about dying processes when killing vterm
+          ;; Prevent premature horizontal scrolling
+          hscroll-margin 0))
+  (add-hook 'vterm-mode-hook #'+thomas/set-vterm-settings))
 
 ;; The Emacs shell & friends
+;; TODO 学习 Eshell
 (use-package eshell
   :straight (:type built-in)
   :hook (eshell-mode . shell-mode-common-init)
@@ -112,41 +109,6 @@ current directory."
   ;; Delete the last "word"
   (dolist (ch '(?_ ?- ?.))
     (modify-syntax-entry ch "w" eshell-mode-syntax-table)))
-
-;; The interactive shell.
-;;
-;; It can be used as a `sh-mode' REPL.
-;;
-;; `shell' is recommended to use over `tramp'.
-(use-package shell
-  :straight (:type built-in)
-  :hook ((shell-mode . shell-mode-common-init)
-         (shell-mode . revert-tab-width-to-default))
-  :bind ("M-`" . shell-toggle) ;; was `tmm-menubar'
-  :config
-  (defun shell-toggle ()
-    "Toggle a persistent shell popup window.
-If popup is visible but unselected, select it.
-If popup is focused, kill it."
-    (interactive)
-    (if-let ((win (get-buffer-window "*shell-popup*")))
-        (if (eq (selected-window) win)
-            ;; If users attempt to delete the sole ordinary window, silence it.
-            (shell-delete-window)
-          (select-window win))
-      (let ((display-comint-buffer-action '(display-buffer-at-bottom
-                                            (inhibit-same-window . nil))))
-        (when-let ((proc (ignore-errors (get-buffer-process (shell "*shell-popup*")))))
-          (set-process-sentinel proc #'shell-self-destroy-sentinel)))))
-
-  ;; Correct indentation for `ls'
-  (defun revert-tab-width-to-default ()
-    "Revert `tab-width' to default value."
-    (setq-local tab-width 8))
-  :config
-  (setq shell-kill-buffer-on-exit t
-        shell-get-old-input-include-continuation-lines t)
-  (add-to-list 'comint-output-filter-functions 'ansi-color-process-output))
 
 (provide 'init-shell)
 ;;; init-shell.el ends here
