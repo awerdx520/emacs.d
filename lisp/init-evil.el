@@ -68,6 +68,11 @@
         ;; the unpredictability of this (when enabled) makes it a poor default
         avy-single-candidate-jump nil))
 
+;; zm hide-all
+;; zr show-all
+;; za toggle-fold
+;; zo show-block
+;; zc hide-block
 (use-package evil
   :demand t
   :hook (after-init . evil-mode)

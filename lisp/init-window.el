@@ -20,6 +20,7 @@
 ;;; Code:
 
 (use-package winner
+  :straight (:type built-in)
   ;; undo/redo changes to Emacs' window layout
   :preface (defvar winner-dont-bind-my-keys t) ; I'll bind keys myself
   :hook (after-init . winner-mode)

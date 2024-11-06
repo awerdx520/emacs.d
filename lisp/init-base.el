@@ -29,6 +29,7 @@
 ;; Don't ping things that look like domain names.
 (setq ffap-machine-p-known 'reject)
 
+;; Emacs 垃圾收集优化
 (use-package gcmh
   :diminish
   :hook (emacs-startup . gcmh-mode)
@@ -57,14 +58,7 @@
     (set-selection-coding-system 'gbk)
   (set-selection-coding-system 'utf-8))
 
-;; Environment
-(use-package exec-path-from-shell
-  :init
-  (setq exec-path-from-shell-variables '("PATH" "MANPATH")
-        exec-path-from-shell-arguments '("-l"))
-  (exec-path-from-shell-initialize))
-
-;; Save place
+;; 保存访问过文件的光标位置.
 (use-package saveplace
   :straight (:type built-in)
   :hook (after-init . save-place-mode)
@@ -73,7 +67,7 @@
         "\\(?:COMMIT_EDITMSG\\|hg-editor-[[:alnum:]]+\\.txt\\|elpa\\|svn-commit\\.tmp\\|bzr_log\\.[[:alnum:]]+\\)$"
         save-place-file (expand-file-name "saveplace" thomas-cache-dir)))
 
-;; Recently opened files
+;; 保存最近的编辑过的那些文件
 (use-package recentf
   :straight (:type built-in)
   :hook (after-init . recentf-mode)
@@ -98,9 +92,10 @@
   :straight (:type built-in)
   :hook (after-init . savehist-mode)
   :init
-  (setq savehist-save-minibuffer-history t
+  (setq savehist-autosave-interval 300
+        savehist-save-minibuffer-history t
         savehist-file (expand-file-name "savehist" thomas-cache-dir)
-        savehist-autosave-interval 300
+
         ;; Allow for minibuffer-ception. Sometimes we need another minibuffer command
         ;; while we're in the minibuffer.
         enable-recursive-minibuffers t
@@ -109,8 +104,14 @@
         '(kill-ring                        ; persist clipboard
           register-alist                   ; persist macros
           mark-ring global-mark-ring       ; persist marks
-          search-ring regexp-search-ring) ; persist searches
-        ))
+          ;; persist searches
+          search-ring regexp-search-ring)))
+
+;; 自动重载被修改过的文件.
+(use-package autorevert
+  :straight (:type built-in)
+  :diminish auto-revert-mode
+  :hook (find-file . global-auto-revert-mode))
 
 (use-package simple
   :straight (:type built-in)
@@ -124,6 +125,7 @@
   ;; Visualize TAB, (HARD) SPACE, NEWLINE
   (setq-default show-trailing-whitespace nil) ; Don't show trailing whitespace by default
 
+  ;; 在保存 buffer 之前显示末尾空白，然后保存之后删除末尾空白
   (defun enable-trailing-whitespace ()
     "Show trailing spaces and delete on saving."
     (setq show-trailing-whitespace t)
@@ -131,7 +133,7 @@
 
   :hook ((after-init . size-indication-mode)
          (text-mode .  visual-line-mode)
-         ((prog-mode markdown-mode conf-mode) . enable-trailing-whitespace)))
+         ((prog-mode conf-mode markdown-mode) . #'enable-trailing-whitespace)))
 
 ;; Misc
 ;; 简化 yes-or-no 输入
@@ -159,6 +161,13 @@
       sentence-end "\\([。！？]\\|……\\|[.?!][]\"')}]*\\($\\|[ \t]\\)\\)[ \t\n]*"
       sentence-end-double-space nil
       word-wrap-by-category t)
+
+;; Environment
+(use-package exec-path-from-shell
+  :init
+  (setq exec-path-from-shell-variables '("PATH" "MANPATH")
+        exec-path-from-shell-arguments '("-l"))
+  (exec-path-from-shell-initialize))
 
 ;; Treesit
 (use-package treesit-auto

@@ -182,8 +182,8 @@
     (setq nerd-icons-font-family "Symbols Nerd Font Mono")))
 
 
+;; 高亮显示匹配的括号
 (use-package paren
-  ;; 高亮显示匹配的括号
   :straight (:type built-in)
   :hook (after-init . show-paren-mode)
   :config
@@ -192,20 +192,8 @@
         show-paren-when-point-inside-paren t
         show-paren-when-point-in-periphery t))
 
-(use-package whitespace
-  ;; 空白字符配置
-  :config
-  (setq whitespace-line-column nil
-        whitespace-style
-        '(face indentation tabs tab-mark spaces space-mark newline newline-mark
-               trailing lines-tail)
-        whitespace-display-mappings
-        '((tab-mark ?\t [?› ?\t])
-          (newline-mark ?\n [?¬ ?\n])
-          (space-mark ?\  [?·] [?.]))))
-
+;;许多主要模式不突出显示数字文字，因此我们为它们突出显示
 (use-package highlight-numbers
-  ;;许多主要模式不突出显示数字文字，因此我们为它们突出显示
   :hook ((prog-mode conf-mode) . highlight-numbers-mode)
   :config (setq highlight-numbers-generic-regexp
                 "\\_<[[:digit:]]+\\(?:\\.[0-9]*\\)?\\_>"))

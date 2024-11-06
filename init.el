@@ -29,8 +29,7 @@
 (add-to-list 'load-path (file-name-as-directory (locate-user-emacs-file "lisp")))
 
 ;; 设置 Custom 文件路径
-(setq custom-file
-      (expand-file-name "custom.el"  user-emacs-directory))
+(setq custom-file (expand-file-name "custom.el"  user-emacs-directory))
 
 ;; Packages
 (require 'init-package)
@@ -38,9 +37,8 @@
 ;; 添加性能测试
 (use-package benchmark-init
   :demand t
-  :config
-  (require 'benchmark-init-modes)
-  (add-hook 'after-init-hook #'benchmark-init/deactivate))
+  :hook (after-init . benchmark-init/deactivate)
+  :config (require 'benchmark-init-modes))
 
 ;; Core
 (require 'init-base)
@@ -72,10 +70,7 @@
 (require 'init-go)
 ;;(require 'init-sh)
 
-;;
-;;(require 'init-keybinding)
-
-;;
+;; 加载 custom.el 文件
 (when (file-exists-p custom-file)
   (load custom-file))
 ;;;  init.el ends here

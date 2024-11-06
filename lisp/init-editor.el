@@ -31,85 +31,6 @@
    ("rc\\'" . conf-mode)
    ("\\.\\(?:hex\\|nes\\)\\'" . hexl-mode)))
 
-;; autorevert
-(use-package autorevert
-  :straight (:type built-in)
-  :diminish auto-revert-mode
-  :hook (find-file . global-auto-revert-mode))
-
-;;; Comment
-(use-package newcomment
-  :straight (:type built-in)
-  :bind ([remap comment-dwim] . comment-or-uncomment)
-  :config
-  (defun comment-or-uncomment ()
-    "Comment or uncomment the current line or region.
-
-If the region is active and `transient-mark-mode' is on, call
-`comment-or-uncomment-region'.
-Else, if the current line is empty, insert a comment and indent
-it.
-Else, call `comment-or-uncomment-region' on the current line."
-    (interactive)
-    (if (region-active-p)
-        (comment-or-uncomment-region (region-beginning) (region-end))
-      (if (save-excursion
-            (beginning-of-line)
-            (looking-at "\\s-*$"))
-          (comment-dwim nil)
-        (comment-or-uncomment-region (line-beginning-position) (line-end-position)))))
-  :custom
-  ;; `auto-fill' inside comments.
-  ;;
-  ;; The quoted text in `message-mode' are identified as comments, so only
-  ;; quoted text can be `auto-fill'ed.
-  (comment-auto-fill-only-comments t))
-
-;;
-;;; Session
-;; Hiding structured data
-;; zm hide-all
-;; zr show-all
-;; za toggle-fold
-;; zo show-block
-;; zc hide-block
-(use-package hideshow
-  :straight (:type built-in)
-  :diminish hs-minor-mode
-  :hook (prog-mode . hs-minor-mode)
-  :config
-  (defconst hideshow-folded-face '((t (:inherit 'font-lock-comment-face :box t))))
-  (defface hideshow-border-face
-    '((((background light))
-       :background "rosy brown" :extend t)
-      (t
-       :background "sandy brown" :extend t))
-    "Face used for hideshow fringe."
-    :group 'hideshow)
-
-  (define-fringe-bitmap 'hideshow-folded-fringe
-    (vector #b00000000
-            #b00000000
-            #b00000000
-            #b11000011
-            #b11100111
-            #b01111110
-            #b00111100
-            #b00011000))
-
-  (defun hideshow-folded-overlay-fn (ov)
-    "Display a folded region indicator with the number of folded lines."
-    (when (eq 'code (overlay-get ov 'hs))
-      (let* ((nlines (count-lines (overlay-start ov) (overlay-end ov)))
-             (info (format " (%d)..." nlines)))
-        ;; fringe indicator
-        (overlay-put ov 'before-string (propertize " "
-                                                   'display '(left-fringe hideshow-folded-fringe
-                                                                          hideshow-border-face)))
-        ;; folding indicator
-        (overlay-put ov 'display (propertize info 'face hideshow-folded-face)))))
-  (setq hs-set-up-overlay #'hideshow-folded-overlay-fn))
-
 ;;; Edit
 ;; 智能添加 parens 符号
 (use-package smartparens
@@ -165,17 +86,6 @@ This includes everything that calls `read--expression', e.g.
   ;; quote pairs, which lisps doesn't use for strings:
   (sp-local-pair '(minibuffer-mode minibuffer-inactive-mode) "'" nil :actions nil)
   (sp-local-pair '(minibuffer-mode minibuffer-inactive-mode) "`" nil :actions nil))
-
-;; 删除末尾空白
-(use-package ws-butler
-  ;; a less intrusive `delete-trailing-whitespaces' on save
-  :hook (prog-mode . ws-butler-mode)
-  :config
-  ;; ws-butler normally preserves whitespace in the buffer (but strips it from
-  ;; the written file). While sometimes convenient, this behavior is not
-  ;; intuitive. To the average user it looks like whitespace cleanup is failing,
-  ;; which causes folks to redundantly install their own.
-  (setq ws-butler-keep-whitespace-before-point nil))
 
 (use-package transient
   :init
