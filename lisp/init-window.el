@@ -29,6 +29,7 @@
             '("*Compile-Log*" "*inferior-lisp*" "*Fuzzy Completions*"
               "*Apropos*" "*Help*" "*cvs*" "*Buffer List*" "*Ibuffer*"
               "*esh command on file*")))
+
 ;; 跳转 window
 (use-package ace-window
   :defer t
@@ -45,6 +46,7 @@
         aw-scope 'frame
         aw-background t))
 
+;; TODO 窗口弹出规则
 ;; (use-package shackle
 ;;   :hook (after-init . shackle-mode)
 ;;   :init

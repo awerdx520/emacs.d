@@ -1,4 +1,5 @@
 ;;; init-org.el utils -*- lexical-binding: t; -*-
+;; TODO 完善 Org-Mode 配置
 (use-package org-download
   :config
   (when IS-WSL

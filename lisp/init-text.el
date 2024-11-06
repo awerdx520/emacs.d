@@ -2,7 +2,6 @@
 
 ;;; Commentary:
 ;;
-;; `org-mode' is too huge to place here.
 
 ;;; Code:
 
@@ -20,12 +19,10 @@
 
 ;; Pixel alignment for org/markdown tables
 (use-package valign
-  :ensure t
   :hook ((markdown-mode org-mode) . valign-mode))
 
 ;; The markdown mode is awesome! unbeatable
 (use-package markdown-mode
-  :ensure t
   :init
   (advice-add #'markdown--command-map-prompt :override #'ignore)
   (advice-add #'markdown--style-map-prompt   :override #'ignore)
@@ -51,19 +48,6 @@
         markdown-asymmetric-header t
         markdown-gfm-uppercase-checkbox t
         markdown-fontify-code-blocks-natively t))
-
-;; ReStructuredText
-(use-package rst
-  :ensure nil
-  :hook ((rst-mode . visual-line-mode)
-         (rst-adjust . rst-toc-update)))
-
-;; Show trailing whitespaces
-(use-package whitespace
-  :straight (:type built-in)
-  :hook ((prog-mode markdown-mode conf-mode) . whitespace-mode)
-  :config
-  (setq whitespace-style '(face trailing)))
 
 (provide 'init-text)
 ;;; init-text.el ends here
