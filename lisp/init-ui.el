@@ -227,7 +227,11 @@
                                 ("HACK" font-lock-constant-face bold)
                                 ("REVIEW" font-lock-keyword-face bold)
                                 ("DEPRECATED" font-lock-doc-face bold))))
+;; 显示缩进线
+(use-package highlight-indent-guides
+  :hook (prog-mode . highlight-indent-guides-mode))
 
+;;
 (use-package symbol-overlay
   :hook (((prog-mode yaml-mode) . symbol-overlay-mode)
          (iedit-mode . turn-off-symbol-overlay)
