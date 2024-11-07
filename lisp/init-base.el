@@ -253,9 +253,6 @@
     "oA" 'org-agenda
     "of" 'make-frame
     "oF" 'select-frame-by-name
-    "ot" 'term
-
-
 
     ;; Project
     "p" '(:ignore t :wk "project")

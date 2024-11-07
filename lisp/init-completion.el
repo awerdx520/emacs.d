@@ -124,10 +124,13 @@
     ;; insert
     "ir" 'consult-register
     "is" 'consult-yasnippet
+
     ;; project
     "pb" 'consult-project-buffer ;; 切换到项目中已经打开的 Buffer
     "pg" 'consult-git-grep
+
     ;; search
+    "sp" 'consult-ripgrep
     "sf" 'consult-locate
     "si" 'consult-imenu
     "sI" 'consult-imenu-multi

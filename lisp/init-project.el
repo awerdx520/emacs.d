@@ -62,7 +62,6 @@ Nil to use font supports ligatures.")
     "px" 'project-execute-extended-command
     "pr" 'project-query-replace-regexp
     "ps" 'save-some-buffers
-    "sp" 'project-find-regexp
     "pk" 'project-kill-buffers); kill 所有项目 buffer
   :config
   (cl-defmethod project-root ((project (head local)))
