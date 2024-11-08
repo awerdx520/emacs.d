@@ -99,30 +99,6 @@
   (setq evil-respect-visual-line-mode t ; when `visual-line-mode' enabled, exchange j/k with gj/gk
         evil-symbol-word-search t)
 
-  ;; Don't quit Emacs on `:q'.
-  ;;
-  ;; Rebind `f'/`s' to mimic `evil-snipe'.
-  :bind (([remap evil-quit] . kill-this-buffer)
-         :map evil-motion-state-map
-         ("f" . evil-avy-goto-char-in-line)
-
-         :map evil-insert-state-map
-         ("C-e" . move-end-of-line)
-         ("M-j" . yas-expand)
-         :map evil-visual-state-map
-         ("C-e" . move-end-of-line)
-
-         :map evil-normal-state-map
-         ("s" . evil-avy-goto-char-timer)
-         ;; ("Y" . (kbd "y$"))
-         ("C-e" . move-end-of-line)
-
-         :map evil-ex-completion-map
-         ("C-a" . move-beginning-of-line)
-         ("C-b" . backward-char)
-         ("C-f" . forward-char)
-         ("M-n" . next-complete-history-element)
-         ("M-p" . previous-complete-history-element))
   :general
   (thomas-leader-define
     "w:" 'evil-ex
@@ -152,6 +128,19 @@
     "wW" 'evil-window-prev
     "wx" 'evil-window-exchange
     "w|" 'evil-window-set-width )
+
+  (:states 'insert "M-j" 'yas-expand)
+
+  (:states '(normal insert)
+           "C-a" 'move-beginning-of-line
+           "C-e" 'move-end-of-line)
+
+  (:keymaps 'evil-ex-completion-map
+            "C-a" 'move-beginning-of-line
+            "C-e" 'move-end-of-line
+            "C-f" 'forward-char
+            "M-n" 'next-complete-history-element
+            "M-p" 'previous-complete-history-element)
   :config
   ;; Specify major mode uses EMACS original state.
   (dolist (p '((minibuffer-inactive-mode . emacs)

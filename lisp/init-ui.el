@@ -233,9 +233,7 @@
 
 ;;
 (use-package symbol-overlay
-  :hook (((prog-mode yaml-mode) . symbol-overlay-mode)
-         (iedit-mode . turn-off-symbol-overlay)
-         (iedit-mode-end . turn-on-symbol-overlay))
+  :hook (((prog-mode yaml-mode) . symbol-overlay-mode))
   :config
   (setq symbol-overlay-scope t)
   ;; Disable symbol highlighting while selecting
@@ -250,6 +248,7 @@
     (interactive)
     (when (derived-mode-p 'prog-mode 'yaml-mode)
       (symbol-overlay-mode 1)))
+
   (advice-add #'deactivate-mark :after #'turn-on-symbol-overlay))
 
 (provide 'init-ui)
