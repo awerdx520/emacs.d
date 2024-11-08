@@ -27,6 +27,19 @@
     (interactive "P")
     (gt-start gt-sentence-translator))
 
+  ;; TODO gt-buffer-render 在 evil 模式下键绑定有问题
+  (setq gt-input-translator
+        (gt-translator
+         :taker (gt-taker :langs '(en zh) :text 'word :prompt t)
+         :engines (list (gt-bing-engine :if 'word)
+                        (gt-youdao-suggest-engine :if '(and word src:en)))
+         :render (gt-buffer-render)))
+
+  (defun +thomas/translate-input (word)
+    "Translate with interactive in minibuffer, default select word at point."
+    (interactive "P")
+    (gt-start gt-input-translator))
+
   (cl-defmethod gt-thing-at-point ((_ (eql 'brackets)) (_ t))
     (form-at-point 'string))
 
@@ -45,6 +58,7 @@
   (thomas-leader-define
     "d." 'gt-do-translate
     "ds" '+thomas/translate-sentence
+    "di" '+thomas/translate-input
     "db" '+thomas/translate-brackets))
 
 
